@@ -12,7 +12,7 @@ import pandas as pd
 # Define the SQL query to fetch data from the database
 def myview(request):
     now = datetime.datetime.now()
-    last_24h = now - datetime.timedelta(hours=24)
+    last_24h = now - datetime.timedelta(hours=48)
 
     with connection.cursor() as cursor:
         sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{last_24h}' ORDER BY `poolStats`.`date` ASC"
@@ -25,7 +25,7 @@ def myview(request):
     small = df['small']
     ice = df['ice'] 
     fig = px.line(df, x=date, y=[sport, family, small, ice])
-    fig.update_layout(title="Stan zajętości obiektów BOSiR (ostatnie 24h)", xaxis_title="Czas", yaxis_title="Liczba osób")
+    fig.update_layout(title="Stan zajętości obiektów BOSiR (ostatnie 48h)", xaxis_title="Czas", yaxis_title="Liczba osób")
     #fig.update_traces(text=["Sportowa", "Rodzinna", "Kameralna", "Lodowisko"])
 
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
