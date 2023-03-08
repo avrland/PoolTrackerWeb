@@ -25,7 +25,8 @@ def myview(request):
     small = df['small']
     ice = df['ice'] 
     fig = px.line(df, x=date, y=[sport, family, small, ice])
-    #fig.update_traces(name=['Sportowa', 'Rodzinna', 'Kameralna', 'Lodowisko'])
+    fig.update_layout(title="Stan zajętości obiektów BOSiR (ostatnie 24h)", xaxis_title="Czas", yaxis_title="Liczba osób")
+    #fig.update_traces(text=["Sportowa", "Rodzinna", "Kameralna", "Lodowisko"])
 
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
     return render(request, 'chart.html', {'plot': fig.to_html(full_html=False), 'date': last_date, 'sport' : sport.iloc[-1], 'family' : family.iloc[-1], 'small': small.iloc[-1], "ice" : ice.iloc[-1]})
