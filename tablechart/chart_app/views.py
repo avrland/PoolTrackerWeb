@@ -12,7 +12,7 @@ import pandas as pd
 # Define the SQL query to fetch data from the database
 def myview(request):
     now = datetime.datetime.now()
-    last_24h = now - datetime.timedelta(hours=48)
+    last_24h = now - datetime.timedelta(hours=24)
 
     with connection.cursor() as cursor:
         sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{last_24h}' ORDER BY `poolStats`.`date` ASC"
@@ -24,8 +24,12 @@ def myview(request):
     family = df['family']
     small = df['small']
     ice = df['ice'] 
-    fig = px.line(df, x=date, y=[sport, family, small, ice])
-    fig.update_layout(title="Stan zajętości obiektów BOSiR (ostatnie 48h)", xaxis_title="Czas", yaxis_title="Liczba osób")
+    fig = px.line(df, x=date, y=[sport, family, small, ice], labels={'value': 'Liczba osób', 'variable': 'Obiekt'})
+    fig.update_traces(name='Sportowa', selector=dict(name='sport'))
+    fig.update_traces(name='Rodzinna', selector=dict(name='family'))
+    fig.update_traces(name='Kameralna', selector=dict(name='small'))
+    fig.update_traces(name='Lodowisko', selector=dict(name='ice'))
+    fig.update_layout(title="Stan zajętości obiektów BOSiR (ostatnie 24h)", xaxis_title="Czas", yaxis_title="Liczba osób")
     #fig.update_traces(text=["Sportowa", "Rodzinna", "Kameralna", "Lodowisko"])
 
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
