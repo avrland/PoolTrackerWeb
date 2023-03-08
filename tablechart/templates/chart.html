@@ -3,10 +3,10 @@
 {% block content %}
 <h1>basen.bialystok.pl</h1>
 <div id="plot">{{ plot|safe }}</div>
+<p><h3>Obecny stan:</h3></p>
 <p>Ostatnia synchronizacja: {{ date }}</p>
-<p>Obecny stan:</p>
-<p>Pływalnia sportowa: {{ sport }} osób</p>
-<p>Pływalnia rodzinna: {{ family }} osób</p>
-<p>Pływalnia kameralna: {{ small }} osób</p>
-<p>Lodowisko: {{ ice }} osób</p>
+<p>Pływalnia sportowa: <b>{{ sport }}</b> / <b>105</b> osób max</p>
+<p>Pływalnia rodzinna: <b>{{ family }}</b> / <b>150</b> osób max</p>
+<p>Pływalnia kameralna: <b>{{ small }}</b> / <b>30</b> osób max</p>
+<p>Lodowisko: <b>{{ ice }}</b> / <b>300</b> osób max</p>
 {% endblock %}
