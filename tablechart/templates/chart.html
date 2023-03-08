@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>basen.bialystok.pl</h1>
+<div id="plot">{{ plot|safe }}</div>
+<p>Ostatnia synchronizacja: {{ date }}</p>
+<p>Obecny stan:</p>
+<p>Pływalnia sportowa: {{ sport }} osób</p>
+<p>Pływalnia rodzinna: {{ family }} osób</p>
+<p>Pływalnia kameralna: {{ small }} osób</p>
+<p>Lodowisko: {{ ice }} osób</p>
+{% endblock %}
