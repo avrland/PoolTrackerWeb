@@ -32,3 +32,6 @@ python manage.py runserver 0.0.0.0:80
 
 ## To do
 - put app into Docker container
+
+## Credits
+- Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
