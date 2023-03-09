@@ -3,6 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
+    <style>
+		@media only screen and (max-width: 600px) {
+			#chart-div {
+				width: 100%;
+				height: 300px;
+			}
+		}
+
+		@media only screen and (min-width: 601px) and (max-width: 900px) {
+			#chart-div {
+				width: 100%;
+				height: 400px;
+			}
+		}
+
+		@media only screen and (min-width: 901px) {
+			#chart-div {
+				width: 800px;
+				height: 500px;
+			}
+		}
+	</style>
 </head>
 <body>
     <main>
