@@ -38,9 +38,9 @@ def myview(request):
             xanchor='right', # Anchor the legend to the right of the chart
             x=1 # Adjust the position of the legend
         ),
+        modebar_remove = ['pan2d', 'lasso2d', 'select2d', 'toggleSpikelines']
         #margin=dict(t=50, b=0) # Adjust the top and bottom margins
     )
-    #fig.update_traces(text=["Sportowa", "Rodzinna", "Kameralna", "Lodowisko"])
 
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
     return render(request, 'chart.html', {'plot': fig.to_html(full_html=False), 'date': last_date, 'sport' : sport.iloc[-1], 'family' : family.iloc[-1], 'small': small.iloc[-1], "ice" : ice.iloc[-1]})
