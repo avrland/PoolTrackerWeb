@@ -1,7 +1,7 @@
 # PoolTrackerWeb
 Django based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
 
-1. Install pip requirments
+1. Use latest python, install pip requirments
 ```
 pip install django pymysql plotly pandas
 ```
