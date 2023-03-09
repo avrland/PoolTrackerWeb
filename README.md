@@ -1,5 +1,7 @@
 # PoolTrackerWeb
-Django based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
+![ss1](https://raw.githubusercontent.com/avrland/PoolTrackerWeb/main/images/1.png)
+
+Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
 
 1. Use latest python, install pip requirments
 ```
