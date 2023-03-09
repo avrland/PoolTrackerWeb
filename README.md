@@ -1,5 +1,5 @@
 # PoolTrackerWeb
-Web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Based on django. App reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
+Django based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
 
 1. Clone repo
 ```
