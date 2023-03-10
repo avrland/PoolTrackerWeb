@@ -18,6 +18,5 @@ from django.urls import path, include
 from chart_app.views import myview, update_chart
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', myview, name='home'),
-    path('update_chart/', update_chart)
+    path('', include("chart_app.urls"))
 ]
