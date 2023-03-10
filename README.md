@@ -42,8 +42,11 @@ PoolTrackerWeb/
         static/ <- all static assets
 ```
 
-## To do
-- put app into Docker container
+## Docker image
+```
+docker image build -t pooltrackerweb .
+docker container run -p80:8000 pooltrackerweb
+```
 
 ## Credits
 - Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
