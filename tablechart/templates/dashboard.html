@@ -26,7 +26,7 @@
                   <h6>Filtruj</h6>
                 </li>
   
-                <li><a class="dropdown-item" href="#">Dzisiaj</a></li>
+                <li><a class="dropdown-item" href="#" id="button1">6h</a></li>
                 <li><a class="dropdown-item" href="#">Ten tydzień</a></li>
                 <li><a class="dropdown-item" href="#">Ten miesiąc</a></li>
               </ul>
@@ -92,8 +92,37 @@
                   document.querySelector("#reportsChart").addEventListener("contextmenu", (e) => {
                       e.preventDefault(); // prevent default context menu from showing
                       chart.resetSeries(); // reset zoom level
-                    });
+                  });
+
+                const button1 = document.getElementById('button1');
+                button1.addEventListener('click', function() {
+                            // make AJAX call to update chart data and options
+                            fetch('/my_function')
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(data);
+                                    // update chart with new data and options
+                                    chart.updateSeries([
+                                        {
+                                            name: 'Sportowa',
+                                            data: data.sport
+                                            }, {
+                                            name: 'Rodzinna',
+                                            data: data.family
+                                            }, {
+                                            name: 'Kameralna',
+                                            data:  data.small
+                                            }], animate = true);
+                                    chart.updateOptions({
+                                        xaxis: {
+                                            type: 'datetime',
+                                            categories: data.date
+                                        }
+                                    });
+                                });         
+                            });
                 });
+    
               </script>
               <!-- End Line Chart -->
   

@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from chart_app.views import myview
+from chart_app.views import myview, myview2
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', myview, name='home')
+    path('', myview, name='home'),
+    path('my_function/', myview2, name='my_function')
 ]
