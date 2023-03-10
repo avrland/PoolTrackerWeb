@@ -97,7 +97,7 @@
                 const button1 = document.getElementById('button1');
                 button1.addEventListener('click', function() {
                             // make AJAX call to update chart data and options
-                            fetch('/my_function')
+                            fetch('/update_chart')
                                 .then(response => response.json())
                                 .then(data => {
                                     console.log(data);
