@@ -15,7 +15,7 @@ def myview(request):
         cursor.execute(sql_query)
         data = cursor.fetchall()
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    date = df['date']
+    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=1)
     sport = df['sport']
     family = df['family']
     small = df['small']
@@ -33,7 +33,7 @@ def update_chart(request):
         cursor.execute(sql_query)
         data = cursor.fetchall()
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    date = df['date']
+    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=1)
     sport = df['sport']
     family = df['family']
     small = df['small']

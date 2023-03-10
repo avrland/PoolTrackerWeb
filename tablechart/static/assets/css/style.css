@@ -1231,3 +1231,10 @@ h6 {
   font-size: 13px;
   color: #012970;
 }
+
+@media (max-width: 992px) {
+  .font-size-mobile {
+  font-size: 1.5rem; /* adjust the font size to your liking */
+  display: block;
+  }
+}

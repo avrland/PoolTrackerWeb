@@ -5,11 +5,16 @@
     <h1>Stan zajętości obiektów BOSiR</h1>
     <nav>
       <ol class="breadcrumb">
+  
       </ol>
     </nav>
-  </div>
+  </div><!-- End Page Title -->
   
   <section class="section dashboard">
+    <div class="row">
+  
+      <!-- Left side columns -->
+      <div class="col-lg-8">
         <!-- Reports -->
         <div class="col-12">
           <div class="card">
@@ -90,6 +95,7 @@
 
                 const button1 = document.getElementById('button1');
                 button1.addEventListener('click', function() {
+                            // make AJAX call to update chart data and options
                             fetch('/update_chart')
                                 .then(response => response.json())
                                 .then(data => {
@@ -114,79 +120,17 @@
                                     });
                                 });         
                             });
-                }); 
+                });
+    
               </script>
               <!-- End Line Chart -->
+  
             </div>
+  
           </div>
         </div><!-- End Reports -->
+      </div><!-- End Left side columns -->
   
-        <div class="row"> <!-- Current number of people -->
-          <!-- Sport -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card sales-card">
-  
-              <div class="card-body">
-                <h5 class="card-title">Sportowa <span>| Teraz</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastsport}}</h6>
-                    <span class="text small pt-1 fw-bold">105</span><span class="text-muted small pt-2 ps-1">osób max</span>
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-          </div><!-- End Sport -->
-  
-          <!-- Family -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card"> 
-              <div class="card-body">
-                <h5 class="card-title">Rodzinna <span>| Teraz</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastfamily}}</h6>
-                    <span class="text small pt-1 fw-bold">150</span><span class="text-muted small pt-2 ps-1">osób max</span>
-  
-                  </div>
-                </div>
-              </div>
-  
-            </div>
-          </div><!-- End Family -->
-  
-          <!-- Small -->
-          <div class="col-xxl-4 col-xl-12">
-  
-            <div class="card info-card customers-card">
-  
-              <div class="card-body">
-                <h5 class="card-title">Kameralna <span>| Teraz</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastsmall}}</h6>
-                    <span class="text small pt-1 fw-bold">30</span><span class="text-muted small pt-2 ps-1">osób max</span>
-  
-                  </div>
-                </div>
-              </div>
-            </div> 
-          </div><!-- End Small --> 
-        </div> <!-- Enc current number of people -->
-      </div> 
     </div>
   </section>
   {% endblock %}
