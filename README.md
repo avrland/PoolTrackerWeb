@@ -32,6 +32,16 @@ print(get_random_secret_key())
 python manage.py runserver 0.0.0.0:80
 ```
 
+## Repository sctructure
+```
+PoolTrackerWeb/
+    tablechart/
+        chart_app/ <- main django app
+        tablechart/ <- core of django project
+        templates/ <- html templates
+        static/ <- all static assets
+```
+
 ## To do
 - put app into Docker container
 
