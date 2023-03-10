@@ -633,7 +633,7 @@ h6 {
 
   #main,
   #footer {
-    margin-left: 300px;
+    margin-left: 10px;
   }
 }
 
@@ -1237,4 +1237,8 @@ h6 {
   font-size: 1.5rem; /* adjust the font size to your liking */
   display: block;
   }
+}
+
+.card-title {
+  max-width: calc(100% - 3rem); /* or any other smaller value */
 }
