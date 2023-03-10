@@ -20,7 +20,7 @@ def myview(request):
     family = df['family']
     small = df['small']
 
-    last_date = df['date'].iloc[-1].strftime('%d.%m. %Y %H:%M')
+    last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
     return render(request, 'dashboard.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
                                           'lastdate': last_date, 'lastsport' : sport.iloc[-1], 'lastfamily' : family.iloc[-1], 'lastsmall': small.iloc[-1]})
 
