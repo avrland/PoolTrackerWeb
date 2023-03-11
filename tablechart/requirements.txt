@@ -2,3 +2,4 @@ pymysql
 plotly
 pandas
 django
+whitenoise
