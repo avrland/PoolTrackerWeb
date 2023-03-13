@@ -87,10 +87,29 @@
                       type: 'datetime',
                       categories: {{date|safe}}
                     },
+                    annotations: {
+                          yaxis: [
+                            {
+                              y: 30,
+                              borderColor: '#ff771d',
+                              borderWidth: 2,
+                            },
+                            {
+                              y: 105,
+                              borderColor: '#4154f1',
+                              borderWidth: 2
+                            },
+                            {
+                              y: 150,
+                              borderColor: '#2eca6a',
+                              borderWidth: 2
+                            },
+                          ],
+                    },
                     tooltip: {
                       x: {
                         format: 'dd/MM/yy HH:mm'
-                      },
+                      }
                     }
                   });
                   chart.render();
