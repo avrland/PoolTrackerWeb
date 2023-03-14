@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from chart_app.views import myview, update_chart
+from chart_app.views import live_chart_view, update_chart
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("chart_app.urls"))
