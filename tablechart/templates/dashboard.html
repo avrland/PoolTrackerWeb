@@ -21,24 +21,11 @@
 
   
   <section class="section dashboard">
-        <!-- Reports -->
-        <div class="col-12">
+        <div class="col-12"> <!-- Live chart section start -->
           <div class="card">
-  
-            <div class="filter">
-              <a class="icon" href="#" data-bs-toggle="dropdown"> <!-- <i class="bi bi-three-dots"></i></a>-->
-              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li class="dropdown-header text-start">
-                </li>
-  
-                <li><a class="dropdown-item" href="#" id="button1">6h</a></li>
-                <li><a class="dropdown-item" href="#">Ten tydzień</a></li>
-                <li><a class="dropdown-item" href="#">Ten miesiąc</a></li>
-              </ul>
-            </div>
-  
+
             <div class="card-body">
-              <h5 class="card-title">Status <span>| Ostatnia aktualizacja: {{ lastdate }}</span></h5>
+              <h5 class="card-title">Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span></h5>
   
               <!-- Line Chart -->
               <div id="reportsChart"></div>
@@ -116,40 +103,13 @@
                   document.querySelector("#reportsChart").addEventListener("contextmenu", (e) => {
                       e.preventDefault(); // prevent default context menu from showing
                       chart.resetSeries(); // reset zoom level
-                  });
-
-                const button1 = document.getElementById('button1');
-                button1.addEventListener('click', function() {
-                            fetch('/update_chart')
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log(data);
-                                    // update chart with new data and options
-                                    chart.updateSeries([
-                                        {
-                                            name: 'Sportowa',
-                                            data: data.sport
-                                            }, {
-                                            name: 'Rodzinna',
-                                            data: data.family
-                                            }, {
-                                            name: 'Kameralna',
-                                            data:  data.small
-                                            }], animate = true);
-                                    chart.updateOptions({
-                                        xaxis: {
-                                            type: 'datetime',
-                                            categories: data.date
-                                        }
-                                    });
-                                });         
-                            });
-                }); 
+                  }); 
+                });
               </script>
               <!-- End Line Chart -->
             </div>
           </div>
-        </div><!-- End Reports -->
+        </div><!-- End of live chart section  -->
   
         <div class="row"> <!-- Current number of people -->
           <!-- Sport -->
@@ -157,7 +117,7 @@
             <div class="card info-card sales-card">
   
               <div class="card-body">
-                <h5 class="card-title">Sportowa <span>| Teraz</span></h5>
+                <h5 class="card-title">Sportowa <span>| Teraz {{sport_percent}}% zajęte</span></h5>
   
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -177,7 +137,7 @@
           <div class="col-xxl-4 col-md-6">
             <div class="card info-card revenue-card"> 
               <div class="card-body">
-                <h5 class="card-title">Rodzinna <span>| Teraz</span></h5>
+                <h5 class="card-title">Rodzinna <span>| Teraz {{family_percent}}% zajęte</span></h5>
   
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -200,7 +160,7 @@
             <div class="card info-card customers-card">
   
               <div class="card-body">
-                <h5 class="card-title">Kameralna <span>| Teraz</span></h5>
+                <h5 class="card-title">Kameralna <span>| Teraz {{small_percent}}% zajęte</span></h5>
   
                 <div class="d-flex align-items-center">
                   <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -215,9 +175,10 @@
               </div>
             </div> 
           </div><!-- End Small --> 
-        </div> <!-- Enc current number of people -->
-      </div> 
-    </div>
+        </div> <!-- End current number of people -->
+
+
+  
   </section>
 
 {% endblock %}

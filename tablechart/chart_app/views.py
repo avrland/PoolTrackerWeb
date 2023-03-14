@@ -20,9 +20,17 @@ def live_chart_view(request):
     family = df['family']
     small = df['small']
 
+    last_sport = sport.iloc[-1]
+    last_family = family.iloc[-1]
+    last_small = small.iloc[-1]
+
+    sport_percent = round((last_sport/105)*100)
+    family_percent = round((last_family/150)*100)
+    small_percent = round((last_small/30)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
     return render(request, 'dashboard.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
-                                          'lastdate': last_date, 'lastsport' : sport.iloc[-1], 'lastfamily' : family.iloc[-1], 'lastsmall': small.iloc[-1]})
+                                          'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 'lastsmall': last_small,
+                                          'sport_percent': sport_percent, 'family_percent': family_percent, 'small_percent': small_percent})
 
 def update_chart(request):
     now = datetime.datetime.now()
