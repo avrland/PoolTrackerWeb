@@ -9,11 +9,16 @@ from django.http import JsonResponse
 def live_chart_view(request):
     now = datetime.datetime.now()
     today = datetime.datetime(now.year, now.month, now.day, 6)
-    
+  
     with connection.cursor() as cursor:
         sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{today}' ORDER BY `poolStats`.`date` ASC"
         cursor.execute(sql_query)
         data = cursor.fetchall()
+    
+    if len(data) == 0:
+            return render(request, 'dashboard.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
+                                          'sport_percent': "0", 'family_percent': "0", 'small_percent': "0"})
+    
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
     date = pd.to_datetime(df['date']) + pd.Timedelta(hours=1)
     sport = df['sport']
