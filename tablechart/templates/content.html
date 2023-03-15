@@ -1,4 +1,4 @@
-{% extends 'chart_app/index.html' %}
+{% extends 'index.html' %}
 
 {% block content %}
 <!-- Google tag (gtag.js) -->
@@ -19,10 +19,11 @@
     </nav>
   </div>
 
+  
   <section class="section dashboard">
-        {% include 'chart_app/live_chart.html' %}
-        {% include 'chart_app/dashboard.html' %}
-        {% include 'chart_app/stats_chart.html' %}
+        {% include 'live_chart.html' %}
+        {% include 'dashboard.html' %}
+        {% include 'stats_chart.html' %}
   </section>
 
 {% endblock %}

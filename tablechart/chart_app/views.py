@@ -33,7 +33,7 @@ def content_view(request):
     family_percent = round((last_family/150)*100)
     small_percent = round((last_small/30)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'chart_app/content.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
+    return render(request, 'content.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
                                           'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 'lastsmall': last_small,
                                           'sport_percent': sport_percent, 'family_percent': family_percent, 'small_percent': small_percent})
 
