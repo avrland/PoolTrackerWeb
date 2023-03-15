@@ -1,0 +1,29 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D1NXRMPMY9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D1NXRMPMY9');
+</script>
+
+  <div class="pagetitle">
+    <h1>Stan zajętości obiektów BOSiR</h1>
+    <nav>
+      <ol class="breadcrumb">
+      </ol>
+    </nav>
+  </div>
+
+  
+  <section class="section dashboard">
+        {% include 'live_chart.html' %}
+        {% include 'dashboard.html' %}
+        {% include 'stats_chart.html' %}
+  </section>
+
+{% endblock %}

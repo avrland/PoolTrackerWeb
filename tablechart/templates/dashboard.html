@@ -1,184 +1,67 @@
-{% extends 'index.html' %}
-
 {% block content %}
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D1NXRMPMY9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<div class="row"> <!-- Current number of people -->
+    <!-- Sport -->
+    <div class="col-xxl-4 col-md-6">
+      <div class="card info-card sales-card">
 
-  gtag('config', 'G-D1NXRMPMY9');
-</script>
+        <div class="card-body">
+          <h5 class="card-title">Sportowa <span>| Teraz {{sport_percent}}% zajęte</span></h5>
 
-  <div class="pagetitle">
-    <h1>Stan zajętości obiektów BOSiR</h1>
-    <nav>
-      <ol class="breadcrumb">
-      </ol>
-    </nav>
-  </div>
-
-  
-  <section class="section dashboard">
-        <div class="col-12"> <!-- Live chart section start -->
-          <div class="card">
-
-            <div class="card-body">
-              <h5 class="card-title">Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span></h5>
-  
-              <!-- Line Chart -->
-              <div id="reportsChart"></div>
-  
-              <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                  const chart = new ApexCharts(document.querySelector("#reportsChart"), {
-                    series: [{
-                      name: 'Sportowa',
-                      data: {{ sport|safe }}
-                    }, {
-                      name: 'Rodzinna',
-                      data: {{ family|safe }}
-                    }, {
-                      name: 'Kameralna',
-                      data:  {{ small|safe }}
-                    }],
-                    chart: {
-                      height: 350,
-                      type: 'area',
-                      toolbar: {
-                        show: false
-                      },
-                    },
-                    markers: {
-                      size: 2.5
-                    },
-                    colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                    fill: {
-                      type: "gradient",
-                      gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.3,
-                        opacityTo: 0.4,
-                        stops: [0, 90, 100]
-                      }
-                    },
-                    dataLabels: {
-                      enabled: false
-                    },
-                    stroke: {
-                      curve: 'smooth',
-                      width: 2
-                    },
-                    xaxis: {
-                      type: 'datetime',
-                      categories: {{date|safe}}
-                    },
-                    annotations: {
-                          yaxis: [
-                            {
-                              y: 30,
-                              borderColor: '#ff771d',
-                              borderWidth: 2,
-                            },
-                            {
-                              y: 105,
-                              borderColor: '#4154f1',
-                              borderWidth: 2
-                            },
-                            {
-                              y: 150,
-                              borderColor: '#2eca6a',
-                              borderWidth: 2
-                            },
-                          ],
-                    },
-                    tooltip: {
-                      x: {
-                        format: 'dd/MM/yy HH:mm'
-                      }
-                    }
-                  });
-                  chart.render();
-                  document.querySelector("#reportsChart").addEventListener("contextmenu", (e) => {
-                      e.preventDefault(); // prevent default context menu from showing
-                      chart.resetSeries(); // reset zoom level
-                  }); 
-                });
-              </script>
-              <!-- End Line Chart -->
+          <div class="d-flex align-items-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+              <i class="fas fa-swimmer"></i>
+            </div>
+            <div class="ps-3">
+              <h6>{{lastsport}}</h6>
+              <span class="text small pt-1 fw-bold">105</span><span class="text-muted small pt-2 ps-1">osób max</span>
             </div>
           </div>
-        </div><!-- End of live chart section  -->
-  
-        <div class="row"> <!-- Current number of people -->
-          <!-- Sport -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card sales-card">
-  
-              <div class="card-body">
-                <h5 class="card-title">Sportowa <span>| Teraz {{sport_percent}}% zajęte</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastsport}}</h6>
-                    <span class="text small pt-1 fw-bold">105</span><span class="text-muted small pt-2 ps-1">osób max</span>
-                  </div>
-                </div>
-              </div>
-  
+        </div>
+
+      </div>
+    </div><!-- End Sport -->
+
+    <!-- Family -->
+    <div class="col-xxl-4 col-md-6">
+      <div class="card info-card revenue-card"> 
+        <div class="card-body">
+          <h5 class="card-title">Rodzinna <span>| Teraz {{family_percent}}% zajęte</span></h5>
+
+          <div class="d-flex align-items-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+              <i class="fas fa-swimmer"></i>
             </div>
-          </div><!-- End Sport -->
-  
-          <!-- Family -->
-          <div class="col-xxl-4 col-md-6">
-            <div class="card info-card revenue-card"> 
-              <div class="card-body">
-                <h5 class="card-title">Rodzinna <span>| Teraz {{family_percent}}% zajęte</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastfamily}}</h6>
-                    <span class="text small pt-1 fw-bold">150</span><span class="text-muted small pt-2 ps-1">osób max</span>
-  
-                  </div>
-                </div>
-              </div>
-  
+            <div class="ps-3">
+              <h6>{{lastfamily}}</h6>
+              <span class="text small pt-1 fw-bold">150</span><span class="text-muted small pt-2 ps-1">osób max</span>
+
             </div>
-          </div><!-- End Family -->
-  
-          <!-- Small -->
-          <div class="col-xxl-4 col-xl-12">
-  
-            <div class="card info-card customers-card">
-  
-              <div class="card-body">
-                <h5 class="card-title">Kameralna <span>| Teraz {{small_percent}}% zajęte</span></h5>
-  
-                <div class="d-flex align-items-center">
-                  <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                    <i class="fas fa-swimmer"></i>
-                  </div>
-                  <div class="ps-3">
-                    <h6>{{lastsmall}}</h6>
-                    <span class="text small pt-1 fw-bold">30</span><span class="text-muted small pt-2 ps-1">osób max</span>
-  
-                  </div>
-                </div>
-              </div>
-            </div> 
-          </div><!-- End Small --> 
-        </div> <!-- End current number of people -->
+          </div>
+        </div>
 
+      </div>
+    </div><!-- End Family -->
 
-  
-  </section>
+    <!-- Small -->
+    <div class="col-xxl-4 col-xl-12">
 
-{% endblock %}
+      <div class="card info-card customers-card">
+
+        <div class="card-body">
+          <h5 class="card-title">Kameralna <span>| Teraz {{small_percent}}% zajęte</span></h5>
+
+          <div class="d-flex align-items-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+              <i class="fas fa-swimmer"></i>
+            </div>
+            <div class="ps-3">
+              <h6>{{lastsmall}}</h6>
+              <span class="text small pt-1 fw-bold">30</span><span class="text-muted small pt-2 ps-1">osób max</span>
+
+            </div>
+          </div>
+        </div>
+      </div> 
+    </div><!-- End Small --> 
+  </div> <!-- End current number of people -->
+  {% endblock %}

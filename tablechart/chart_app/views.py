@@ -6,7 +6,7 @@ import plotly.express as px
 import pandas as pd
 from django.http import JsonResponse
 
-def live_chart_view(request):
+def content_view(request):
     now = datetime.datetime.now()
     today = datetime.datetime(now.year, now.month, now.day, 6)
   
@@ -16,7 +16,7 @@ def live_chart_view(request):
         data = cursor.fetchall()
     
     if len(data) == 0:
-            return render(request, 'dashboard.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
+            return render(request, 'content.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
                                           'sport_percent': "0", 'family_percent': "0", 'small_percent': "0"})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
@@ -33,7 +33,7 @@ def live_chart_view(request):
     family_percent = round((last_family/150)*100)
     small_percent = round((last_small/30)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'dashboard.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
+    return render(request, 'content.html', {'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
                                           'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 'lastsmall': last_small,
                                           'sport_percent': sport_percent, 'family_percent': family_percent, 'small_percent': small_percent})
 
