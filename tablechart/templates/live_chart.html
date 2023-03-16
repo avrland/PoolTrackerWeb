@@ -10,16 +10,18 @@
 
         <script>
           document.addEventListener("DOMContentLoaded", () => {
+            const colors = ['#ff771d', '#4154f1', '#2eca6a'];
             const chart = new ApexCharts(document.querySelector("#reportsChart"), {
-              series: [{
+              series: [
+              {
+                name: 'Kameralna',
+                data:  {{ small|safe }}
+              }, {
                 name: 'Sportowa',
                 data: {{ sport|safe }}
               }, {
                 name: 'Rodzinna',
                 data: {{ family|safe }}
-              }, {
-                name: 'Kameralna',
-                data:  {{ small|safe }}
               }],
               chart: {
                 height: 350,
@@ -27,11 +29,51 @@
                 toolbar: {
                   show: false
                 },
+                events: {
+                  legendClick: function(chartContext, seriesIndex, config) {
+                    const annotations = chartContext.w.config.annotations.yaxis || [];
+                    const seriesAnnotation = annotations.find(annotation => annotation.seriesIndex === seriesIndex);
+                    if (seriesAnnotation) {
+                      // remove the annotation if it exists
+                      chartContext.updateOptions({
+                        annotations: {
+                          yaxis: annotations.filter(annotation => annotation.seriesIndex !== seriesIndex)
+                        }
+                      });
+                    } else {
+                      // add a new annotation for the series
+                      const newAnnotation = [
+                      {
+                        seriesIndex: 0,
+                        y: 30,
+                        borderColor: colors[0],
+                        borderWidth: 2,
+                      },
+                      {
+                        seriesIndex: 1,
+                        y: 105,
+                        borderColor: colors[1],
+                        borderWidth: 2
+                      },
+                      {
+                        seriesIndex: 2,
+                        y: 150,
+                        borderColor: colors[2],
+                        borderWidth: 2
+                      }];
+                      chartContext.updateOptions({
+                        annotations: {
+                          yaxis: [...annotations, newAnnotation[seriesIndex]]
+                        }
+                      });
+                    }
+                  }
+                }
               },
               markers: {
                 size: 2.5
               },
-              colors: ['#4154f1', '#2eca6a', '#ff771d'],
+              colors: [colors[0], colors[1], colors[2]],
               fill: {
                 type: "gradient",
                 gradient: {
@@ -54,21 +96,24 @@
               },
               annotations: {
                     yaxis: [
-                      {
+                    {
+                        seriesIndex: 0,
                         y: 30,
-                        borderColor: '#ff771d',
+                        borderColor: colors[0],
                         borderWidth: 2,
                       },
                       {
+                        seriesIndex: 1,
                         y: 105,
-                        borderColor: '#4154f1',
+                        borderColor: colors[1],
                         borderWidth: 2
                       },
                       {
+                        seriesIndex: 2,
                         y: 150,
-                        borderColor: '#2eca6a',
+                        borderColor: colors[2],
                         borderWidth: 2
-                      },
+                      }
                     ],
               },
               tooltip: {
