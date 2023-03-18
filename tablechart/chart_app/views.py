@@ -98,3 +98,6 @@ def update_chart(request, day):
     stats_chart = render_to_string('stats_chart.html', {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)})
     response_data = {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
     return JsonResponse(response_data)
+
+def handler404(request, exception):
+    return render(request, '404.html', status=404)
