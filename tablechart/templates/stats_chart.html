@@ -6,34 +6,36 @@
         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
             <li class="dropdown-header text-start">
             </li>  
-            <li><a class="dropdown-item" id="button1">Poniedziałek</a></li>
-            <li><a class="dropdown-item">Wtorek</a></li>
-            <li><a class="dropdown-item">Środa</a></li>
-            <li><a class="dropdown-item">Czwartek</a></li>
-            <li><a class="dropdown-item">Piątek</a></li>
-            <li><a class="dropdown-item">Sobota</a></li>
-            <li><a class="dropdown-item">Niedziela</a></li>
+            <li><a class="dropdown-item" id="stats0">Poniedziałek</a></li>
+            <li><a class="dropdown-item" id="stats1">Wtorek</a></li>
+            <li><a class="dropdown-item" id="stats2">Środa</a></li>
+            <li><a class="dropdown-item" id="stats3">Czwartek</a></li>
+            <li><a class="dropdown-item" id="stats4">Piątek</a></li>
+            <li><a class="dropdown-item" id="stats5">Sobota</a></li>
+            <li><a class="dropdown-item" id="stats6">Niedziela</a></li>
         </ul>
         </div>
 
         <div class="card-body">
-        <h5 class="card-title">Średnia z dnia tygodnia</span></h5>
+        <h5 class="card-title">Średnia z dnia tygodnia <span id="today"> {{today}}</span></h5>
 
         <!-- Line Chart -->
         <div id="reportsChart2"></div>
 
         <script>
             document.addEventListener("DOMContentLoaded", () => {
+            const colors = ['#ff771d', '#4154f1', '#2eca6a'];
             const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
-                series: [{
-                name: 'Sportowa',
-                data: {{ sport_stat|safe }}
+                series: [
+                {
+                    name: 'Kameralna',
+                    data:  {{ small_stat|safe }}
                 }, {
-                name: 'Rodzinna',
-                data: {{ family_stat|safe }}
+                    name: 'Sportowa',
+                    data: {{ sport_stat|safe }}
                 }, {
-                name: 'Kameralna',
-                data:  {{ small_stat|safe }}
+                    name: 'Rodzinna',
+                    data: {{ family_stat|safe }}
                 }],
                 chart: {
                 height: 350,
@@ -45,7 +47,7 @@
                 markers: {
                 size: 4
                 },
-                colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                colors: [colors[0], colors[1], colors[2]],
                 fill: {
                 type: "gradient",
                 gradient: {
@@ -56,17 +58,20 @@
                 }
                 },
                 dataLabels: {
-                enabled: false
+                    enabled: false
                 },
                 stroke: {
-                curve: 'smooth',
-                width: 2
+                    curve: 'smooth',
+                    width: 2
+                },
+                yaxis: {
+                    max: 160
                 },
                 xaxis: {
-                type: 'time',
-                tickAmount: 24, // Set the number of ticks to be displayed
-                tickInterval: 'hour', // Set the tick interval to be one hour
-                categories: {{date_stat|safe}}
+                    type: 'time',
+                    tickAmount: 16, // Set the number of ticks to be displayed
+                    tickInterval: 'hour', // Set the tick interval to be one hour
+                    categories: {{date_stat|safe}}
                 },
                 annotations: {
                     yaxis: [
@@ -86,11 +91,18 @@
                         borderWidth: 2
                         },
                     ],
+                    xaxis: [
+                        {
+                        x: new Date().getTime(),
+                        borderColor: '#775DD0',
+                        borderWidth: 2
+                        }
+                    ]
                 },
                 tooltip: {
-                x: {
-                    format: 'HH:mm'
-                }
+                    x: {
+                        format: 'HH:mm'
+                    }
                 }
             });
             chart2.render();
@@ -98,33 +110,48 @@
                 e.preventDefault(); // prevent default context menu from showing
                 chart2.resetSeries(); // reset zoom level
             });
-
-            const button1 = document.getElementById('button1');
-            button1.addEventListener('click', function() {
-                        fetch('/update_chart')
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log(data);
-                                // update chart with new data and options
-                                chart2.updateSeries([
-                                    {
-                                        name: 'Sportowa',
-                                        data: data.sport
-                                        }, {
-                                        name: 'Rodzinna',
-                                        data: data.family
-                                        }, {
-                                        name: 'Kameralna',
-                                        data:  data.small
-                                        }], animate = true);
-                                chart2.updateOptions({
-                                    xaxis: {
-                                        type: 'datetime',
-                                        categories: data.date
+            function handleButtonClick(event) {
+                const buttonId = event.target.id;
+                fetch(`/update_chart/${buttonId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // update chart with new data and options
+                        const currentDate = data.today;
+                        const todayElement = document.querySelector('#today');
+                        todayElement.textContent = currentDate;
+                        chart2.updateOptions({
+                                chart: {
+                                    animations: {
+                                        enabled: true,
+                                        easing: 'easeinout',
+                                        speed: 1000
                                     }
-                                });
-                            });         
+                                },
+                                xaxis: {
+                                    type: 'time',
+                                    tickAmount: 16, // Set the number of ticks to be displayed
+                                    tickInterval: 'hour', // Set the tick interval to be one hour
+                                    categories: data.date_stat
+                                }
+                            });
+                        chart2.updateSeries([
+                                {
+                                    name: 'Kameralna',
+                                    data: data.small_stat
+                                },
+                                {
+                                    name: 'Sportowa',
+                                    data: data.sport_stat
+                                },
+                                {
+                                    name: 'Rodzinna',
+                                    data: data.family_stat
+                                }
+                                ], animate = true);
                         });
+            }
+            const buttons = document.querySelectorAll('.dropdown-item');
+            buttons.forEach(button => button.addEventListener('click', handleButtonClick));
             }); 
         </script>
         <!-- End Line Chart -->
