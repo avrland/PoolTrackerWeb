@@ -6,11 +6,12 @@ import plotly.express as px
 import pandas as pd
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+from datetime import datetime
 
 def content_view(request):
     stats_chart = stats_view(request)
-    now = datetime.datetime.now()
-    today = datetime.datetime(now.year, now.month, now.day, 6)
+    now = datetime.now()
+    today = datetime(now.year, now.month, now.day, 6)
   
     with connection.cursor() as cursor:
         sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{today}' ORDER BY `poolStats`.`date` ASC"
@@ -55,7 +56,7 @@ def stats_view(request):
     # Map the day of the week integers to weekday names and group the data by weekday and time separately
     df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])["sport", "family", "small"].mean().round()
     df_sunday = df_weekly_mean.loc["Sunday"]
-    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.datetime.combine(datetime.datetime.today(), t).strftime('%H:%M')))
+    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')))
     df_sunday = df_sunday.between_time("6:00", "22:00")
 
     time_sunday = df_sunday.index.tolist()
@@ -70,7 +71,7 @@ def stats_view(request):
 
 
 def update_chart(request):
-    now = datetime.datetime.now()
+    now = datetime.now()
     last_24h = now - datetime.timedelta(hours=6)
 
     with connection.cursor() as cursor:
