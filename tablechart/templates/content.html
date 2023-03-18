@@ -23,7 +23,9 @@
   <section class="section dashboard">
         {% include 'live_chart.html' %}
         {% include 'dashboard.html' %}
-        {% include 'stats_chart.html' %}
+        <div id="stats-chart">
+          {{ stats_chart }}
+        </div>
   </section>
 
 {% endblock %}
