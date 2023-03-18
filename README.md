@@ -48,6 +48,11 @@ docker image build -t pooltrackerweb .
 docker container run -p80:8000 pooltrackerweb
 ```
 
+## TODO
+- choose slimer python images for docker
+- SSL cert 
+- stats chart for each day
+
 ## Credits
 - Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
 - Favicon [www.flaticon.com](https://www.flaticon.com/free-icon/swimmer_3091014?term=swimming+pool&page=1&position=56&origin=tag&related_id=3091014)
