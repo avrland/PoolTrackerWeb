@@ -1,5 +1,5 @@
 # PoolTrackerWeb
-![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/1.png)
+![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
 Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
 
