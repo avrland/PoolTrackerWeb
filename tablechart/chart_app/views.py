@@ -26,8 +26,9 @@ def content_view(request):
         cursor.execute(sql_query)
         data = cursor.fetchall()
     if len(data) == 0:
-            return render(request, 'content.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
-                                          'sport_percent': "0", 'family_percent': "0", 'small_percent': "0"})
+            return render(request, 'content.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 
+                                                    'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
+                                                    'sport_percent': "0", 'family_percent': "0", 'small_percent': "0"})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
     date = pd.to_datetime(df['date']) + pd.Timedelta(hours=1)
@@ -43,9 +44,12 @@ def content_view(request):
     family_percent = round((last_family/150)*100)
     small_percent = round((last_small/30)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'content.html', {'stats_chart': stats_chart, 'date': list(date.dt.strftime('%Y-%m-%d %H:%M')), 'sport' : list(sport), 'family' : list(family), 'small': list(small),
-                                          'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 'lastsmall': last_small,
-                                          'sport_percent': sport_percent, 'family_percent': family_percent, 'small_percent': small_percent})
+    return render(request, 'content.html', {'stats_chart': stats_chart,
+                                             'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
+                                            'sport' : list(sport), 'family' : list(family), 'small': list(small),
+                                            'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
+                                            'lastsmall': last_small, 'sport_percent': sport_percent, 
+                                            'family_percent': family_percent, 'small_percent': small_percent})
 
 def stats_view(request, weekday):
     data = cache.get('fulldata')
@@ -71,7 +75,9 @@ def stats_view(request, weekday):
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
-    stats_chart = render_to_string('stats_chart.html', {'current_time': current_time, 'today': weekday_names[weekday], 'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)})
+    stats_chart = render_to_string('stats_chart.html', {'current_time': current_time, 'today': weekday_names[weekday], 
+                                                        'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 
+                                                        'family_stat' : list(family), 'small_stat': list(small)})
     return stats_chart
 
 def update_chart(request, day):
@@ -95,6 +101,12 @@ def update_chart(request, day):
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
-    stats_chart = render_to_string('stats_chart.html', {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)})
-    response_data = {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
+    stats_chart = render_to_string('stats_chart.html', {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 
+                                                        'sport_stat' : list(sport), 'family_stat' : list(family), 
+                                                        'small_stat': list(small)})
+    response_data = {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 
+                     'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
     return JsonResponse(response_data)
+
+def handler404(request, exception):
+    return render(request, '404.html', status=404)
