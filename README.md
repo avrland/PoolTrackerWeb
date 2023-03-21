@@ -3,6 +3,15 @@
 
 Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
 
+## Features
+- occupancy live chart for current day (for my observed pools it's from 6:00 AM)
+- mean occupancy chart for each weekday, day is selectable, default it's current day
+- max lines showing max pool cap
+- charts are zoomable, right click brings back to standard view 
+- dashboard showing % occupancy live for each pool, colouring red when it's over 80%, green when below
+
+## Installation (for local development)
+
 1. Use latest python, install pip requirments
 ```
 pip install django pymysql plotly pandas
@@ -32,6 +41,12 @@ print(get_random_secret_key())
 python manage.py runserver 0.0.0.0:80
 ```
 
+## Docker image (for production)
+```
+docker image build -t pooltrackerweb .
+docker container run -d -p80:8000 pooltrackerweb
+```
+
 ## Repository sctructure
 ```
 PoolTrackerWeb/
@@ -42,11 +57,6 @@ PoolTrackerWeb/
         static/ <- all static assets
 ```
 
-## Docker image
-```
-docker image build -t pooltrackerweb .
-docker container run -p80:8000 pooltrackerweb
-```
 
 ## Credits
 - Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
