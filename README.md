@@ -61,7 +61,7 @@ PoolTrackerWeb/
 ## TODO
 - choose slimer python images for docker
 - SSL cert 
-- stats chart for each day
+- ~~stats chart for each day~~ - DONE!
 
 ## Credits
 - Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
