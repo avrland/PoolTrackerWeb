@@ -1,0 +1,53 @@
+{% block content %}
+<!-- F.A.Q Group 1 -->
+<div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Pytania i odpowiedzi</h5>
+
+      <div class="accordion accordion-flush" id="faq-group-1">
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" data-bs-target="#faqsOne-1" type="button" data-bs-toggle="collapse">
+              Jak przybliżyć wykres?
+            </button>
+          </h2>
+          <div id="faqsOne-1" class="accordion-collapse collapse" data-bs-parent="#faq-group-1">
+            <div class="accordion-body">
+              Przybliżenie funkcjonuje przez kliknięcie na wykresie i przeciągnięcie na żądanym fragmencie czasu. Funkcja obecnie nie działa na urządzeniach mobilnych.
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" data-bs-target="#faqsOne-2" type="button" data-bs-toggle="collapse">
+                Jak wybrać inny dzień tygodnia dla danych statycznych?
+              </button>
+            </h2>
+            <div id="faqsOne-2" class="accordion-collapse collapse" data-bs-parent="#faq-group-2">
+              <div class="accordion-body">
+                Domyślnie wyświetlany jest bieżący dzień. Po kliknięciu w prawym górnym rogu na wykresie na "wybierz dzień tygodnia" lub symbolu ... (na urządzeniach mobilnych) pokaże się lista dni do wyboru.
+              </div>
+            </div>
+          </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" data-bs-target="#faqsOne-3" type="button" data-bs-toggle="collapse">
+              Gdzie mogę zgłosić sugestie/uwagi do tej strony?
+            </button>
+          </h2>
+          <div id="faqsOne-3" class="accordion-collapse collapse" data-bs-parent="#faq-group-3">
+            <div class="accordion-body">
+              Ankieta znajduje się pod tym <a href="https://forms.gle/CGzzGs8PKedTDJXc9"><b>linkiem</b></a>.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div><!-- End F.A.Q Group 1 -->
+
+</div>
+{% endblock %}
