@@ -1241,3 +1241,7 @@ h6 {
 .card-title {
   max-width: calc(100% - 3rem); /* or any other smaller value */
 }
+
+.reportsChart {
+  touch-action: none;
+}
