@@ -824,6 +824,11 @@ h6 {
   background: #fae7a9;
 }
 
+.dashboard .fb-card .card-icon {
+  color: #4154f0;
+  background: #fae7a9;
+}
+
 .dashboard .revenue-card .card-icon {
   color: #2eca6a;
   background: #e0f8e9;
