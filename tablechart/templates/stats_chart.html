@@ -2,7 +2,12 @@
 <div class="col-12"> <!-- Start mean stats chart -->
     <div class="card">
         <div class="filter">
-        <a class="icon" id="weekday" href="#" data-bs-toggle="dropdown">Wybierz dzień tygodnia</a>
+            <style>
+                .btn-outline-primary {
+                    margin-right: 30px;
+                }
+            </style>
+        <a class="btn btn-outline-primary" id="weekday" href="#" data-bs-toggle="dropdown">Wybierz dzień tygodnia</a>
         <script>
             const weekdayElement = document.getElementById("weekday");
             if (window.innerWidth <= 768) {
