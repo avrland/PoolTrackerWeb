@@ -7,15 +7,15 @@
       <div class="card info-card customers-card">
 
         <div class="card-body">
-          <h5 class="card-title">Kameralna <span>| Teraz 
+          <h5 class="card-title">Pływalnia kameralna <span>| Teraz 
             <!-- red colour if over 80% occupacy -->
             <span class={% if small_percent < 80 %}
             "text-success small pt-1"
             {% else %}
             "text-danger small pt-1"
             {% endif %}>
-            {{small_percent}}%</span> zajęte</span></h5>
-
+            {{small_percent}}%</span> zajęte</span>
+          </h5>
           <div class="d-flex align-items-center">
             <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
               <i class="fas fa-swimmer"></i>
@@ -34,7 +34,7 @@
     <div class="col-xxl-4 col-md-6">
       <div class="card info-card sales-card">
         <div class="card-body">
-          <h5 class="card-title">Sportowa <span>| Teraz 
+          <h5 class="card-title">Pływalnia sportowa <span>| Teraz 
           <!-- red colour if over 80% occupacy -->
             <span class={% if sport_percent < 80 %}
             "text-success small pt-1"
@@ -61,7 +61,7 @@
     <div class="col-xxl-4 col-md-6">
       <div class="card info-card revenue-card"> 
         <div class="card-body">
-          <h5 class="card-title">Rodzinna <span>| Teraz 
+          <h5 class="card-title">Pływalnia rodzinna <span>| Teraz 
             <!-- red colour if over 80% occupacy -->
             <span class={% if family_percent < 80 %}
             "text-success small pt-1"
