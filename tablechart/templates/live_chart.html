@@ -10,18 +10,21 @@
 
         <script>
           document.addEventListener("DOMContentLoaded", () => {
-            const colors = ['#ff771d', '#4154f1', '#2eca6a'];
+            const colors = ['#ff771d', '#00aeff', '#2eca6a', '#1804ad'];
             const chart = new ApexCharts(document.querySelector("#reportsChart"), {
               series: [
               {
                 name: 'Kameralna',
                 data:  {{ small|safe }}
-              }, {
+              },{
                 name: 'Sportowa',
                 data: {{ sport|safe }}
-              }, {
+              },{
                 name: 'Rodzinna',
                 data: {{ family|safe }}
+              },{
+                name: 'Lodowisko',
+                data: {{ ice|safe }}
               }],
               chart: {
                 height: 350,
@@ -60,6 +63,12 @@
                         y: 150,
                         borderColor: colors[2],
                         borderWidth: 2
+                      },
+                      {
+                        seriesIndex: 3,
+                        y: 300,
+                        borderColor: colors[3],
+                        borderWidth: 2
                       }];
                       chartContext.updateOptions({
                         annotations: {
@@ -73,7 +82,7 @@
               markers: {
                 size: 2.5
               },
-              colors: [colors[0], colors[1], colors[2]],
+              colors: [colors[0], colors[1], colors[2], colors[3]],
               fill: {
                 type: "gradient",
                 gradient: {
@@ -112,6 +121,12 @@
                         seriesIndex: 2,
                         y: 150,
                         borderColor: colors[2],
+                        borderWidth: 2
+                      },
+                      {
+                        seriesIndex: 3,
+                        y: 300,
+                        borderColor: colors[3],
                         borderWidth: 2
                       }
                     ],
