@@ -814,6 +814,11 @@ h6 {
   flex-grow: 0;
 }
 
+.dashboard .ice-card .card-icon {
+  color: #4154f0;
+  background: #f6f6fe;
+}
+
 .dashboard .sport-card .card-icon {
   color: #00aeff;
   background: #f6f6fe;
@@ -831,17 +836,12 @@ h6 {
 
 .dashboard .family-card .card-icon {
   color: #2eca6a;
-  background: #e0f8e9;
+  background: #f6f6fe;
 }
 
-.dashboard .ice-card .card-icon {
-  color: #4154f0;
-  background: #fae7a9;
-}
-
-.dashboard .customers-card .card-icon {
+.dashboard .small-card .card-icon {
   color: #ff771d;
-  background: #ffecdf;
+  background: #f6f6fe;
 }
 
 /* Activity */
