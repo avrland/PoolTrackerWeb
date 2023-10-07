@@ -66,7 +66,7 @@ def stats_view(request, weekday):
     # Map the day of the week integers to weekday names and group the data by weekday and time separately
     df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])[["sport", "family", "small"]].mean().round()
     df_sunday = df_weekly_mean.loc[weekday_names[weekday]]
-    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')))
+    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')), format='%H:%M')
     df_sunday = df_sunday.between_time("6:00", "22:00")
 
     time_sunday = df_sunday.index.tolist()
