@@ -814,8 +814,8 @@ h6 {
   flex-grow: 0;
 }
 
-.dashboard .sales-card .card-icon {
-  color: #4154f1;
+.dashboard .sport-card .card-icon {
+  color: #00aeff;
   background: #f6f6fe;
 }
 
@@ -829,9 +829,14 @@ h6 {
   background: #fae7a9;
 }
 
-.dashboard .revenue-card .card-icon {
+.dashboard .family-card .card-icon {
   color: #2eca6a;
   background: #e0f8e9;
+}
+
+.dashboard .ice-card .card-icon {
+  color: #4154f0;
+  background: #fae7a9;
 }
 
 .dashboard .customers-card .card-icon {

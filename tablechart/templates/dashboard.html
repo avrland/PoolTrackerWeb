@@ -32,7 +32,7 @@
 
     <!-- Sport -->
     <div class="col-xxl-4 col-md-6">
-      <div class="card info-card sales-card">
+      <div class="card info-card sport-card">
         <div class="card-body">
           <h5 class="card-title">Pływalnia sportowa <span>| Teraz 
           <!-- red colour if over 80% occupacy -->
@@ -59,7 +59,7 @@
 
     <!-- Family -->
     <div class="col-xxl-4 col-md-6">
-      <div class="card info-card revenue-card"> 
+      <div class="card info-card family-card"> 
         <div class="card-body">
           <h5 class="card-title">Pływalnia rodzinna <span>| Teraz 
             <!-- red colour if over 80% occupacy -->
@@ -85,7 +85,35 @@
       </div>
     </div><!-- End Family -->
 
-        <!-- Sport -->
+        <!-- Ice -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card ice-card"> 
+            <div class="card-body">
+              <h5 class="card-title">Lodowisko <span>| Teraz 
+                <!-- red colour if over 80% occupacy -->
+                <span class={% if ice_percent < 80 %}
+                "text-success small pt-1"
+                {% else %}
+                "text-danger small pt-1"
+                {% endif %}>
+                {{ice_percent}}%</span> zajęte</span></h5>
+    
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="fas fa-skating"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{lastice}}</h6>
+                  <span class="text small pt-1 fw-bold">300</span><span class="text-muted small pt-2 ps-1">osób max</span>
+    
+                </div>
+              </div>
+            </div>
+    
+          </div>
+        </div><!-- End Ice -->
+
+        <!-- Feedback -->
         <div class="col-xxl-4 col-md-6">
           <div class="card info-card feedback-card">
             <div class="card-body">
@@ -102,26 +130,26 @@
             </div>
     
           </div>
-        </div><!-- End Sport -->
+        </div><!-- End Feedback -->
 
-                <!-- Sport -->
-                <div class="col-xxl-4 col-md-6">
-                  <div class="card info-card sales-card">
-                    <div class="card-body">
-                      <h5 class="card-title">Bądź na bieżąco</h5>
-                      <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                          <a href="https://www.facebook.com/basenbialystok/" target="_blank"><i class="ri-facebook-box-fill"></i></a>
-                        </div>
-                        <div class="ps-3">
-                          <h6><a href="https://www.facebook.com/basenbialystok/" target="_blank">Polub nas na FB!</a></h6>
-                          <span class="text small pt-1 fw-bold"><a href="https://www.facebook.com/basenbialystok/" target="_blank"><b>Facebook</b></a></span>
-                        </div>
-                      </div>
-                    </div>
-            
-                  </div>
-                </div><!-- End Sport -->
+        <!-- Fb -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card sales-card">
+            <div class="card-body">
+              <h5 class="card-title">Bądź na bieżąco</h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="https://www.facebook.com/basenbialystok/" target="_blank"><i class="ri-facebook-box-fill"></i></a>
+                </div>
+                <div class="ps-3">
+                  <h6><a href="https://www.facebook.com/basenbialystok/" target="_blank">Polub nas na FB!</a></h6>
+                  <span class="text small pt-1 fw-bold"><a href="https://www.facebook.com/basenbialystok/" target="_blank"><b>Facebook</b></a></span>
+                </div>
+              </div>
+            </div>
+    
+          </div>
+        </div><!-- End Fb -->
 
   </div> <!-- End current number of people -->
   {% endblock %}
