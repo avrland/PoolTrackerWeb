@@ -17,7 +17,7 @@
             {{small_percent}}%</span> zajęte</span>
           </h5>
           <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#small_popup">
               <i class="fas fa-swimmer"></i>
             </div>
             <div class="ps-3">
@@ -27,8 +27,8 @@
             </div>
           </div>
         </div>
-        <div class="ps-3">       
-          <a href="https://maps.app.goo.gl/YTTwYV16m3tyxoW76" target="_blank"><b>Mazowiecka 39C, 15-302 Białystok</b></a>
+        <div class="ps-3">    
+          <a href="https://maps.app.goo.gl/YTTwYV16m3tyxoW76" target="_blank"><b>Mazowiecka 39C, 15-302 Białystok</b></a> 
         </div>
       </div> 
     </div><!-- End Small --> 
@@ -47,7 +47,7 @@
             {{sport_percent}}%</span> zajęte</span></h5>
 
           <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#sport_popup">
               <i class="fas fa-swimmer"></i>
             </div>
             <div class="ps-3">
@@ -76,7 +76,7 @@
             {{family_percent}}%</span> zajęte</span></h5>
 
           <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#family_popup">
               <i class="fas fa-swimmer"></i>
             </div>
             <div class="ps-3">
@@ -106,7 +106,7 @@
                 {{ice_percent}}%</span> zajęte</span></h5>
     
               <div class="d-flex align-items-center">
-                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#ice_popup">
                   <i class="fas fa-skating"></i>
                 </div>
                 <div class="ps-3">
@@ -165,5 +165,8 @@
 
 
 
-  {% include 'small.html' %}
+  {% include 'popup_small.html' %}
+  {% include 'popup_sport.html' %}
+  {% include 'popup_family.html' %}
+  {% include 'popup_ice.html' %}
   {% endblock %}

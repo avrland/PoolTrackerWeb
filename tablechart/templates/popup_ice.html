@@ -1,0 +1,57 @@
+{% load static %}
+{% block content %}
+<div class="modal fade" id="ice_popup" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Lodowisko</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="{% static 'assets/img/ice.jpg' %}" alt="" style="width: 100%; height: auto;">
+          <table>
+            <thead>
+                <tr>
+                    <th>Dzień</th>
+                    <th>Godziny</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Poniedziałek</td>
+                    <td>17:00–18:30, 19:00–21:00</td>
+                </tr>
+                <tr>
+                    <td>Wtorek</td>
+                    <td>17:00–18:30, 19:00–20:30</td>
+                </tr>
+                <tr>
+                    <td>Środa</td>
+                    <td>17:00–18:30, 19:00–20:30</td>
+                </tr>
+                <tr>
+                    <td>Czwartek</td>
+                    <td>17:00–18:30, 19:00–21:00</td>
+                </tr>
+                <tr>
+                    <td>Piątek</td>
+                    <td>17:00–18:30, 19:00–20:30</td>
+                </tr>
+                <tr>
+                    <td>Sobota</td>
+                    <td>11:30–21:00</td>
+                </tr>
+                <tr>
+                    <td>Niedziela</td>
+                    <td>11:30–21:00</td>
+                </tr>
+            </tbody>
+        </table>        
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
