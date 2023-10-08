@@ -3,9 +3,7 @@
 
     <!-- Small -->
     <div class="col-xxl-4 col-md-6">
-
       <div class="card info-card small-card">
-
         <div class="card-body">
           <h5 class="card-title">Pływalnia kameralna <span>| Teraz 
             <!-- red colour if over 80% occupacy -->
@@ -17,19 +15,17 @@
             {{small_percent}}%</span> zajęte</span>
           </h5>
           <div class="d-flex align-items-center">
-            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+            <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#verticalycentered">
               <i class="fas fa-swimmer"></i>
             </div>
             <div class="ps-3">
               <h6>{{lastsmall}}</h6>
               <span class="text small pt-1 fw-bold">30</span><span class="text-muted small pt-2 ps-1">osób max</span>
-
             </div>
           </div>
         </div>
       </div> 
     </div><!-- End Small --> 
-
     <!-- Sport -->
     <div class="col-xxl-4 col-md-6">
       <div class="card info-card sport-card">
@@ -152,4 +148,8 @@
         </div><!-- End Fb -->
 
   </div> <!-- End current number of people -->
+
+
+
+  {% include 'small.html' %}
   {% endblock %}

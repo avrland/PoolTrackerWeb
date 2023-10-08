@@ -30,7 +30,7 @@
         </div>
 
         <div class="card-body">
-        <h5 class="card-title">Średnia zajętość basenów z dnia tygodnia <span id="today"> {{today}}</span></h5>
+        <h5 class="card-title">Średnia zajętość obiektów z dnia tygodnia <span id="today"> {{today}}</span></h5>
 
         <!-- Line Chart -->
         <div id="reportsChart2"></div>
@@ -41,13 +41,13 @@
             const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
                 series: [
                 {
-                    name: 'Kameralna',
+                    name: 'Pływalnia Kameralna',
                     data:  {{ small_stat|safe }}
                 }, {
-                    name: 'Sportowa',
+                    name: 'Pływalnia Sportowa',
                     data: {{ sport_stat|safe }}
                 }, {
-                    name: 'Rodzinna',
+                    name: 'Pływalnia Rodzinna',
                     data: {{ family_stat|safe }}
                 }],
                 chart: {

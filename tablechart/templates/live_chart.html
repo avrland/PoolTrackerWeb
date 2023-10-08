@@ -1,7 +1,6 @@
 {% block content %}
 <div class="col-12"> <!-- Live chart section start -->
     <div class="card">
-
       <div class="card-body">
         <h5 class="card-title">Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span></h5>
 
@@ -14,13 +13,13 @@
             const chart = new ApexCharts(document.querySelector("#reportsChart"), {
               series: [
               {
-                name: 'Kameralna',
+                name: 'Pływalnia Kameralna',
                 data:  {{ small|safe }}
               },{
-                name: 'Sportowa',
+                name: 'Pływalnia Sportowa',
                 data: {{ sport|safe }}
               },{
-                name: 'Rodzinna',
+                name: 'Pływalnia Rodzinna',
                 data: {{ family|safe }}
               },{
                 name: 'Lodowisko',
