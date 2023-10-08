@@ -1,3 +1,4 @@
+{% load static %}
 {% block content %}
 <div class="modal fade" id="family_popup" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -7,7 +8,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Non omnis incidunt qui sed occaecati magni asperiores est mollitia. Soluta at et reprehenderit. Placeat autem numquam et fuga numquam. Tempora in facere consequatur sit dolor ipsum. Consequatur nemo amet incidunt est facilis. Dolorem neque recusandae quo sit molestias sint dignissimos.
+          <img src="{% static 'assets/img/family.jpg' %}" alt="" style="width: 100%; height: auto;">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
