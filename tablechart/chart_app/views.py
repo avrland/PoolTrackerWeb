@@ -26,7 +26,7 @@ def content_view(request):
         cursor.execute(sql_query)
         data = cursor.fetchall()
     if len(data) == 0:
-            return render(request, 'content.html', {'lastdate': "Brak danych z dzisiaj, wróć po 6:00.", 
+            return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
                                                     'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
                                                     'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
     
