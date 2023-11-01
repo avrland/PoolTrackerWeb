@@ -32,7 +32,6 @@ def content_view(request):
                                                     'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=2)
     localtime = time.localtime()
     summer_time = localtime.tm_isdst
     if summer_time:
