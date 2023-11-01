@@ -6,8 +6,9 @@ import plotly.express as px
 import pandas as pd
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.core.cache import cache
+import time
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -31,7 +32,13 @@ def content_view(request):
                                                     'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=2)
+    localtime = time.localtime()
+    summer_time = localtime.tm_isdst
+    if summer_time:
+        hour_offset = 2
+    if summer_time == 0:
+        hour_offset = 1
+    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=hour_offset)
     sport = df['sport']
     family = df['family']
     small = df['small']
