@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from datetime import datetime, timedelta
 from django.core.cache import cache
 import time
+import pytz
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -20,7 +21,8 @@ def content_view(request):
 
     weekday = datetime.today().weekday()
     stats_chart = stats_view(request, weekday)
-    now = datetime.now()
+    pl = pytz.timezone('Europe/Warsaw')
+    now = datetime.now().astimezone(pl)
     today = datetime(now.year, now.month, now.day, 6)
     with connection.cursor() as cursor:
         sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{today}' ORDER BY `poolStats`.`date` ASC"
@@ -32,13 +34,10 @@ def content_view(request):
                                                     'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    localtime = time.localtime()
-    summer_time = localtime.tm_isdst
-    if summer_time:
-        hour_offset = 2
-    if summer_time == 0:
-        hour_offset = 1
-    date = pd.to_datetime(df['date']) + pd.Timedelta(hours=hour_offset)
+
+    tz = pytz.timezone('Europe/Warsaw')
+    date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+
     sport = df['sport']
     family = df['family']
     small = df['small']
@@ -66,14 +65,13 @@ def stats_view(request, weekday):
     if len(data) == 0:
         stats_chart = render_to_string('stats_chart.html', {'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0})
         return stats_chart   
-    
-    now = datetime.now()
+    pl = pytz.timezone('Europe/Warsaw')
+    now = datetime.now().astimezone(pl)
     current_time = now.strftime("%H:%M")
 
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
     df['date'] = pd.to_datetime(df['date'])
     weekday_names = {0: "Poniedziałek", 1: "Wtorek", 2: "Środa", 3: "Czwartek", 4: "Piątek", 5: "Sobota", 6: "Niedziela"}
-    # Map the day of the week integers to weekday names and group the data by weekday and time separately
     df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])[["sport", "family", "small"]].mean().round()
     df_sunday = df_weekly_mean.loc[weekday_names[weekday]]
     df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')), format='%H:%M')
@@ -102,7 +100,7 @@ def update_chart(request, day):
     # Map the day of the week integers to weekday names and group the data by weekday and time separately
     df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])[["sport", "family", "small"]].mean().round()
     df_sunday = df_weekly_mean.loc[weekday_names[day]]
-    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')))
+    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')), format='%H:%M')
     df_sunday = df_sunday.between_time("6:00", "22:00")
 
     time_sunday = df_sunday.index.tolist()
