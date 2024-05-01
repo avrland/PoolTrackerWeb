@@ -13,16 +13,15 @@
 
   <div class="pagetitle">
     <h1>Stan zajętości obiektów BOSiR Białystok</h1>
-    <nav>
-      <ol class="breadcrumb">
-      </ol>
-    </nav>
+    <h6><span>Ostatnia aktualizacja: {{ lastdate }}</span></h5>
+
   </div>
 
   
   <section class="section dashboard">
+        {% include 'dashboard_upper.html' %}
         {% include 'live_chart.html' %}
-        {% include 'dashboard.html' %}
+        {% include 'dashboard_lower.html' %}
         <div id="stats-chart">
           {{ stats_chart }}
         </div>
