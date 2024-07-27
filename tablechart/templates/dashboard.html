@@ -92,8 +92,81 @@
       </div>
     </div><!-- End Family -->
 
+        <!-- Ice -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card ice-card"> 
+            <div class="card-body">
+              <h5 class="card-title">Lodowisko <span>| Teraz 
+                <!-- red colour if over 80% occupacy -->
+                <span class={% if ice_percent < 80 %}
+                "text-success small pt-1"
+                {% else %}
+                "text-danger small pt-1"
+                {% endif %}>
+                {{ice_percent}}%</span> zajęte</span></h5>
+    
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#ice_popup">
+                  <i class="fas fa-skating"></i>
+                </div>
+                <div class="ps-3">
+                  <h6>{{lastice}}</h6>
+                  <span class="text small pt-1 fw-bold">300</span><span class="text-muted small pt-2 ps-1">osób max</span>
+    
+                </div>
+              </div>
+            </div>
+            <div class="ps-3">
+              
+              <a href="https://maps.app.goo.gl/WTfr4wwKsGnKtJUQ9" target="_blank"><b>11 Listopada 28, 15-320 Białystok</b></a>
+            </div>
+          </div>
+        </div><!-- End Ice -->
+
+        <!-- Feedback -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card feedback-card">
+            <div class="card-body">
+              <h5 class="card-title">Pomysły, uwagi?</h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="ri-chat-poll-line"></i>
+                </div>
+                <div class="ps-3">
+                  <h6><a href="https://forms.gle/CGzzGs8PKedTDJXc9" target="_blank">Wypełnij ankietę!</a></h6>
+                  <span class="text small pt-1 fw-bold"><a href="https://forms.gle/CGzzGs8PKedTDJXc9" target="_blank"><b>Ankieta</b></a></span>
+                </div>
+              </div>
+            </div>
+    
+          </div>
+        </div><!-- End Feedback -->
+
+        <!-- Fb -->
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card fb-card">
+            <div class="card-body">
+              <h5 class="card-title">Bądź na bieżąco</h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <a href="https://www.facebook.com/basenbialystok/" target="_blank"><i class="ri-facebook-box-fill"></i></a>
+                </div>
+                <div class="ps-3">
+                  <h6><a href="https://www.facebook.com/basenbialystok/" target="_blank">Polub nas na FB!</a></h6>
+                  <span class="text small pt-1 fw-bold"><a href="https://www.facebook.com/basenbialystok/" target="_blank"><b>Facebook</b></a></span>
+                </div>
+              </div>
+            </div>
+    
+          </div>
+        </div><!-- End Fb -->
+
   </div> <!-- End current number of people -->
 
 
 
+  {% include 'popup_small.html' %}
+  {% include 'popup_sport.html' %}
+  {% include 'popup_family.html' %}
+  {% include 'popup_ice.html' %}
   {% endblock %}
