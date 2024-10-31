@@ -11,6 +11,8 @@ from django.core.cache import cache
 import time
 import pytz
 
+ver_num = "0.1.0"
+
 def content_view(request):
     #TODO do one sql query and fetch data to live view
     with connection.cursor() as cursor:
@@ -53,7 +55,7 @@ def content_view(request):
     small_percent = round((last_small/30)*100)
     ice_percent = round((last_ice/300)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'content.html', {'stats_chart': stats_chart,
+    return render(request, 'content.html', {'ver_num': ver_num, 'stats_chart': stats_chart,
                                              'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
                                             'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
                                             'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
