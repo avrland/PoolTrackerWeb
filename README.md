@@ -5,7 +5,7 @@ Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/
 
 ## Features
 - occupancy live chart for current day (for my observed pools it's from 6:00 AM)
-- mean occupancy chart for each weekday, day is selectable, default it's current day
+- mean occupancy chart for each weekday from last 60 days (updated every day), day is selectable, default it's current day
 - max lines showing max pool cap
 - charts are zoomable, right click brings back to standard view 
 - dashboard showing % occupancy live for each pool, colouring red when it's over 80%, green when below
@@ -61,11 +61,11 @@ PoolTrackerWeb/
 ## TODO
 - info that current day is more or less ocupated that average
 - ML model predicting occupancy for rest of the day (need way more data)
-- ~~choose slimer python images for docker~~ - DONE!
+- ~~choose slimer python images for docker~~
 - weather module, gathering info to link occupancy trends with bad/good weather
-- clickable popup window with info about pools
-- SSL cert as browser don't like sites without it
-- ~~stats chart for each day~~ - DONE!
+- ~~clickable popup window with info about pools~~
+- ~~SSL cert as browser don't like sites without it~~
+- ~~stats chart for each day~~
 
 ## Credits
 - Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
