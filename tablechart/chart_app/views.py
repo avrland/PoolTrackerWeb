@@ -11,16 +11,15 @@ from django.core.cache import cache
 import time
 import pytz
 
-ver_num = "0.1.0"
+ver_num = "0.1.1"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
     with connection.cursor() as cursor:
-        sql_query = f"SELECT date, sport, family, small, ice FROM poolStats ORDER BY `poolStats`.`date` ASC"
+        sql_query = f"SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY `poolStats_history`.`time` ASC"
         cursor.execute(sql_query)
         fulldata = cursor.fetchall()
         cache.set('fulldata', fulldata)
-
     weekday = datetime.today().weekday()
     stats_chart = stats_view(request, weekday)
     pl = pytz.timezone('Europe/Warsaw')
@@ -70,18 +69,13 @@ def stats_view(request, weekday):
     pl = pytz.timezone('Europe/Warsaw')
     now = datetime.now().astimezone(pl)
     current_time = now.strftime("%H:%M")
-
-    df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    df['date'] = pd.to_datetime(df['date'])
+    df = pd.DataFrame(data, columns=['weekday', 'time', 'sport', 'family', 'small', 'ice'])
+    print(df)
     weekday_names = {0: "Poniedziałek", 1: "Wtorek", 2: "Środa", 3: "Czwartek", 4: "Piątek", 5: "Sobota", 6: "Niedziela"}
-    df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])[["sport", "family", "small"]].mean().round()
-    df_sunday = df_weekly_mean.loc[weekday_names[weekday]]
-    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')), format='%H:%M')
-    df_sunday = df_sunday.between_time("6:00", "22:00")
-
-    time_sunday = df_sunday.index.tolist()
+    weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+    df_sunday = df[df['weekday'] == weekday_names_en[weekday]]
+    time_sunday = df_sunday['time']
     time_sunday_formatted = [dt.strftime("%H:%M") for dt in time_sunday]
-    df_sunday['time'] = time_sunday_formatted
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
@@ -96,18 +90,13 @@ def update_chart(request, day):
         response_data = {'today': 0, 'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0}
         return JsonResponse(response_data)
     
-    df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-    df['date'] = pd.to_datetime(df['date'])
+    df = pd.DataFrame(data, columns=['weekday', 'time', 'sport', 'family', 'small', 'ice'])
+    print(df)
     weekday_names = {0: "Poniedziałek", 1: "Wtorek", 2: "Środa", 3: "Czwartek", 4: "Piątek", 5: "Sobota", 6: "Niedziela"}
-    # Map the day of the week integers to weekday names and group the data by weekday and time separately
-    df_weekly_mean = df.groupby([df["date"].dt.dayofweek.map(weekday_names), df["date"].dt.time])[["sport", "family", "small"]].mean().round()
-    df_sunday = df_weekly_mean.loc[weekday_names[day]]
-    df_sunday.index = pd.to_datetime(df_sunday.index.map(lambda t: datetime.combine(datetime.today(), t).strftime('%H:%M')), format='%H:%M')
-    df_sunday = df_sunday.between_time("6:00", "22:00")
-
-    time_sunday = df_sunday.index.tolist()
+    weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
+    df_sunday = df[df['weekday'] == weekday_names_en[day]]
+    time_sunday = df_sunday['time']
     time_sunday_formatted = [dt.strftime("%H:%M") for dt in time_sunday]
-    df_sunday['time'] = time_sunday_formatted
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
