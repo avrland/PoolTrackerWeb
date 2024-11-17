@@ -1,174 +1,375 @@
 {% block content %}
-<div class="col-12"> <!-- Start mean stats chart -->
+<div class="col-12">
     <div class="card">
         <div class="filter">
             <style>
                 .btn-outline-primary {
                     margin-right: 30px;
                 }
+                #reportsChart2.fullscreen {
+                    background: white;
+                    padding: 20px;
+                    height: 100vh;
+                    width: 100vw;
+                }
+                
+                #chartContainer2.fullscreen {
+                    background: white;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                }
+                
+                #chartContainer2 {
+                    width: 100%;
+                    min-height: 350px;
+                    position: relative;
+                }
+
+                #fullscreenBtn2 {
+                    display: none;
+                    position: absolute;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 1000;
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 0;
+                    transition: all 0.2s;
+                }
+
+                #fullscreenBtn2:hover {
+                    background: #f8f9fa;
+                    transform: scale(1.1);
+                }
+
+                #closeFullscreenBtn2 {
+                    display: none;
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    cursor: pointer;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s;
+                }
+
+                #closeFullscreenBtn2:hover {
+                    background: #f8f9fa;
+                    transform: scale(1.1);
+                }
+
+                #chartContainer2.fullscreen #closeFullscreenBtn2 {
+                    display: flex;
+                }
+
+                @media screen and (max-width: 767px) {
+                    #fullscreenBtn2 {
+                        display: flex;
+                    }
+                }
             </style>
-        <a class="btn btn-outline-primary" id="weekday" href="#" data-bs-toggle="dropdown">Wybierz dzień tygodnia</a>
-        <script>
-            const weekdayElement = document.getElementById("weekday");
-            if (window.innerWidth <= 768) {
-                weekdayElement.innerHTML = '<i class="bi bi-three-dots"></i>';
-            } else {
-                weekdayElement.innerHTML = 'Wybierz dzień tygodnia';
-            }
-        </script>
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <li class="dropdown-header text-start">
-            </li>  
-            <li><a class="dropdown-item" id="stats0">Poniedziałek</a></li>
-            <li><a class="dropdown-item" id="stats1">Wtorek</a></li>
-            <li><a class="dropdown-item" id="stats2">Środa</a></li>
-            <li><a class="dropdown-item" id="stats3">Czwartek</a></li>
-            <li><a class="dropdown-item" id="stats4">Piątek</a></li>
-            <li><a class="dropdown-item" id="stats5">Sobota</a></li>
-            <li><a class="dropdown-item" id="stats6">Niedziela</a></li>
-        </ul>
+            <a class="btn btn-outline-primary" id="weekday" href="#" data-bs-toggle="dropdown">Wybierz dzień tygodnia</a>
+            <script>
+                const weekdayElement = document.getElementById("weekday");
+                if (window.innerWidth <= 768) {
+                    weekdayElement.innerHTML = '<i class="bi bi-three-dots"></i>';
+                } else {
+                    weekdayElement.innerHTML = 'Wybierz dzień tygodnia';
+                }
+            </script>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                </li>
+                <li><a class="dropdown-item" id="stats0">Poniedziałek</a></li>
+                <li><a class="dropdown-item" id="stats1">Wtorek</a></li>
+                <li><a class="dropdown-item" id="stats2">Środa</a></li>
+                <li><a class="dropdown-item" id="stats3">Czwartek</a></li>
+                <li><a class="dropdown-item" id="stats4">Piątek</a></li>
+                <li><a class="dropdown-item" id="stats5">Sobota</a></li>
+                <li><a class="dropdown-item" id="stats6">Niedziela</a></li>
+            </ul>
         </div>
 
         <div class="card-body">
-        <h5 class="card-title">Średnia zajętość obiektów (ostatnie 60 dni) <span id="today"> {{today}}</span></h5>
+            <h5 class="card-title">Średnia zajętość obiektów (ostatnie 60 dni) <span id="today"> {{today}}</span></h5>
 
-        <!-- Line Chart -->
-        <div id="reportsChart2"></div>
+            <div id="chartContainer2">
+                <button id="fullscreenBtn2" class="btn btn-sm">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
+                <button id="closeFullscreenBtn2">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div id="reportsChart2"></div>
+            </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-            const colors = ['#ff771d', '#4154f1', '#2eca6a'];
-            const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
-                series: [
-                {
-                    name: 'Pływalnia Kameralna',
-                    data:  {{ small_stat|safe }}
-                }, {
-                    name: 'Pływalnia Sportowa',
-                    data: {{ sport_stat|safe }}
-                }, {
-                    name: 'Pływalnia Rodzinna',
-                    data: {{ family_stat|safe }}
-                }],
-                chart: {
-                height: 350,
-                type: 'area',
-                toolbar: {
-                    show: false
-                },
-                },
-                markers: {
-                size: 2.5
-                },
-                colors: [colors[0], colors[1], colors[2]],
-                fill: {
-                type: "gradient",
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.3,
-                    opacityTo: 0.4,
-                    stops: [0, 90, 100]
-                }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth',
-                    width: 2
-                },
-                yaxis: {
-                    max: 160
-                },
-                xaxis: {
-                    type: 'time',
-                    tickAmount: 16, // Set the number of ticks to be displayed
-                    tickInterval: 'hour', // Set the tick interval to be one hour
-                    categories: {{date_stat|safe}}
-                },
-                annotations: {
-                    yaxis: [
-                        {
-                        y: 30,
-                        borderColor: '#ff771d',
-                        borderWidth: 2,
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                    const colors = ['#ff771d', '#4154f1', '#2eca6a'];
+                    const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
+                        series: [
+                            {
+                                name: 'Pływalnia Kameralna',
+                                data: {{ small_stat|safe }}
+                            }, {
+                                name: 'Pływalnia Sportowa',
+                                data: {{ sport_stat|safe }}
+                            }, {
+                                name: 'Pływalnia Rodzinna',
+                                data: {{ family_stat|safe }}
+                            }],
+                        chart: {
+                            height: 350,
+                            type: 'area',
+                            toolbar: {
+                                show: false
+                            },
                         },
-                        {
-                        y: 105,
-                        borderColor: '#4154f1',
-                        borderWidth: 2
+                        markers: {
+                            size: 2.5
                         },
-                        {
-                        y: 150,
-                        borderColor: '#2eca6a',
-                        borderWidth: 2
+                        colors: [colors[0], colors[1], colors[2]],
+                        fill: {
+                            type: "gradient",
+                            gradient: {
+                                shadeIntensity: 1,
+                                opacityFrom: 0.3,
+                                opacityTo: 0.4,
+                                stops: [0, 90, 100]
+                            }
                         },
-                    ],
-                    xaxis: [
-                        {
-                        x: new Date().getTime(),
-                        borderColor: '#775DD0',
-                        borderWidth: 2
-                        }
-                    ]
-                },
-                tooltip: {
-                    x: {
-                        format: 'HH:mm'
-                    }
-                }
-            });
-            chart2.render();
-            document.querySelector("#reportsChart2").addEventListener("contextmenu", (e) => {
-                e.preventDefault(); // prevent default context menu from showing
-                chart2.resetSeries(); // reset zoom level
-            });
-            function handleButtonClick(event) {
-                const buttonId = event.target.id;
-                fetch(`/update_chart/${buttonId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // update chart with new data and options
-                        const currentDate = data.today;
-                        const todayElement = document.querySelector('#today');
-                        todayElement.textContent = currentDate;
-                        chart2.updateOptions({
-                                chart: {
-                                    animations: {
-                                        enabled: true,
-                                        easing: 'easeinout',
-                                        speed: 1000
-                                    }
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            curve: 'smooth',
+                            width: 2
+                        },
+                        yaxis: {
+                            max: 160
+                        },
+                        xaxis: {
+                            type: 'time',
+                            tickAmount: 16,
+                            tickInterval: 'hour',
+                            categories: {{date_stat|safe}}
+                        },
+                        annotations: {
+                            yaxis: [
+                                {
+                                    y: 30,
+                                    borderColor: '#ff771d',
+                                    borderWidth: 2,
                                 },
-                                xaxis: {
-                                    type: 'time',
-                                    tickAmount: 16, // Set the number of ticks to be displayed
-                                    tickInterval: 'hour', // Set the tick interval to be one hour
-                                    categories: data.date_stat
+                                {
+                                    y: 105,
+                                    borderColor: '#4154f1',
+                                    borderWidth: 2
+                                },
+                                {
+                                    y: 150,
+                                    borderColor: '#2eca6a',
+                                    borderWidth: 2
+                                },
+                            ],
+                            xaxis: [
+                                {
+                                    x: new Date().getTime(),
+                                    borderColor: '#775DD0',
+                                    borderWidth: 2
+                                }
+                            ]
+                        },
+                        tooltip: {
+                            x: {
+                                format: 'HH:mm'
+                            },
+                            y: {
+                                formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+                                    let maxValue = '';
+                                    if (w.config.series[seriesIndex].name === 'Pływalnia Kameralna') {
+                                        maxValue = '/30';
+                                    } else if (w.config.series[seriesIndex].name === 'Pływalnia Sportowa') {
+                                        maxValue = '/105';
+                                    } else if (w.config.series[seriesIndex].name === 'Pływalnia Rodzinna') {
+                                        maxValue = '/150';
+                                    } else if (w.config.series[seriesIndex].name === 'Lodowisko') {
+                                        maxValue = '/300';
+                                    }
+                                    return value + maxValue;
+                                }
+                            }
+                        }
+                    });
+                    chart2.render();
+
+                    const chartElement2 = document.querySelector("#reportsChart2");
+                    const chartContainer2 = document.querySelector("#chartContainer2");
+                    const fullscreenBtn2 = document.querySelector("#fullscreenBtn2");
+                    const closeFullscreenBtn2 = document.querySelector("#closeFullscreenBtn2");
+
+                    const isMobile = () => {
+                        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
+                            window.innerWidth <= 767;
+                    };
+
+                    fullscreenBtn2.style.display = isMobile() ? 'flex' : 'none';
+
+                    window.addEventListener('resize', () => {
+                        fullscreenBtn2.style.display = isMobile() ? 'flex' : 'none';
+                    });
+
+                    if (isMobile()) {
+                        fullscreenBtn2.addEventListener("click", async () => {
+                            try {
+                                if (!document.fullscreenElement) {
+                                    await chartContainer2.requestFullscreen();
+                                    chartElement2.classList.add('fullscreen');
+                                    chartContainer2.classList.add('fullscreen');
+
+                                    if (screen.orientation && screen.orientation.lock) {
+                                        try {
+                                            await screen.orientation.lock("landscape");
+                                        } catch (err) {
+                                            console.log("Orientation lock not supported");
+                                        }
+                                    }
+
+                                    const screenWidth = window.innerWidth;
+                                    const screenHeight = window.innerHeight;
+                                    chart2.updateOptions({
+                                        chart: {
+                                            width: screenWidth - 40,
+                                            height: screenHeight - 40
+                                        }
+                                    });
+                                } else {
+                                    await document.exitFullscreen();
+                                }
+                            } catch (err) {
+                                console.error("Error toggling fullscreen:", err);
+                            }
+                        });
+
+                        closeFullscreenBtn2.addEventListener("click", async () => {
+                            if (document.fullscreenElement) {
+                                await document.exitFullscreen();
+                            }
+                        });
+                    }
+
+                    document.addEventListener("fullscreenchange", () => {
+                        if (!document.fullscreenElement) {
+                            chartElement2.classList.remove('fullscreen');
+                            chartContainer2.classList.remove('fullscreen');
+                    
+                            chartContainer2.style.opacity = '0';
+                    
+                            setTimeout(() => {
+                                chart2.updateOptions({
+                                    chart: {
+                                        width: '100%',
+                                        height: 350
+                                    }
+                                });
+                    
+                                setTimeout(() => {
+                                    chartContainer2.style.opacity = '1';
+                                }, 500);
+                            }, 500);
+                    
+                            if (screen.orientation && screen.orientation.unlock) {
+                                screen.orientation.unlock();
+                            }
+                    
+                            if (isMobile()) {
+                                fullscreenBtn2.style.display = 'flex';
+                            }
+                        }
+                    });
+
+                    window.addEventListener('resize', () => {
+                        if (document.fullscreenElement) {
+                            const screenWidth = window.innerWidth;
+                            const screenHeight = window.innerHeight;
+                            chart2.updateOptions({
+                                chart: {
+                                    width: screenWidth - 40,
+                                    height: screenHeight - 40
                                 }
                             });
-                        chart2.updateSeries([
-                                {
-                                    name: 'Kameralna',
-                                    data: data.small_stat
-                                },
-                                {
-                                    name: 'Sportowa',
-                                    data: data.sport_stat
-                                },
-                                {
-                                    name: 'Rodzinna',
-                                    data: data.family_stat
-                                }
+                        }
+                    });
+
+                    document.querySelector("#reportsChart2").addEventListener("contextmenu", (e) => {
+                        e.preventDefault();
+                        chart2.resetSeries();
+                    });
+
+                    function handleButtonClick(event) {
+                        const buttonId = event.target.id;
+                        fetch(`/update_chart/${buttonId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const currentDate = data.today;
+                                const todayElement = document.querySelector('#today');
+                                todayElement.textContent = currentDate;
+                                chart2.updateOptions({
+                                    chart: {
+                                        animations: {
+                                            enabled: true,
+                                            easing: 'easeinout',
+                                            speed: 1000
+                                        }
+                                    },
+                                    xaxis: {
+                                        type: 'time',
+                                        tickAmount: 16,
+                                        tickInterval: 'hour',
+                                        categories: data.date_stat
+                                    }
+                                });
+                                chart2.updateSeries([
+                                    {
+                                        name: 'Kameralna',
+                                        data: data.small_stat
+                                    },
+                                    {
+                                        name: 'Sportowa',
+                                        data: data.sport_stat
+                                    },
+                                    {
+                                        name: 'Rodzinna',
+                                        data: data.family_stat
+                                    }
                                 ], animate = true);
-                        });
-            }
-            const buttons = document.querySelectorAll('.dropdown-item');
-            buttons.forEach(button => button.addEventListener('click', handleButtonClick));
-            }); 
-        </script>
-        <!-- End Line Chart -->
+                            });
+                    }
+
+                    const buttons = document.querySelectorAll('.dropdown-item');
+                    buttons.forEach(button => button.addEventListener('click', handleButtonClick));
+                });
+            </script>
         </div>
-    </div> <!-- End mean stats chart -->
+    </div>
 </div>
 {% endblock %}

@@ -1,16 +1,130 @@
 {% block content %}
-<div class="col-12"> <!-- Live chart section start -->
+<style>
+  #reportsChart.fullscreen {
+    background: white;
+    padding: 20px;
+    height: 100vh;
+    width: 100vw;
+  }
+  
+  #chartContainer.fullscreen {
+    background: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  #chartContainer {
+    width: 100%;
+    min-height: 350px;
+    position: relative;
+  }
+
+  /* Fullscreen button styles */
+  #fullscreenBtn {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #dee2e6;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+  }
+
+  #fullscreenBtn:hover {
+    background: #f8f9fa;
+    transform: scale(1.1);
+  }
+
+  /* Close button styles */
+  #closeFullscreenBtn {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  #closeFullscreenBtn:hover {
+    background: #f8f9fa;
+    transform: scale(1.1);
+  }
+
+  #chartContainer.fullscreen #closeFullscreenBtn {
+    display: flex;
+  }
+
+  /* Show fullscreen button only on mobile devices */
+  @media screen and (max-width: 767px) {
+    #fullscreenBtn {
+      display: flex;
+    }
+  }
+</style>
+
+<div class="col-12">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span></h5>
+        <h5 class="card-title">
+          Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span>
+        </h5>
 
-        <!-- Line Chart -->
-        <div id="reportsChart"></div>
+        <div id="chartContainer">
+          <button id="fullscreenBtn" class="btn btn-sm">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+          <button id="closeFullscreenBtn">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          <div id="reportsChart"></div>
+        </div>
 
         <script>
           document.addEventListener("DOMContentLoaded", () => {
             const colors = ['#ff771d', '#00aeff', '#2eca6a', '#1804ad'];
-            const chart = new ApexCharts(document.querySelector("#reportsChart"), {
+            const chartElement = document.querySelector("#reportsChart");
+            const chartContainer = document.querySelector("#chartContainer");
+            const fullscreenBtn = document.querySelector("#fullscreenBtn");
+            const closeFullscreenBtn = document.querySelector("#closeFullscreenBtn");
+
+            // Check if device is mobile
+            const isMobile = () => {
+              return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && 
+                     window.innerWidth <= 767;
+            };
+
+            // Show/hide fullscreen button based on device
+            fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
+
+            // Update button visibility on resize
+            window.addEventListener('resize', () => {
+              fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
+            });
+            
+            const defaultChartOptions = {
               series: [
               {
                 name: 'Pływalnia Kameralna',
@@ -28,6 +142,7 @@
               chart: {
                 height: 350,
                 type: 'area',
+                background: 'white',
                 toolbar: {
                   show: false
                 },
@@ -36,14 +151,12 @@
                     const annotations = chartContext.w.config.annotations.yaxis || [];
                     const seriesAnnotation = annotations.find(annotation => annotation.seriesIndex === seriesIndex);
                     if (seriesAnnotation) {
-                      // remove the annotation if it exists
                       chartContext.updateOptions({
                         annotations: {
                           yaxis: annotations.filter(annotation => annotation.seriesIndex !== seriesIndex)
                         }
                       });
                     } else {
-                      // add a new annotation for the series
                       const newAnnotation = [
                       {
                         seriesIndex: 0,
@@ -81,7 +194,7 @@
               markers: {
                 size: 2.5
               },
-              colors: [colors[0], colors[1], colors[2], colors[3]],
+              colors: colors,
               fill: {
                 type: "gradient",
                 gradient: {
@@ -129,22 +242,126 @@
                         borderWidth: 2
                       }
                     ],
-              },
+              },         
               tooltip: {
                 x: {
-                  format: 'dd/MM/yy HH:mm'
+                  format: 'HH:mm'
+                },
+                y: {
+                  formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                    let maxValue = '';
+                    if (w.config.series[seriesIndex].name === 'Pływalnia Kameralna') {
+                      maxValue = '/30';
+                    } else if (w.config.series[seriesIndex].name === 'Pływalnia Sportowa') {
+                      maxValue = '/105';
+                    } else if (w.config.series[seriesIndex].name === 'Pływalnia Rodzinna') {
+                      maxValue = '/150';
+                    } else if (w.config.series[seriesIndex].name === 'Lodowisko') {
+                      maxValue = '/300';
+                    }
+                    return value + maxValue;
+                  }
+                }
+              }
+            };
+            
+            let chart = new ApexCharts(chartElement, defaultChartOptions);
+            chart.render();
+
+            // Only enable fullscreen functionality if it's a mobile device
+            if (isMobile()) {
+              fullscreenBtn.addEventListener("click", async () => {
+                try {
+                  if (!document.fullscreenElement) {
+                    await chartContainer.requestFullscreen();
+                    chartElement.classList.add('fullscreen');
+                    chartContainer.classList.add('fullscreen');
+                    
+                    if (screen.orientation && screen.orientation.lock) {
+                      try {
+                        await screen.orientation.lock("landscape");
+                      } catch (err) {
+                        console.log("Orientation lock not supported");
+                      }
+                    }
+                    
+                    const screenWidth = window.innerWidth;
+                    const screenHeight = window.innerHeight;
+                    chart.updateOptions({
+                      chart: {
+                        width: screenWidth - 40,
+                        height: screenHeight - 40
+                      }
+                    });
+                  } else {
+                    await document.exitFullscreen();
+                  }
+                } catch (err) {
+                  console.error("Error toggling fullscreen:", err);
+                }
+              });
+
+              // Add close button functionality
+              closeFullscreenBtn.addEventListener("click", async () => {
+                if (document.fullscreenElement) {
+                  await document.exitFullscreen();
+                }
+              });
+            }
+
+            document.addEventListener("fullscreenchange", () => {
+              if (!document.fullscreenElement) {
+                chartElement.classList.remove('fullscreen');
+                chartContainer.classList.remove('fullscreen');
+            
+                // Hide the chart container
+                chartContainer.style.opacity = '0';
+                
+                // Destroy the existing chart
+                chart.destroy();
+            
+                // Create a new chart with the default options
+                chart = new ApexCharts(chartElement, defaultChartOptions);
+            
+                // Render the new chart
+                chart.render();
+            
+                // Show the chart container after a short delay to ensure smooth transition
+                setTimeout(() => {
+                  chartContainer.style.opacity = '1';
+                }, 500);
+                
+                if (screen.orientation && screen.orientation.unlock) {
+                  screen.orientation.unlock();
+                }
+            
+                // Show the fullscreen button when exiting fullscreen mode on mobile devices
+                if (isMobile()) {
+                  fullscreenBtn.style.display = 'flex';
                 }
               }
             });
-            chart.render();
-            document.querySelector("#reportsChart").addEventListener("contextmenu", (e) => {
-                e.preventDefault(); // prevent default context menu from showing
-                chart.resetSeries(); // reset zoom level
+
+            window.addEventListener('resize', () => {
+              if (document.fullscreenElement) {
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                chart.updateOptions({
+                  chart: {
+                    width: screenWidth - 40,
+                    height: screenHeight - 40
+                  }
+                });
+              }
+            });
+
+            chartElement.addEventListener("contextmenu", (e) => {
+              e.preventDefault();
+              chart.resetSeries();
             }); 
           });
         </script>
-        <!-- End Line Chart -->
       </div>
     </div>
-  </div><!-- End of live chart section  -->
-  {% endblock %}
+  </div>
+{% endblock %}
