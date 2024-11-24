@@ -93,6 +93,13 @@
         </h5>
 
         <div id="chartContainer">
+          <div id="loadingOverlay">
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
           <button id="fullscreenBtn" class="btn btn-sm">
             <i class="bi bi-arrows-fullscreen"></i>
           </button>
@@ -188,8 +195,13 @@
                         }
                       });
                     }
+                  },
+                  mounted: function () {
+                    // Hide loading overlay when the chart is loaded
+                    const loadingOverlay = chartContainer.querySelector('#loadingOverlay');
+                    loadingOverlay.style.display = 'none';
                   }
-                }
+                },
               },
               markers: {
                 size: 2.5

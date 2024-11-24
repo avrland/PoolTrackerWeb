@@ -1256,3 +1256,75 @@ h6 {
 .reportsChart {
   touch-action: none;
 }
+
+/* Add these at the end of your existing style.css */
+
+/* Chart loading states */
+.chart-loading {
+  position: relative;
+  min-height: 200px;
+}
+
+/* Progress bar animations */
+.progress-bar {
+  transition: width 0.3s ease-in-out;
+}
+
+/* Card hover effects */
+.info-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Loading spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Error alert */
+.alert {
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 0.9rem;
+  }
+  
+  .info-card .card-icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* Print styles */
+@media print {
+  .card {
+    break-inside: avoid;
+  }
+  
+  .filter,
+  .back-to-top {
+    display: none !important;
+  }
+}
+
+
+#loadingOverlay, #statsLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

@@ -113,6 +113,13 @@
             <h5 class="card-title">Średnia zajętość obiektów (ostatnie 60 dni) <span id="today"> {{today}}</span></h5>
 
             <div id="chartContainer2">
+                <div id="loadingOverlay">
+                    <div class="d-flex justify-content-center">
+                      <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
+                  </div>
                 <button id="fullscreenBtn2" class="btn btn-sm">
                     <i class="bi bi-arrows-fullscreen"></i>
                 </button>
@@ -124,6 +131,11 @@
 
             <script>
                 document.addEventListener("DOMContentLoaded", () => {
+                    const chartElement2 = document.querySelector("#reportsChart2");
+                    const chartContainer2 = document.querySelector("#chartContainer2");
+                    const fullscreenBtn2 = document.querySelector("#fullscreenBtn2");
+                    const closeFullscreenBtn2 = document.querySelector("#closeFullscreenBtn2");
+
                     const colors = ['#ff771d', '#4154f1', '#2eca6a'];
                     const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
                         series: [
@@ -143,6 +155,13 @@
                             toolbar: {
                                 show: false
                             },
+                            events: {
+                                mounted: function () {
+                                    // Hide loading overlay when the chart is loaded
+                                    const loadingOverlay2 = chartContainer2.querySelector('#loadingOverlay');
+                                    loadingOverlay2.style.display = 'none';
+                                }
+                            }
                         },
                         markers: {
                             size: 2.5
@@ -221,11 +240,6 @@
                         }
                     });
                     chart2.render();
-
-                    const chartElement2 = document.querySelector("#reportsChart2");
-                    const chartContainer2 = document.querySelector("#chartContainer2");
-                    const fullscreenBtn2 = document.querySelector("#fullscreenBtn2");
-                    const closeFullscreenBtn2 = document.querySelector("#closeFullscreenBtn2");
 
                     const isMobile = () => {
                         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
@@ -326,6 +340,8 @@
                     });
 
                     function handleButtonClick(event) {
+                        const loadingOverlay3 = chartContainer2.querySelector('#loadingOverlay');
+                        loadingOverlay3.style.display = 'flex';
                         const buttonId = event.target.id;
                         fetch(`/update_chart/${buttonId}`)
                             .then(response => response.json())
@@ -361,7 +377,11 @@
                                         name: 'Rodzinna',
                                         data: data.family_stat
                                     }
-                                ], animate = true);
+                                ], true, () => {
+                                    // Hide loading overlay after the chart is updated
+                                });
+                                const loadingOverlay3 = chartContainer2.querySelector('#loadingOverlay');
+                                loadingOverlay3.style.display = 'none';
                             });
                     }
 
