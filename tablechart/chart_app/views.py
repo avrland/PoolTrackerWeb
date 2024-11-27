@@ -11,7 +11,7 @@ from django.core.cache import cache
 import time
 import pytz
 
-ver_num = "0.1.1"
+ver_num = "0.1.2"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -91,7 +91,6 @@ def update_chart(request, day):
         return JsonResponse(response_data)
     
     df = pd.DataFrame(data, columns=['weekday', 'time', 'sport', 'family', 'small', 'ice'])
-    print(df)
     weekday_names = {0: "Poniedziałek", 1: "Wtorek", 2: "Środa", 3: "Czwartek", 4: "Piątek", 5: "Sobota", 6: "Niedziela"}
     weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
     df_sunday = df[df['weekday'] == weekday_names_en[day]]
