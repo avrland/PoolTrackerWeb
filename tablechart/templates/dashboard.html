@@ -123,24 +123,72 @@
           </div>
         </div><!-- End Ice -->
 
-        <!-- Feedback -->
+        <!-- Aquapark -->
+        <style> .dashboard .aquapark-card .card-icon {
+          color: #6a269a;
+          background: #f6f6fe;
+        }</style>
+        <!-- Counter to aquapark opening date -->
+        <script>
+          // Set the target date (December 15, 2028)
+        const targetDate = new Date('2028-12-15T00:00:00').getTime();
+        
+        // Update the countdown every second
+        const countdownTimer = setInterval(function() {
+            // Get current date and time
+            const now = new Date().getTime();
+            
+            // Calculate the remaining time
+            const distance = targetDate - now;
+            
+            // Time calculations for days, hours, minutes and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Update days text
+            const daysElement = document.querySelector('.aquapark-card h6 a');
+            if (daysElement) {
+                daysElement.textContent = `Otwarcie za ${days} dni`;
+            }
+            
+            // Update detailed countdown text
+            const detailsElement = document.querySelector('.aquapark-card .text.small a b');
+            if (detailsElement) {
+                detailsElement.textContent = `${hours} godzin, ${minutes} minut, ${seconds} sekund`;
+            }
+            
+            // If the countdown is finished, display a message
+            if (distance < 0) {
+                clearInterval(countdownTimer);
+                if (daysElement) {
+                    daysElement.textContent = "Aquapark jest już otwarty!";
+                }
+                if (detailsElement) {
+                    detailsElement.textContent = "Zapraszamy!";
+                }
+            }
+        }, 1000);
+        </script>
+
         <div class="col-xxl-4 col-md-6">
-          <div class="card info-card feedback-card">
+          <div class="card info-card aquapark-card">
             <div class="card-body">
-              <h5 class="card-title">Pomysły, uwagi?</h5>
+              <h5 class="card-title">Aquapark Andersa <span>| Grudzień 2028</span></h5>
               <div class="d-flex align-items-center">
                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                  <i class="ri-chat-poll-line"></i>
+                  <i class="fas fa-swimmer"></i>
                 </div>
                 <div class="ps-3">
-                  <h6><a href="https://forms.gle/CGzzGs8PKedTDJXc9" target="_blank">Wypełnij ankietę!</a></h6>
-                  <span class="text small pt-1 fw-bold"><a href="https://forms.gle/CGzzGs8PKedTDJXc9" target="_blank"><b>Ankieta</b></a></span>
+                  <h6><a href="https://www.lech.net.pl/pl/aktualnosci/bedziemy-budowac-aquapark-w-bialymstoku-.html" target="_blank">Otwarcie za 1475 dni</a></h6>
+                  <span class="text small pt-1 fw-bold"><a href="https://www.lech.net.pl/pl/aktualnosci/bedziemy-budowac-aquapark-w-bialymstoku-.html" target="_blank"><b>12 godzin, 43 minut, 33 sekund</b></a></span>
                 </div>
               </div>
             </div>
     
           </div>
-        </div><!-- End Feedback -->
+        </div><!-- End aquapark -->
 
         <!-- Fb -->
         <div class="col-xxl-4 col-md-6">

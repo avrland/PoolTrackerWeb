@@ -11,7 +11,7 @@ from django.core.cache import cache
 import time
 import pytz
 
-ver_num = "0.1.2"
+ver_num = "0.1.3"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -59,7 +59,7 @@ def content_view(request):
                                             'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
                                             'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
                                             'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
-                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent})
+                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening()})
 
 def stats_view(request, weekday):
     data = cache.get('fulldata')
@@ -108,3 +108,13 @@ def update_chart(request, day):
 
 def handler404(request, exception):
     return render(request, '404.html', status=404)
+
+
+def days_until_opening():
+    tz = pytz.timezone('Europe/Warsaw')
+    today = datetime.now(tz)
+    target_date = tz.localize(datetime(2028, 12, 15))
+    delta = target_date - today
+    
+    # Return just the days as integer
+    return delta.days
