@@ -11,7 +11,7 @@ from django.core.cache import cache
 import time
 import pytz
 
-ver_num = "0.1.5"
+ver_num = "0.1.6"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
