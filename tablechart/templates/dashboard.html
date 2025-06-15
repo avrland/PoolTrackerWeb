@@ -6,33 +6,33 @@
   <!-- zawartość kafelka pogody -->
 
 
-<div class="col-xxl-4 col-md-6">
-  <div class="card info-card small-card weather-card">
-    <div class="card-body">
-      <h5 class="card-title">
-        Pogoda | <span class="text-capitalize">{{ weather.description|default:"--" }}</span>
-      </h5>
-      <div class="d-flex align-items-center">
-        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #f0f4fa;">
-          {% if weather and weather.icon %}
-            <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="{{ weather.description|default:'Ikona pogody' }}" style="width:64px;height:64px;object-fit:contain;display:inline-block;vertical-align:middle;margin-right:8px;">
-          {% else %}
-            <img src="" alt="Ikona pogody" style="width:64px;height:64px;">
-          {% endif %}
-        </div>
-        <div class="ps-3">
-          <h6>{{ weather.temp|default:"--" }}°C</h6>
-          <div class="text-muted small pt-1">
-            Odczuwalna: {{ weather.feels_like|default:"--" }}°C | Wilgotność: {{ weather.humidity|default:"--" }}%
+  <div class="col-xxl-4 col-md-6">
+    <div class="card info-card small-card weather-card">
+      <div class="card-body">
+        <h5 class="card-title">
+          Pogoda | <span class="text-capitalize">{{ weather.description|default:"--" }}</span>
+        </h5>
+        <div class="d-flex align-items-center">
+          <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background: #f0f4fa;">
+            {% if weather and weather.icon %}
+              <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="{{ weather.description|default:'Ikona pogody' }}" style="width:64px;height:64px;object-fit:contain;display:inline-block;vertical-align:middle;">
+            {% else %}
+              <img src="" alt="Ikona pogody" style="width:64px;height:64px;">
+            {% endif %}
+          </div>
+          <div class="ps-3">
+            <h6>{{ weather.temp|default:"--" }}°C</h6>
+            <div class="text-muted small pt-1">
+              Odczuwalna: {{ weather.feels_like|default:"--" }}°C | Wilgotność: {{ weather.humidity|default:"--" }}%
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="ps-3">
-      <a href="https://www.google.com/maps?q=Białystok" target="_blank"><b>Białystok</b></a>
+      <div class="ps-3">
+        <a href="https://www.google.com/maps?q=Białystok" target="_blank"><b>Białystok</b></a>
+      </div>
     </div>
   </div>
-</div>
 
 
     <!-- Small -->
