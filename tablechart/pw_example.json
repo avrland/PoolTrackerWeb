@@ -4,5 +4,6 @@
     "PASSWORD": "...",
     "HOST": "...",
     "PORT": "...",
-    "SECRET_KEY": "..."
+    "SECRET_KEY": "...",
+    "OPENWEATHER_API_KEY": "..."
 }

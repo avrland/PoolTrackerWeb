@@ -10,8 +10,10 @@ from datetime import datetime, timedelta
 from django.core.cache import cache
 import time
 import pytz
+import requests
+from django.conf import settings
 
-ver_num = "0.1.6"
+ver_num = "0.1.7"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -54,7 +56,7 @@ def content_view(request):
     small_percent = round((last_small/30)*100)
     ice_percent = round((last_ice/300)*100)
     last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'content.html', {'ver_num': ver_num, 'stats_chart': stats_chart,
+    return render(request, 'content.html', {'weather': get_weather_data(), 'ver_num': ver_num, 'stats_chart': stats_chart,
                                              'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
                                             'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
                                             'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
@@ -118,3 +120,30 @@ def days_until_opening():
     
     # Return just the days as integer
     return delta.days
+
+def weather_view(request):
+    weather = get_weather_data()
+    print(weather)
+    context = {'weather': weather}
+    return render(request, 'dashboard.html', context)
+
+API_KEY = settings.OPENWEATHER_API_KEY
+CITY = 'Białystok,pl'
+URL = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pl'
+
+def get_weather_data():
+    try:
+        response = requests.get(URL)
+        response.raise_for_status()
+        data = response.json()
+        print(data)
+        weather = {
+            'icon': data['weather'][0]['icon'],
+            'description': data['weather'][0]['description'].capitalize(),
+            'temp': round(data['main']['temp']),
+            'feels_like': round(data['main']['feels_like']),
+            'humidity': data['main']['humidity']
+        }
+        return weather
+    except requests.RequestException:
+        return None

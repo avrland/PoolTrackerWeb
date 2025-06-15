@@ -15,6 +15,7 @@ import os
 import json
 with open('pw.json') as f:
     SECRETS = json.load(f)
+OPENWEATHER_API_KEY = SECRETS['OPENWEATHER_API_KEY']
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -125,7 +126,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 if DEBUG:
-    STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static')]
+    STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), 
+                         os.path.join(BASE_DIR, 'tablechart/static')]
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
