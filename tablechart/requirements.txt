@@ -4,3 +4,8 @@ plotly
 pandas
 whitenoise
 requests
+langchain
+langchain-google-genai
+google-generativeai
+qdrant-client
+sentence-transformers

@@ -1,0 +1,83 @@
+<div id="chat-widget" class="chat-widget">
+  <!-- Floating button -->
+  <div id="chat-button" class="chat-button-floating">
+    <i class="fas fa-comments"></i>
+    <div id="notification-dot" class="notification-dot"></div>
+  </div>
+  
+  <!-- Chat window -->
+  <div id="chat-window" class="chat-window">
+    <!-- Header -->
+    <div class="chat-header" id="chat-header">
+      <div class="chat-title">
+        <div class="chat-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="chat-title-text">
+          <h4>Śledź AI</h4>
+          <span class="chat-status">Online</span>
+        </div>
+      </div>
+      <div class="chat-controls">
+        <button id="chat-close" class="chat-control-btn" title="Zamknij">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Messages area -->
+    <div id="chat-body" class="chat-body">
+      <div id="chat-messages" class="chat-messages">
+        <!-- Welcome message -->
+        <div class="message bot-message">
+          <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="message-content">
+            <div class="message-text">
+              Cześć, jestem Basenowym Czatbotem! 👋<br>
+              Mogę pomóc Ci z informacjami o basenach i zaplanowaniem wizyty na pływalni 🏊‍♂️<br>
+              Jak mogę Ci dzisiaj pomóc?
+            </div>
+            <div class="message-time">
+              <span class="time-text">Teraz</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Typing indicator -->
+      <div id="typing-indicator" class="typing-indicator" style="display: none;">
+        <div class="message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Input area -->
+    <div class="chat-input-container">
+      <div class="chat-input-wrapper">
+        <textarea 
+          id="chat-input" 
+          class="chat-input" 
+          placeholder="Napisz wiadomość..." 
+          maxlength="1000"
+          rows="1"
+        ></textarea>
+        <button id="chat-send" class="chat-send-btn" title="Wyślij">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+      <div class="chat-input-footer">
+        <small class="input-counter">
+          <span id="char-counter">0</span>/1000
+        </small>
+      </div>
+    </div>
+  </div>
+</div>

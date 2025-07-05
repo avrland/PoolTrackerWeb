@@ -18,5 +18,6 @@ from django.urls import path, include
 from chart_app.views import content_view, update_chart
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include("chart_app.urls"))
+    path('', include("chart_app.urls")),
+    path('chatbot/', include('chatbot_app.urls')),
 ]
