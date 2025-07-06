@@ -1,7 +1,20 @@
+def history_to_text(messages):
+    """Zamienia listę wiadomości na tekst do promptu. Zawsze zwraca string."""
+    if not messages or not isinstance(messages, list):
+        return ""
+    lines = []
+    for m in messages:
+        # AIMessage/UserMessage w LangChain mają atrybut 'type' lub 'role'
+        if hasattr(m, 'type') and m.type == 'ai':
+            lines.append(f"Bot: {getattr(m, 'content', str(m))}")
+        else:
+            lines.append(f"Użytkownik: {getattr(m, 'content', str(m))}")
+    return "\n".join(lines)
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
+from langchain.memory import ConversationBufferMemory
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from django.conf import settings
 from pydantic import BaseModel, Field
 
@@ -11,10 +24,8 @@ class BotResponse(BaseModel):
     bot_response: str = Field(description="Odpowiedz bota dla uzytkownika ktora zostanie wprowadzona w czacie")
 
 def create_chain(history=None, pool_data=""):
-    """Tworzy łańcuch konwersacyjny LangChain z Gemini, uwzględniając dane o basenach."""
-    
-    # Szablon promptu, który instruuje LLM i dostarcza dane
-    PROMPT_TEMPLATE = """Jesteś pomocnym asystentem AI o nazwie "PoolBot". Twoim zadaniem jest odpowiadanie na pytania dotyczące obłożenia basenów i lodowiska w kompleksie.
+    """Tworzy pipeline konwersacyjny LangChain z Gemini, bez RunnableWithMessageHistory."""
+    PROMPT_TEMPLATE = """Jesteś pomocnym asystentem AI o nazwie \"PoolBot\". Twoim zadaniem jest odpowiadanie na pytania dotyczące obłożenia basenów i lodowiska w kompleksie.
 Twoja rola to dostarczanie informacji na podstawie poniższych danych. Bądź miły, pomocny i rozmawiaj naturalnie.
 Odpowiadaj zawsze w języku polskim.
 
@@ -38,41 +49,26 @@ Użytkownik: {input}
         template=PROMPT_TEMPLATE
     )
 
-    # Inicjalizacja modelu Gemini
     llm = ChatGoogleGenerativeAI(
         model="gemini-1.5-flash",
         temperature=0.3,
         google_api_key=settings.GEMINI_API_KEY
-    )
-    # Removed with_structured_output wrapping to avoid passing BotResponse objects internally
-    
-    # Tworzenie pamięci konwersacji
-    memory = ConversationBufferMemory(memory_key="history")
-    if history:
-        for message in history:
-            if message.role == 'user':
-                memory.chat_memory.add_user_message(message.content)
-            elif message.role == 'bot':
-                # The content can be a JSON string, which is fine.
-                memory.chat_memory.add_ai_message(message.content)
-    
-    # Tworzenie łańcucha konwersacyjnego
-    conversation_chain = ConversationChain(
-        llm=llm,
-        prompt=prompt,
-        memory=memory,
-        verbose=True
-    )
-    
-    return conversation_chain
+    ).with_structured_output(BotResponse)
 
-def generate_response(chain, prompt):
-    """Generuje odpowiedź z łańcucha LangChain"""
-    raw_response = chain.predict(input=prompt)
-    try:
-        # Parse raw string response into BotResponse model
-        parsed_response = BotResponse.model_validate_json(raw_response)
-        return parsed_response.bot_response
-    except Exception as e:
-        # Fallback: return raw response if parsing fails
-        return raw_response
+    def run_chain(user_input, session_history=None):
+        # Zamień historię na tekst
+        history_text = history_to_text(session_history) if session_history else ""
+        prompt_str = prompt.format(history=history_text, input=user_input)
+        return llm.invoke(prompt_str)
+
+    return run_chain
+
+def generate_response(chain, prompt, session_history=None):
+    """Generuje odpowiedź z pipeline'u LangChain (bez RunnableWithMessageHistory)"""
+    response = chain(prompt, session_history)
+    print(response)
+    if isinstance(response, BotResponse):
+        return response.bot_response
+    if hasattr(response, 'content'):
+        return response.content
+    return str(response)
