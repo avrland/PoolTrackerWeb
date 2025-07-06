@@ -3,7 +3,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
 from django.conf import settings
 
-def create_chain():
+def create_chain(history=None):
     """Tworzy łańcuch konwersacyjny LangChain z Gemini"""
     # Inicjalizacja modelu Gemini
     llm = ChatGoogleGenerativeAI(
@@ -14,6 +14,12 @@ def create_chain():
     
     # Tworzenie pamięci konwersacji
     memory = ConversationBufferMemory()
+    if history:
+        for message in history:
+            if message.role == 'user':
+                memory.chat_memory.add_user_message(message.content)
+            elif message.role == 'bot':
+                memory.chat_memory.add_ai_message(message.content)
     
     # Tworzenie łańcucha konwersacyjnego
     conversation_chain = ConversationChain(

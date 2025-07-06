@@ -29,6 +29,9 @@ def chat_view(request):
                 except Conversation.DoesNotExist:
                     conversation = Conversation.objects.create(session_id=session_id)
             
+            # Pobranie historii konwersacji
+            history = conversation.messages.all()
+
             # Zapisanie wiadomości użytkownika
             Message.objects.create(
                 conversation=conversation,
@@ -37,7 +40,7 @@ def chat_view(request):
             )
             
             # Generowanie odpowiedzi za pomocą LangChain i Gemini
-            chain = create_chain()
+            chain = create_chain(history=history)
             bot_response = generate_response(chain, message)
             
             # Zapisanie odpowiedzi bota
