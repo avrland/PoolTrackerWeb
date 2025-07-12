@@ -7,7 +7,7 @@ class ChatbotWidget {
   constructor(options = {}) {
     this.config = {
       apiEndpoint: '/chatbot/api/chat/',
-      maxMessageLength: 1000,
+      maxMessageLength: 250,
       animationDuration: 300,
       typingDelay: 1000,
       persistHistory: true,
@@ -188,6 +188,8 @@ class ChatbotWidget {
     if (length > this.config.maxMessageLength) {
       this.elements.sendBtn.disabled = true;
       this.elements.input.style.borderColor = '#ff4757';
+      // Truncate input to max length
+      this.elements.input.value = this.elements.input.value.substring(0, this.config.maxMessageLength);
     } else {
       this.elements.sendBtn.disabled = false;
       this.elements.input.style.borderColor = '';
@@ -217,8 +219,14 @@ class ChatbotWidget {
    * Wysłanie wiadomości
    */
   async sendMessage() {
-    const message = this.elements.input.value.trim();
+    let message = this.elements.input.value.trim();
     if (!message || this.state.isTyping) return;
+
+    // Block sending if message exceeds max length
+    if (message.length > this.config.maxMessageLength) {
+      alert(`Wiadomość nie może przekraczać ${this.config.maxMessageLength} znaków.`);
+      return;
+    }
     
     // Dodanie wiadomości użytkownika
     this.addMessage(message, 'user');

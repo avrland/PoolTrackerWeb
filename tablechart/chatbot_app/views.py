@@ -22,6 +22,10 @@ def chat_view(request):
             if not session_id:
                 session_id = str(uuid.uuid4())
 
+            # Enforce max message length 250
+            if len(message) > 250:
+                message = message[:250]
+
             # Pobranie danych o basenach z cache
             pool_data_raw = cache.get('fulldata')
             pool_data_str = ""
