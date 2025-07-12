@@ -7,6 +7,4 @@ requests
 pydantic
 langchain
 langchain-google-genai
-google-generativeai
 qdrant-client
-sentence-transformers
