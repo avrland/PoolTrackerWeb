@@ -44,7 +44,7 @@ python manage.py runserver 0.0.0.0:80
 ## Docker image (for production)
 ```
 docker image build -t pooltrackerweb .
-docker container run -d -p80:8000 --restart unless-stopped --name pooltrackerweb pooltrackerweb
+docker container run -d -p80:8000 --restart unless-stopped -v $(pwd)/logs:/logs --name pooltrackerweb pooltrackerweb
 ```
 
 ## Repository sctructure
