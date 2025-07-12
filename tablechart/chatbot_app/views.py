@@ -2,9 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 import uuid
-from .models import Conversation, Message
-from .gemini_client import GeminiClient
-from .langchain_utils import create_chain, generate_response
+from .langchain_utils import create_conversational_chain
 from django.shortcuts import render
 from django.core.cache import cache
 import pandas as pd
@@ -21,16 +19,9 @@ def chat_view(request):
             message = data.get('message', '')
             session_id = data.get('session_id')
             
-            # Tworzenie lub pobieranie konwersacji
             if not session_id:
                 session_id = str(uuid.uuid4())
-                conversation, created = Conversation.objects.get_or_create(session_id=session_id)
-            else:
-                try:
-                    conversation = Conversation.objects.get(session_id=session_id)
-                except Conversation.DoesNotExist:
-                    conversation = Conversation.objects.create(session_id=session_id)
-            
+
             # Pobranie danych o basenach z cache
             pool_data_raw = cache.get('fulldata')
             pool_data_str = ""
@@ -54,30 +45,11 @@ def chat_view(request):
                     'session_id': session_id
                 })
 
-            # Pobranie historii konwersacji
-            history = conversation.messages.all()
+            # Utworzenie i wywołanie łańcucha konwersacyjnego
+            chain = create_conversational_chain(pool_data=pool_data_str)
+            config = {"configurable": {"session_id": session_id}}
+            bot_response_text = chain.invoke({"input": message}, config=config)
 
-            # Zapisanie wiadomości użytkownika
-            Message.objects.create(
-                conversation=conversation,
-                role='user',
-                content=message
-            )
-            
-            # Generowanie odpowiedzi za pomocą LangChain i Gemini
-            chain = create_chain(history=history, pool_data=pool_data_str)
-            bot_response_text = generate_response(chain, message)
-
-            # Zapisanie odpowiedzi bota
-            Message.objects.create(
-                conversation=conversation,
-                role='bot',
-                content=bot_response_text
-            )
-            
-            # Aktualizacja czasu konwersacji
-            conversation.save()
-            
             return JsonResponse({
                 'response': bot_response_text,
                 'session_id': session_id

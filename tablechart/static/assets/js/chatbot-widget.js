@@ -45,8 +45,8 @@ class ChatbotWidget {
         <div class="message-content">
           <div class="message-text">
               Cześć, jestem Basenowym Czatbotem! 👋<br>
-              Mogę pomóc dla Ciebie z informacjami o basenach i zaplanowaniem wizyty na pływalni 🏊‍♂️<br>
-              W czym mogę pomóc?
+              Mogę pomóc dla Ciebie zaplanować wizytę na pływalni 🏊‍♂️<br>
+              Zapytaj na przyklad "ile osob jest na basenie rodzinnym o 15:00 w poniedziałek?"<br>
           </div>
           <div class="message-time">
             <span class="time-text">Teraz</span>
@@ -74,7 +74,7 @@ class ChatbotWidget {
       closeBtn: document.getElementById('chat-close'),
       typingIndicator: document.getElementById('typing-indicator'),
       notificationDot: document.getElementById('notification-dot'),
-      charCounter: document.getElementById('char-counter')
+      charCounter: document.getElementById('char-counter'),
     };
   }
   
@@ -123,7 +123,7 @@ class ChatbotWidget {
       this.elements.widget.classList.remove('initializing');
     }, 600);
   }
-  
+
   /**
    * Przełączenie stanu okna czatu
    */
@@ -533,8 +533,8 @@ class ChatbotWidget {
         <div class="message-content">
           <div class="message-text">
               Cześć, jestem Basenowym Czatbotem! 👋<br>
-              Mogę pomóc dla Ciebie z informacjami o basenach i zaplanowaniem wizyty na pływalni 🏊‍♂️<br>
-              W czym mogę pomóc?
+              Mogę pomóc dla Ciebie zaplanować wizytę na pływalni 🏊‍♂️<br>
+              Zapytaj na przyklad "ile osob jest na basenie rodzinnym o 15:00 w poniedziałek?"<br>
           </div>
           <div class="message-time">
             <span class="time-text">Teraz</span>
