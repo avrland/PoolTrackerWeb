@@ -6,6 +6,31 @@ from .langchain_utils import create_conversational_chain
 from django.shortcuts import render
 from django.core.cache import cache
 import pandas as pd
+import os
+import csv
+from datetime import datetime
+
+
+def save_chat_history(session_id, user_message, bot_response):
+    """Saves a chat message to the history CSV file."""
+    history_dir = 'logs'
+    os.makedirs(history_dir, exist_ok=True)
+    history_file = os.path.join(history_dir, 'chat_history.csv')
+    
+    file_exists = os.path.isfile(history_file)
+    
+    with open(history_file, 'a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, delimiter=';')
+        if not file_exists:
+            writer.writerow(['datetime', 'session_id', 'prompt', 'response'])
+        
+        writer.writerow([
+            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            session_id,
+            user_message,
+            str(bot_response)
+        ])
+
 
 def chatbot_home(request):
     return render(request, 'chat_home.html')
@@ -53,6 +78,13 @@ def chat_view(request):
             chain = create_conversational_chain(pool_data=pool_data_str)
             config = {"configurable": {"session_id": session_id}}
             bot_response_text = chain.invoke({"input": message}, config=config)
+
+            # Zapis historii czatu
+            try:
+                save_chat_history(session_id, message, bot_response_text)
+            except Exception as e:
+                # Log the error but don't prevent the user from getting a response
+                print(f"Error saving chat history: {e}")
 
             return JsonResponse({
                 'response': bot_response_text,

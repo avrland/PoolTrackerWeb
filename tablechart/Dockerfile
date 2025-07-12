@@ -17,6 +17,10 @@ COPY . .
 
 RUN sed -i "s/DEBUG = True/DEBUG = ${DJANGO_DEBUG}/g" /tablechart/settings.py
 
+# Create a directory for logs and declare it as a volume
+RUN mkdir -p /logs
+VOLUME /logs
+
 # Expose port 8000 for the Django app
 EXPOSE 8000
 
