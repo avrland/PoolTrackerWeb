@@ -11,61 +11,176 @@ from django.core.cache import cache
 import time
 import pytz
 import requests
+from django.http import JsonResponse
+from botocore.exceptions import ClientError
 from django.conf import settings
+from dotenv import load_dotenv
+import os
+import json
+from decimal import Decimal
+from .aws_dynamodb import get_dynamodb_resource
 
-ver_num = "0.1.8"
+load_dotenv()
+
+ver_num = "0.1.9"
+
+class DecimalEncoder(json.JSONEncoder):
+    """Encoder do konwersji Decimal na float/int dla JSON"""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super(DecimalEncoder, self).default(obj)
+
+def convert_dynamodb_to_dataframe(items):
+    """Konwertuje items z DynamoDB do DataFrame"""
+    converted_items = []
+    
+    for item in items:
+        converted_item = {
+            'date': item['datetime'],  # datetime z DynamoDB -> date dla DataFrame
+            'sport': float(item['sport']) if item['sport'] else 0,
+            'family': float(item['family']) if item['family'] else 0, 
+            'small': float(item['small']) if item['small'] else 0,
+            'ice': float(item['ice']) if item['ice'] else 0
+        }
+        converted_items.append(converted_item)
+    
+    return converted_items
+
+def get_todays_pool_data_optimized():
+    """
+    Zoptymalizowana wersja - jeśli tabela ma partition key związany z datą
+    lub można użyć Global Secondary Index (GSI) dla dat
+    """
+    try:
+        dynamodb = get_dynamodb_resource()
+        table = dynamodb.Table('poolStats')
+        
+        pl = pytz.timezone('Europe/Warsaw')
+        now = datetime.now().astimezone(pl)
+        today_start = datetime(now.year, now.month, now.day, 6)
+        today_end = today_start + timedelta(days=1)
+        
+        today_start_str = today_start.strftime('%Y-%m-%d %H:%M:%S')
+        today_end_str = today_end.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Jeśli masz GSI na datetime, możesz użyć query zamiast scan
+        response = table.query(
+            IndexName='datetime-only-index',  # nazwa GSI
+            KeyConditionExpression='#dt BETWEEN :start AND :end',
+            ExpressionAttributeNames={'#dt': 'datetime'},
+            ExpressionAttributeValues={
+                ':start': today_start_str,
+                ':end': today_end_str
+            }
+        )
+        
+        items = response.get('Items', [])
+        
+        # Sortuj po datetime
+        items.sort(key=lambda x: x['datetime'])
+        
+        return items
+        
+    except Exception as e:
+        print(f"Błąd podczas odczytu poolStats z DynamoDB: {str(e)}")
+        return []
+
 
 def content_view(request):
-    #TODO do one sql query and fetch data to live view
-    with connection.cursor() as cursor:
-        sql_query = f"SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY `poolStats_history`.`time` ASC"
-        cursor.execute(sql_query)
-        fulldata = cursor.fetchall()
-        cache.set('fulldata', fulldata)
+    # Pobierz dane z poolStatsHistory (pozostaje MySQL)
+    # TODO: do one sql query and fetch data to live view
+    # with connection.cursor() as cursor:
+    #     sql_query = f"SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY `poolStats_history`.`time` ASC"
+    #     cursor.execute(sql_query)
+    #     fulldata = cursor.fetchall()
+    #     cache.set('fulldata', fulldata)
+    
+    fulldata = []
     weekday = datetime.today().weekday()
     stats_chart = stats_view(request, weekday)
-    pl = pytz.timezone('Europe/Warsaw')
-    now = datetime.now().astimezone(pl)
-    today = datetime(now.year, now.month, now.day, 6)
-    with connection.cursor() as cursor:
-        sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{today}' ORDER BY `poolStats`.`date` ASC"
-        cursor.execute(sql_query)
-        data = cursor.fetchall()
-    if len(data) == 0:
-            return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
-                                                    'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
-                                                    'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
     
-    df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
+    # Pobierz dzisiejsze dane z DynamoDB zamiast MySQL
+    todays_pool_data = get_todays_pool_data_optimized()
+    
+    if not todays_pool_data:
+        # Brak danych z dzisiejszego dnia
+        return render(request, 'content.html', {
+            'weather': get_weather_data(), 
+            'lastdate': "Brak danych z bieżącego dnia.", 
+            'sport': [0], 'family': [0], 'small': [0], 'ice': [0],
+            'lastsport': "0", 'lastfamily': "0", 'lastsmall': "0", "lastice": "0",
+            'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"
+        })
+    
+    # Konwertuj dane DynamoDB do formatu DataFrame
+    converted_data = convert_dynamodb_to_dataframe(todays_pool_data)
+    df = pd.DataFrame(converted_data, columns=['date', 'sport', 'family', 'small', 'ice'])
 
+    # Konwersja datetime strings na pandas datetime z timezone
     tz = pytz.timezone('Europe/Warsaw')
-    date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
-
+    
+    # Parsuj datetime strings z DynamoDB
+    datetime_objects = []
+    for date_str in df['date']:
+        try:
+            # Usuń mikrosekundy jeśli są obecne i parsuj
+            date_clean = date_str.split('.')[0] if '.' in date_str else date_str
+            dt = datetime.strptime(date_clean, '%Y-%m-%d %H:%M:%S')
+            # Zakładając że datetime z DynamoDB jest w UTC lub lokalnym czasie
+            dt_aware = tz.localize(dt) if dt.tzinfo is None else dt.astimezone(tz)
+            datetime_objects.append(dt_aware)
+        except ValueError as e:
+            print(f"Błąd parsowania daty {date_str}: {e}")
+            datetime_objects.append(datetime.now().astimezone(tz))
+    
+    date = pd.Series(datetime_objects)
+    
+    # Wyciągnij dane liczbowe
     sport = df['sport']
-    family = df['family']
+    family = df['family'] 
     small = df['small']
     ice = df['ice']
 
-    last_sport = sport.iloc[-1]
-    last_family = family.iloc[-1]
-    last_small = small.iloc[-1]
-    last_ice = ice.iloc[-1]
+    # Ostatnie wartości
+    last_sport = int(sport.iloc[-1])
+    last_family = int(family.iloc[-1])
+    last_small = int(small.iloc[-1])
+    last_ice = int(ice.iloc[-1])
 
+    # Oblicz procenty (te same limity co w oryginalnym kodzie)
     sport_percent = round((last_sport/105)*100)
     family_percent = round((last_family/150)*100)
     small_percent = round((last_small/30)*100)
     ice_percent = round((last_ice/300)*100)
-    last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'content.html', {'weather': get_weather_data(), 'ver_num': ver_num, 'stats_chart': stats_chart,
-                                             'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
-                                            'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
-                                            'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
-                                            'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
-                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening()})
+    
+    # Ostatnia data
+    last_date = datetime_objects[-1].strftime('%d.%m.%Y %H:%M')
+    
+    return render(request, 'content.html', {
+        'weather': get_weather_data(), 
+        'ver_num': ver_num, 
+        'stats_chart': stats_chart,
+        'date': [dt.strftime('%Y-%m-%d %H:%M') for dt in datetime_objects],
+        'sport': list(sport.astype(int)), 
+        'family': list(family.astype(int)), 
+        'small': list(small.astype(int)), 
+        'ice': list(ice.astype(int)),
+        'lastdate': last_date, 
+        'lastsport': last_sport, 
+        'lastfamily': last_family, 
+        'lastsmall': last_small, 
+        'lastice': last_ice, 
+        'sport_percent': sport_percent, 
+        'family_percent': family_percent, 
+        'small_percent': small_percent, 
+        'ice_percent': ice_percent, 
+        'opening': days_until_opening()
+    })
 
 def stats_view(request, weekday):
     data = cache.get('fulldata')
-    if len(data) == 0:
+    if True:
         stats_chart = render_to_string('stats_chart.html', {'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0})
         return stats_chart   
     pl = pytz.timezone('Europe/Warsaw')
@@ -127,16 +242,15 @@ def weather_view(request):
     context = {'weather': weather}
     return render(request, 'dashboard.html', context)
 
-API_KEY = settings.OPENWEATHER_API_KEY
+OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY')
 CITY = 'Białystok,pl'
-URL = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pl'
+URL = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={OPENWEATHER_API_KEY}&units=metric&lang=pl'
 
 def get_weather_data():
     try:
         response = requests.get(URL)
         response.raise_for_status()
         data = response.json()
-        print(data)
         weather = {
             'icon': data['weather'][0]['icon'],
             'description': data['weather'][0]['description'].capitalize(),
