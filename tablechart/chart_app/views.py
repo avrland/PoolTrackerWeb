@@ -48,10 +48,6 @@ def convert_dynamodb_to_dataframe(items):
     return converted_items
 
 def get_todays_pool_data_optimized():
-    """
-    Zoptymalizowana wersja - jeśli tabela ma partition key związany z datą
-    lub można użyć Global Secondary Index (GSI) dla dat
-    """
     try:
         dynamodb = get_dynamodb_resource()
         table = dynamodb.Table('poolStats')
@@ -63,29 +59,26 @@ def get_todays_pool_data_optimized():
         
         today_start_str = today_start.strftime('%Y-%m-%d %H:%M:%S')
         today_end_str = today_end.strftime('%Y-%m-%d %H:%M:%S')
+        today_date_only = today_start.strftime('%Y-%m-%d')
         
-        # Jeśli masz GSI na datetime, możesz użyć query zamiast scan
         response = table.query(
-            IndexName='datetime-only-index',  # nazwa GSI
-            KeyConditionExpression='#dt BETWEEN :start AND :end',
+            IndexName='datetime-only-index',
+            KeyConditionExpression='date_only = :date and #dt BETWEEN :start AND :end',
             ExpressionAttributeNames={'#dt': 'datetime'},
             ExpressionAttributeValues={
+                ':date': today_date_only,
                 ':start': today_start_str,
                 ':end': today_end_str
             }
         )
         
         items = response.get('Items', [])
-        
-        # Sortuj po datetime
         items.sort(key=lambda x: x['datetime'])
-        
         return items
         
     except Exception as e:
-        print(f"Błąd podczas odczytu poolStats z DynamoDB: {str(e)}")
+        print(f"Błąd podczas query: {str(e)}")
         return []
-
 
 def content_view(request):
     # Pobierz dane z poolStatsHistory (pozostaje MySQL)
