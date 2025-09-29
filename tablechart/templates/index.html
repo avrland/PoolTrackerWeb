@@ -38,6 +38,7 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+<link rel="stylesheet" href="{% static 'assets/css/chatbot-widget.css' %}">
 </head>
 
 <body>
@@ -74,7 +75,12 @@
     </div>
   </footer><!-- End Footer -->
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  <div class="corner-buttons">
+    <div id="chat-widget" class="chat-widget">
+      <!-- Widget chatbota -->
+      {% include 'chat_widget.html' %}
+    </div>
+  </div>
 
   <!-- Vendor JS Files -->
   <script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
@@ -87,6 +93,8 @@
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+<!-- JavaScript dla chatbota -->
+<script src="{% static 'assets/js/chatbot-widget.js' %}"></script>
 
 </body>
 
