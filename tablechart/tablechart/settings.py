@@ -12,11 +12,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 import json
-with open('pw.json', encoding='utf-8') as f:
-    SECRETS = json.load(f)
-OPENWEATHER_API_KEY = SECRETS['OPENWEATHER_API_KEY']
-GEMINI_API_KEY = SECRETS['GEMINI_API_KEY']
+
+load_dotenv()
+
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SECRETS['SECRET_KEY']
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,11 +86,11 @@ WSGI_APPLICATION = 'tablechart.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': SECRETS['NAME'],
-        'USER': SECRETS['USER'],
-        'PASSWORD': SECRETS['PASSWORD'],
-        'HOST': SECRETS['HOST'],
-        'PORT': SECRETS['PORT'],
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
