@@ -42,10 +42,10 @@ def chat_view(request):
         try:
             data = json.loads(request.body)
             message = data.get('message', '')
-            session_id = data.get('session_id')
-            
+            session_id = request.session.session_key
             if not session_id:
-                session_id = str(uuid.uuid4())
+                request.session.save()
+                session_id = request.session.session_key
 
             # Enforce max message length 250
             if len(message) > 250:
