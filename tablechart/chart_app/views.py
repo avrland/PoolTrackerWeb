@@ -13,7 +13,7 @@ import pytz
 import requests
 from django.conf import settings
 
-ver_num = "0.2.1"
+ver_num = "0.2.2"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
