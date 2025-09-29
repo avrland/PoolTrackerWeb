@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -16,6 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN sed -i "s/DEBUG = True/DEBUG = ${DJANGO_DEBUG}/g" /tablechart/settings.py
+
+# Create a directory for logs and declare it as a volume
+RUN mkdir -p /logs
+VOLUME /logs
 
 # Expose port 8000 for the Django app
 EXPOSE 8000

@@ -13,8 +13,10 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import json
-with open('pw.json') as f:
+with open('pw.json', encoding='utf-8') as f:
     SECRETS = json.load(f)
+OPENWEATHER_API_KEY = SECRETS['OPENWEATHER_API_KEY']
+GEMINI_API_KEY = SECRETS['GEMINI_API_KEY']
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -39,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pymysql'
+    'pymysql',
+    'chart_app',
+    'chatbot_app',
 ]
 
 MIDDLEWARE = [
@@ -125,7 +129,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 if DEBUG:
-    STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static')]
+    STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), 
+                         os.path.join(BASE_DIR, 'tablechart/static')]
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
