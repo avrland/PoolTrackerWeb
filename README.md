@@ -25,7 +25,7 @@ git clone https://github.com/avrland/PoolTrackerWeb.git
 from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
 ```
-4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker) secret key, gemini api key, openweathermap api key into .env file:
+4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker), django secret key, gemini api key, openweathermap api key into .env file:
 ```env
 DB_NAME=
 DB_USER=
