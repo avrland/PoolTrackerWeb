@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django-tablechart
+    ports:
+      - "80:8000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    volumes:
+      - logs_data:/logs
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
+
+volumes:
+  logs_data:
