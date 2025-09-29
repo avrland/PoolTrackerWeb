@@ -1,4 +1,5 @@
-django==5.1.10
+python-dotenv
+django==5.2.6
 pymysql
 plotly
 pandas
