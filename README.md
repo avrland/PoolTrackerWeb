@@ -62,7 +62,7 @@ PoolTrackerWeb/
 - info that current day is more or less ocupated that average
 - ML model predicting occupancy for rest of the day (need way more data)
 - ~~choose slimer python images for docker~~
-- weather module, gathering info to link occupancy trends with bad/good weather
+- ~~weather module~~, gathering info to link occupancy trends with bad/good weather
 - ~~clickable popup window with info about pools~~
 - ~~SSL cert as browser don't like sites without it~~
 - ~~stats chart for each day~~
