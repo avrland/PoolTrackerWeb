@@ -18,3 +18,5 @@ services:
     command: >
       sh -c "python manage.py migrate --noinput &&
              gunicorn tablechart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-level info"
+volumes:
+  logs_data:
