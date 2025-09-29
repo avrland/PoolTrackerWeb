@@ -25,16 +25,16 @@ git clone https://github.com/avrland/PoolTrackerWeb.git
 from django.core.management.utils import get_random_secret_key
 print(get_random_secret_key())
 ```
-4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker) and secret key.
-```json
-{
-    "NAME": "...",
-    "USER": "...",
-    "PASSWORD": "...",
-    "HOST": "...",
-    "PORT": "...",
-    "SECRET_KEY": "..."
-}
+4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker) secret key, gemini api key, openweathermap api key into .env file:
+```env
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+SECRET_KEY=
+OPENWEATHER_API_KEY=
+GEMINI_API_KEY=
 ```
 5. Run django server
 ```
@@ -43,8 +43,8 @@ python manage.py runserver 0.0.0.0:80
 
 ## Docker image (for production)
 ```
-docker image build -t pooltrackerweb .
-docker container run -d -p80:8000 --restart unless-stopped -v $(pwd)/logs:/logs --name pooltrackerweb pooltrackerweb
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## Repository sctructure
@@ -52,6 +52,7 @@ docker container run -d -p80:8000 --restart unless-stopped -v $(pwd)/logs:/logs 
 PoolTrackerWeb/
     tablechart/
         chart_app/ <- main django app
+        chatbot_app/ <- part for chatbot integration
         tablechart/ <- core of django project
         templates/ <- html templates
         static/ <- all static assets
