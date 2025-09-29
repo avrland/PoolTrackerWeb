@@ -9,12 +9,12 @@ services:
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
+      - DJANGO_DEBUG=False
     env_file:
       - .env
     volumes:
       - logs_data:/logs
     restart: unless-stopped
-    command: python manage.py runserver 0.0.0.0:8000
-
-volumes:
-  logs_data:
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn tablechart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-level info"
