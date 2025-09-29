@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import json
-with open('pw.json') as f:
+with open('pw.json', encoding='utf-8') as f:
     SECRETS = json.load(f)
 OPENWEATHER_API_KEY = SECRETS['OPENWEATHER_API_KEY']
 GEMINI_API_KEY = SECRETS['GEMINI_API_KEY']
