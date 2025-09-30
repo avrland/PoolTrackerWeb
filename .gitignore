@@ -4,4 +4,4 @@ tablechart/pw.json
 db_data
 .env
 .env copy
-dev_db
+dev_db/.env

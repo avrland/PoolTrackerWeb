@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  dev-db:
+    image: mariadb:latest
+    container_name: pooltracker-db-dev
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data_dev:/var/lib/mysql
+      - ./db-init.sql:/docker-entrypoint-initdb.d/db-init.sql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db_data_dev:
