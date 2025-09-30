@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  scrapper:
+    build:
+      context: data_scrapper/
+      dockerfile: Dockerfile
+    container_name: pooltracker-scrapper
+    command: ["python", "-u", "scrapper.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
   web:
     build:
       context: tablechart/
@@ -31,8 +45,7 @@ services:
       - .env
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+      - ./db-init.sql:/docker-entrypoint-initdb.d/db-init.sql
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
       interval: 5s

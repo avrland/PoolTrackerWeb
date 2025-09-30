@@ -1,0 +1,6 @@
+requests
+mysql-connector-python
+schedule
+pytz
+pandas
+python-dotenv
