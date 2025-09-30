@@ -1,3 +1,6 @@
 tablechart/pw.json
 *.pyc
 .DS_Store
+db_data
+.env
+.env copy

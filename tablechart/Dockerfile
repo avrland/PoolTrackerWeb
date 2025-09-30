@@ -4,7 +4,6 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-COPY .env .
 # Set environment variable for Django DEBUG setting
 ENV DJANGO_DEBUG=False
 

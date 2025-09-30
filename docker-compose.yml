@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: tablechart/
+      dockerfile: Dockerfile
+    container_name: pooltracker-web
+    ports:
+      - "80:8000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DJANGO_DEBUG=False
+    env_file:
+      - .env
+    volumes:
+      - ./logs_data:/logs
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn tablechart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-level info"
+  db:
+    image: mariadb:latest
+    container_name: pooltracker-db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  logs_data:
+  db_data:
