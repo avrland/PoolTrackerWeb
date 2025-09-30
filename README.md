@@ -1,7 +1,7 @@
 # PoolTrackerWeb
 ![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
-Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
+Reads data from database about pool occupacy, puts it on line chart and does some calculations. All in one docker compose solution (scrapper+db+web).
 
 ## Features
 - occupancy live chart for current day (for my observed pools it's from 6:00 AM)
@@ -36,6 +36,11 @@ SECRET_KEY=
 OPENWEATHER_API_KEY=
 GEMINI_API_KEY=
 ```
+5. Run locally mariadb
+```
+Go to dev_db/
+docker compose up -d
+```
 5. Run django server
 ```
 python manage.py runserver 0.0.0.0:80
@@ -50,6 +55,8 @@ docker compose up -d
 ## Repository sctructure
 ```
 PoolTrackerWeb/
+    data_scrapper/ <- python api scrapper part
+    dev_db/ <- docker compose for dev mariadb
     tablechart/
         chart_app/ <- main django app
         chatbot_app/ <- part for chatbot integration
