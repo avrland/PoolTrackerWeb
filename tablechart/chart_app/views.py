@@ -126,8 +126,8 @@ def get_date_data(request):
         
         # Query database for the selected date range
         with connection.cursor() as cursor:
-            sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}' AND date <= '{end_time.strftime('%Y-%m-%d %H:%M:%S')}' ORDER BY `poolStats`.`date` ASC"
-            cursor.execute(sql_query)
+            sql_query = "SELECT date, sport, family, small, ice FROM poolStats WHERE date >= %s AND date <= %s ORDER BY `poolStats`.`date` ASC"
+            cursor.execute(sql_query, [start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')])
             data = cursor.fetchall()
         
         if len(data) == 0:
