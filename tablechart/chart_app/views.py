@@ -152,7 +152,8 @@ def get_date_data(request):
         small = df['small']
         ice = df['ice']
         
-        last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
+        # Use the parsed datetime series for formatting
+        last_date = date.iloc[-1].strftime('%d.%m.%Y %H:%M')
         display_date = selected_datetime.strftime('%d.%m.%Y')
         
         return JsonResponse({

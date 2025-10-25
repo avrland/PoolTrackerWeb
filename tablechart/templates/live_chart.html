@@ -399,8 +399,12 @@
 
             // Helper function to safely update title
             function updateChartTitle(titleText, updateText) {
-              chartTitle.textContent = titleText + ' ';
-              lastUpdateSpan.textContent = '| Ostatnia aktualizacja: ' + updateText;
+              if (chartTitle) {
+                chartTitle.textContent = titleText + ' ';
+              }
+              if (lastUpdateSpan) {
+                lastUpdateSpan.textContent = '| Ostatnia aktualizacja: ' + updateText;
+              }
             }
 
             datePicker.addEventListener("change", async (e) => {
