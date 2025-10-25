@@ -166,10 +166,10 @@ def get_date_data(request):
             'display_date': display_date
         })
     
-    except ValueError as e:
-        return JsonResponse({'error': f'Invalid date format: {str(e)}'}, status=400)
-    except Exception as e:
-        return JsonResponse({'error': f'Error fetching data: {str(e)}'}, status=500)
+    except ValueError:
+        return JsonResponse({'error': 'Nieprawidłowy format daty'}, status=400)
+    except Exception:
+        return JsonResponse({'error': 'Wystąpił błąd podczas pobierania danych'}, status=500)
 
 def handler404(request, exception):
     return render(request, '404.html', status=404)
