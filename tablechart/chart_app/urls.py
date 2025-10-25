@@ -6,5 +6,6 @@ handler404 = views.handler404
 
 urlpatterns = [
     path('', views.content_view),
-    path('update_chart/stats<int:day>', views.update_chart)
+    path('update_chart/stats<int:day>', views.update_chart),
+    path('get_date_data/', views.get_date_data, name='get_date_data'),
 ]

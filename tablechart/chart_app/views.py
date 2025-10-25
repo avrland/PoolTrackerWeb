@@ -108,6 +108,68 @@ def update_chart(request, day):
                      'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
     return JsonResponse(response_data)
 
+def get_date_data(request):
+    """Fetch occupancy data for a specific date"""
+    selected_date = request.GET.get('date')
+    
+    if not selected_date:
+        return JsonResponse({'error': 'No date provided'}, status=400)
+    
+    try:
+        # Parse the selected date
+        pl = pytz.timezone('Europe/Warsaw')
+        selected_datetime = datetime.strptime(selected_date, '%Y-%m-%d')
+        
+        # Set time range from 6 AM to 9 PM (21:00)
+        start_time = pl.localize(datetime(selected_datetime.year, selected_datetime.month, selected_datetime.day, 6, 0, 0))
+        end_time = pl.localize(datetime(selected_datetime.year, selected_datetime.month, selected_datetime.day, 21, 0, 0))
+        
+        # Query database for the selected date range
+        with connection.cursor() as cursor:
+            sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{start_time.strftime('%Y-%m-%d %H:%M:%S')}' AND date <= '{end_time.strftime('%Y-%m-%d %H:%M:%S')}' ORDER BY `poolStats`.`date` ASC"
+            cursor.execute(sql_query)
+            data = cursor.fetchall()
+        
+        if len(data) == 0:
+            return JsonResponse({
+                'error': 'No data available for selected date',
+                'date': [],
+                'sport': [],
+                'family': [],
+                'small': [],
+                'ice': [],
+                'lastdate': 'Brak danych',
+                'display_date': selected_datetime.strftime('%d.%m.%Y')
+            })
+        
+        # Process the data
+        df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
+        tz = pytz.timezone('Europe/Warsaw')
+        date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+        
+        sport = df['sport']
+        family = df['family']
+        small = df['small']
+        ice = df['ice']
+        
+        last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
+        display_date = selected_datetime.strftime('%d.%m.%Y')
+        
+        return JsonResponse({
+            'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
+            'sport': list(sport),
+            'family': list(family),
+            'small': list(small),
+            'ice': list(ice),
+            'lastdate': last_date,
+            'display_date': display_date
+        })
+    
+    except ValueError as e:
+        return JsonResponse({'error': f'Invalid date format: {str(e)}'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Error fetching data: {str(e)}'}, status=500)
+
 def handler404(request, exception):
     return render(request, '404.html', status=404)
 
