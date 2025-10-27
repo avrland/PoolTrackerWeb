@@ -410,6 +410,9 @@
             datePicker.addEventListener("change", async (e) => {
               const selectedDate = e.target.value;
               
+              // Close the date picker after selection
+              datePicker.blur();
+              
               if (!selectedDate) {
                 // If date is cleared, restore original data
                 updateChartTitle('Dzisiaj', originalData.lastdate);
