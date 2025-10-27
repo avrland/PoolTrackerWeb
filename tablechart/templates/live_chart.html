@@ -92,7 +92,10 @@
           <h5 class="card-title" id="chartTitle" style="margin-bottom: 0;">
             Dzisiaj <span id="lastUpdateSpan">| Ostatnia aktualizacja: {{ lastdate }}</span>
           </h5>
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+            <button type="button" id="todayBtn" class="btn btn-primary btn-sm" title="Pokaż dzisiejsze dane">
+              Dzisiaj
+            </button>
             <input type="date" id="datePicker" class="form-control" style="width: auto;" title="Wybierz dzień">
           </div>
         </div>
@@ -379,6 +382,7 @@
 
             // Date picker functionality
             const datePicker = document.querySelector("#datePicker");
+            const todayBtn = document.querySelector("#todayBtn");
             const chartTitle = document.querySelector("#chartTitle");
             const lastUpdateSpan = document.querySelector("#lastUpdateSpan");
             const loadingOverlay = chartContainer.querySelector('#loadingOverlay');
@@ -408,6 +412,34 @@
               }
             }
 
+            // Helper function to restore today's data
+            function restoreTodayData() {
+              // Clear the date picker
+              datePicker.value = '';
+              
+              // Restore original title and data
+              updateChartTitle('Dzisiaj', originalData.lastdate);
+              chart.updateSeries([
+                { name: 'Pływalnia Kameralna', data: originalData.small },
+                { name: 'Pływalnia Sportowa', data: originalData.sport },
+                { name: 'Pływalnia Rodzinna', data: originalData.family },
+                { name: 'Lodowisko', data: originalData.ice }
+              ]);
+              chart.updateOptions({
+                xaxis: {
+                  type: 'datetime',
+                  categories: originalData.date
+                }
+              });
+            }
+
+            // "Dzisiaj" button click handler
+            if (todayBtn) {
+              todayBtn.addEventListener("click", () => {
+                restoreTodayData();
+              });
+            }
+
             datePicker.addEventListener("change", async (e) => {
               const selectedDate = e.target.value;
               
@@ -415,20 +447,8 @@
               datePicker.blur();
               
               if (!selectedDate) {
-                // If date is cleared, restore original data
-                updateChartTitle('Dzisiaj', originalData.lastdate);
-                chart.updateSeries([
-                  { name: 'Pływalnia Kameralna', data: originalData.small },
-                  { name: 'Pływalnia Sportowa', data: originalData.sport },
-                  { name: 'Pływalnia Rodzinna', data: originalData.family },
-                  { name: 'Lodowisko', data: originalData.ice }
-                ]);
-                chart.updateOptions({
-                  xaxis: {
-                    type: 'datetime',
-                    categories: originalData.date
-                  }
-                });
+                // If date is cleared, restore today's data
+                restoreTodayData();
                 return;
               }
 
