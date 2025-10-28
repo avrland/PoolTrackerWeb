@@ -451,6 +451,15 @@
                 return;
               }
 
+              // Check if this is actually today's date - if so, restore today's data without blur
+              const today = new Date();
+              const todayStr = today.toISOString().split('T')[0];
+              if (selectedDate === todayStr) {
+                // User selected today's date, just restore today's data
+                restoreTodayData();
+                return;
+              }
+
               try {
                 // Show loading overlay while fetching data
                 if (loadingOverlay) {
@@ -486,6 +495,11 @@
                   }
                 });
 
+                // Close the date picker after successful data load (for mobile compatibility)
+                setTimeout(() => {
+                  datePicker.blur();
+                }, 100);
+
               } catch (error) {
                 console.error('Error fetching date data:', error);
                 alert('Wystąpił błąd podczas pobierania danych.');
@@ -494,11 +508,6 @@
                 if (loadingOverlay) {
                   loadingOverlay.style.display = 'none';
                 }
-                
-                // Close the date picker after data is loaded (for mobile compatibility)
-                setTimeout(() => {
-                  datePicker.blur();
-                }, 100);
               }
             });
           });
