@@ -93,10 +93,10 @@
             Dzisiaj <span id="lastUpdateSpan">| Ostatnia aktualizacja: {{ lastdate }}</span>
           </h5>
           <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-            <button type="button" id="todayBtn" class="btn btn-primary btn-sm" title="Pokaż dzisiejsze dane">
+            <button type="button" id="todayBtn" class="btn btn-outline-primary btn-sm" title="Pokaż dzisiejsze dane">
               Dzisiaj
             </button>
-            <input type="date" id="datePicker" class="form-control" style="width: auto;" title="Wybierz dzień">
+            <input type="date" id="datePicker" class="form-control form-control-sm" style="width: auto; height: 31px;" title="Wybierz dzień">
           </div>
         </div>
 
@@ -443,14 +443,16 @@
             datePicker.addEventListener("change", async (e) => {
               const selectedDate = e.target.value;
               
-              // Close the date picker after selection
-              datePicker.blur();
-              
               if (!selectedDate) {
                 // If date is cleared, restore today's data
                 restoreTodayData();
                 return;
               }
+
+              // Close the date picker after selection (with small delay for mobile)
+              setTimeout(() => {
+                datePicker.blur();
+              }, 100);
 
               try {
                 // Show loading overlay while fetching data
