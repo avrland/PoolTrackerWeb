@@ -397,10 +397,11 @@
               lastdate: "{{ lastdate|escapejs }}"
             };
 
-            // Set max date to today
+            // Set max date to today and initialize date picker with today's date
             const today = new Date();
             const maxDate = today.toISOString().split('T')[0];
             datePicker.setAttribute('max', maxDate);
+            datePicker.value = maxDate; // Set initial value to today's date
 
             // Helper function to safely update title
             function updateChartTitle(titleText, updateText) {
@@ -414,8 +415,9 @@
 
             // Helper function to restore today's data
             function restoreTodayData() {
-              // Clear the date picker
-              datePicker.value = '';
+              // Set the date picker back to today's date
+              const today = new Date();
+              datePicker.value = today.toISOString().split('T')[0];
               
               // Restore original title and data
               updateChartTitle('Dzisiaj', originalData.lastdate);
@@ -448,11 +450,6 @@
                 restoreTodayData();
                 return;
               }
-
-              // Close the date picker after selection (with small delay for mobile)
-              setTimeout(() => {
-                datePicker.blur();
-              }, 100);
 
               try {
                 // Show loading overlay while fetching data
@@ -497,6 +494,11 @@
                 if (loadingOverlay) {
                   loadingOverlay.style.display = 'none';
                 }
+                
+                // Close the date picker after data is loaded (for mobile compatibility)
+                setTimeout(() => {
+                  datePicker.blur();
+                }, 100);
               }
             });
           });
