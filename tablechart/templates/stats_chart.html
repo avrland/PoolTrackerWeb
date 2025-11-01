@@ -135,9 +135,114 @@
                     const chartContainer2 = document.querySelector("#chartContainer2");
                     const fullscreenBtn2 = document.querySelector("#fullscreenBtn2");
                     const closeFullscreenBtn2 = document.querySelector("#closeFullscreenBtn2");
+                    let chart2;
+                    const FULLSCREEN_PADDING = 40;
+                    const orientationPreferences = {
+                        landscape: ['landscape-primary', 'landscape', 'landscape-secondary'],
+                        portrait: ['portrait-primary', 'portrait', 'portrait-secondary']
+                    };
+
+                    const tryLockOrientation = async (preferences = []) => {
+                        if (!screen.orientation || !screen.orientation.lock) {
+                            return false;
+                        }
+                        for (const orientation of preferences) {
+                            try {
+                                await screen.orientation.lock(orientation);
+                                return true;
+                            } catch (error) {
+                                console.warn(`Orientation lock failed for ${orientation}`, error);
+                            }
+                        }
+                        return false;
+                    };
+
+                    const unlockOrientation = () => {
+                        if (screen.orientation && screen.orientation.unlock) {
+                            try {
+                                screen.orientation.unlock();
+                            } catch (error) {
+                                console.warn("Orientation unlock failed", error);
+                            }
+                        }
+                    };
+
+                    const restorePortraitOrientation = () => {
+                        tryLockOrientation(orientationPreferences.portrait).then((locked) => {
+                            if (locked && screen.orientation) {
+                                let originalOnChange = null;
+
+                                function detachOrientationListeners() {
+                                    if (typeof screen.orientation.removeEventListener === 'function') {
+                                        screen.orientation.removeEventListener('change', handleOrientationChange);
+                                    } else if ('onchange' in screen.orientation) {
+                                        screen.orientation.onchange = originalOnChange;
+                                    }
+                                }
+
+                                function handleOrientationChange(event) {
+                                    if (typeof originalOnChange === 'function') {
+                                        originalOnChange.call(screen.orientation, event);
+                                    }
+                                    if (screen.orientation && screen.orientation.type && screen.orientation.type.startsWith('portrait')) {
+                                        detachOrientationListeners();
+                                        unlockOrientation();
+                                    }
+                                }
+
+                                if (typeof screen.orientation.addEventListener === 'function') {
+                                    screen.orientation.addEventListener('change', handleOrientationChange);
+                                } else if ('onchange' in screen.orientation) {
+                                    originalOnChange = screen.orientation.onchange;
+                                    screen.orientation.onchange = handleOrientationChange;
+                                }
+
+                                const schedulePortraitCheck = (attempt = 0) => {
+                                    if (!screen.orientation) {
+                                        detachOrientationListeners();
+                                        unlockOrientation();
+                                        return;
+                                    }
+                                    if (screen.orientation.type && screen.orientation.type.startsWith('portrait')) {
+                                        detachOrientationListeners();
+                                        unlockOrientation();
+                                    } else if (attempt < 5) {
+                                        setTimeout(() => schedulePortraitCheck(attempt + 1), 500);
+                                    }
+                                };
+
+                                schedulePortraitCheck();
+                            } else {
+                                unlockOrientation();
+                            }
+                        });
+                    };
+
+                    const updateChartDimensions = () => {
+                        if (!chart2) {
+                            return;
+                        }
+                        if (document.fullscreenElement === chartContainer2) {
+                            const availableWidth = Math.max(window.innerWidth - FULLSCREEN_PADDING, 320);
+                            const availableHeight = Math.max(window.innerHeight - FULLSCREEN_PADDING, 320);
+                            chart2.updateOptions({
+                                chart: {
+                                    width: availableWidth,
+                                    height: availableHeight
+                                }
+                            }, false, true);
+                        } else {
+                            chart2.updateOptions({
+                                chart: {
+                                    width: '100%',
+                                    height: 350
+                                }
+                            }, false, true);
+                        }
+                    };
 
                     const colors = ['#ff771d', '#4154f1', '#2eca6a'];
-                    const chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
+                    chart2 = new ApexCharts(document.querySelector("#reportsChart2"), {
                         series: [
                             {
                                 name: 'Pływalnia Kameralna',
@@ -242,45 +347,47 @@
                     chart2.render();
 
                     const isMobile = () => {
-                        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
-                            window.innerWidth <= 767;
+                        const userAgentMatch = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        const pointerCoarse = window.matchMedia ? window.matchMedia('(pointer:coarse)').matches : false;
+                        return userAgentMatch || (pointerCoarse && window.innerWidth <= 1024);
                     };
 
-                    fullscreenBtn2.style.display = isMobile() ? 'flex' : 'none';
+                    const updateFullscreenButtonVisibility = () => {
+                        if (document.fullscreenElement === chartContainer2) {
+                            fullscreenBtn2.style.display = 'none';
+                        } else {
+                            fullscreenBtn2.style.display = isMobile() ? 'flex' : 'none';
+                        }
+                    };
+
+                    updateFullscreenButtonVisibility();
 
                     window.addEventListener('resize', () => {
-                        fullscreenBtn2.style.display = isMobile() ? 'flex' : 'none';
+                        updateFullscreenButtonVisibility();
                     });
 
                     if (isMobile()) {
                         fullscreenBtn2.addEventListener("click", async () => {
                             try {
                                 if (!document.fullscreenElement) {
+                                    fullscreenBtn2.disabled = true;
                                     await chartContainer2.requestFullscreen();
                                     chartElement2.classList.add('fullscreen');
                                     chartContainer2.classList.add('fullscreen');
 
-                                    if (screen.orientation && screen.orientation.lock) {
-                                        try {
-                                            await screen.orientation.lock("landscape");
-                                        } catch (err) {
-                                            console.log("Orientation lock not supported");
-                                        }
+                                    const locked = await tryLockOrientation(orientationPreferences.landscape);
+                                    if (!locked) {
+                                        console.warn("Unable to lock screen orientation to landscape");
                                     }
 
-                                    const screenWidth = window.innerWidth;
-                                    const screenHeight = window.innerHeight;
-                                    chart2.updateOptions({
-                                        chart: {
-                                            width: screenWidth - 40,
-                                            height: screenHeight - 40
-                                        }
-                                    });
+                                    updateChartDimensions();
                                 } else {
                                     await document.exitFullscreen();
                                 }
                             } catch (err) {
                                 console.error("Error toggling fullscreen:", err);
+                            } finally {
+                                fullscreenBtn2.disabled = false;
                             }
                         });
 
@@ -292,7 +399,11 @@
                     }
 
                     document.addEventListener("fullscreenchange", () => {
-                        if (!document.fullscreenElement) {
+                        const containerWasFullscreen = chartContainer2.classList.contains('fullscreen');
+                        if (document.fullscreenElement === chartContainer2) {
+                            updateFullscreenButtonVisibility();
+                            updateChartDimensions();
+                        } else if (!document.fullscreenElement && containerWasFullscreen) {
                             chartElement2.classList.remove('fullscreen');
                             chartContainer2.classList.remove('fullscreen');
                     
@@ -311,27 +422,23 @@
                                 }, 500);
                             }, 500);
                     
-                            if (screen.orientation && screen.orientation.unlock) {
-                                screen.orientation.unlock();
-                            }
+                            restorePortraitOrientation();
                     
-                            if (isMobile()) {
-                                fullscreenBtn2.style.display = 'flex';
-                            }
+                            updateFullscreenButtonVisibility();
                         }
                     });
 
                     window.addEventListener('resize', () => {
-                        if (document.fullscreenElement) {
-                            const screenWidth = window.innerWidth;
-                            const screenHeight = window.innerHeight;
-                            chart2.updateOptions({
-                                chart: {
-                                    width: screenWidth - 40,
-                                    height: screenHeight - 40
-                                }
-                            });
+                        if (document.fullscreenElement === chartContainer2) {
+                            updateChartDimensions();
                         }
+                    });
+
+                    window.addEventListener('orientationchange', () => {
+                        if (document.fullscreenElement === chartContainer2) {
+                            setTimeout(updateChartDimensions, 150);
+                        }
+                        updateFullscreenButtonVisibility();
                     });
 
                     document.querySelector("#reportsChart2").addEventListener("contextmenu", (e) => {
