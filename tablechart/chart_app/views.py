@@ -12,11 +12,15 @@ import time
 import pytz
 import requests
 from django.conf import settings
+from django.views.decorators.http import require_GET
 
-ver_num = "0.2.2"
+ver_num = "0.2.5"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
+    if not request.session.session_key:
+        request.session.save()
+
     with connection.cursor() as cursor:
         sql_query = f"SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY `poolStats_history`.`time` ASC"
         cursor.execute(sql_query)
@@ -32,9 +36,11 @@ def content_view(request):
         cursor.execute(sql_query)
         data = cursor.fetchall()
     if len(data) == 0:
-            return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
-                                                    'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
-                                                    'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0"})
+        return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
+                            'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
+                            'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0",
+                            'session_id': request.session.session_key,
+                            'opening': days_until_opening()})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
 
@@ -61,7 +67,7 @@ def content_view(request):
                                             'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
                                             'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
                                             'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
-                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening()})
+                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening(), 'session_id': request.session.session_key})
 
 def stats_view(request, weekday):
     data = cache.get('fulldata')
@@ -107,6 +113,82 @@ def update_chart(request, day):
     response_data = {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 
                      'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
     return JsonResponse(response_data)
+
+@require_GET
+def get_date_data(request):
+    """Fetch occupancy data for a specific date"""
+    session_id = request.headers.get('X-Session-Key') or request.GET.get('session_id')
+    active_session = request.session.session_key
+
+    if not session_id:
+        return JsonResponse({'error': 'Brak autoryzacji'}, status=401)
+
+    if not active_session:
+        return JsonResponse({'error': 'Sesja wygasła'}, status=401)
+
+    if session_id != active_session:
+        return JsonResponse({'error': 'Nieprawidłowa sesja'}, status=403)
+
+    selected_date = request.GET.get('date')
+    
+    if not selected_date:
+        return JsonResponse({'error': 'No date provided'}, status=400)
+    
+    try:
+        # Parse the selected date
+        pl = pytz.timezone('Europe/Warsaw')
+        selected_datetime = datetime.strptime(selected_date, '%Y-%m-%d')
+        
+        # Set time range from 6 AM to 9 PM (21:00)
+        start_time = pl.localize(datetime(selected_datetime.year, selected_datetime.month, selected_datetime.day, 6, 0, 0))
+        end_time = pl.localize(datetime(selected_datetime.year, selected_datetime.month, selected_datetime.day, 21, 0, 0))
+        
+        # Query database for the selected date range
+        with connection.cursor() as cursor:
+            sql_query = "SELECT date, sport, family, small, ice FROM poolStats WHERE date >= %s AND date <= %s ORDER BY `poolStats`.`date` ASC"
+            cursor.execute(sql_query, [start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')])
+            data = cursor.fetchall()
+        
+        if len(data) == 0:
+            return JsonResponse({
+                'error': 'Brak danych dla wybranej daty.',
+                'date': [],
+                'sport': [],
+                'family': [],
+                'small': [],
+                'ice': [],
+                'lastdate': 'Brak danych',
+                'display_date': selected_datetime.strftime('%d.%m.%Y')
+            })
+        
+        # Process the data
+        df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
+        tz = pytz.timezone('Europe/Warsaw')
+        date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+        
+        sport = df['sport']
+        family = df['family']
+        small = df['small']
+        ice = df['ice']
+        
+        # Use the parsed datetime series for formatting
+        last_date = date.iloc[-1].strftime('%d.%m.%Y %H:%M')
+        display_date = selected_datetime.strftime('%d.%m.%Y')
+        
+        return JsonResponse({
+            'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
+            'sport': list(sport),
+            'family': list(family),
+            'small': list(small),
+            'ice': list(ice),
+            'lastdate': last_date,
+            'display_date': display_date
+        })
+    
+    except ValueError:
+        return JsonResponse({'error': 'Nieprawidłowy format daty'}, status=400)
+    except Exception:
+        return JsonResponse({'error': 'Wystąpił błąd podczas pobierania danych'}, status=500)
 
 def handler404(request, exception):
     return render(request, '404.html', status=404)
