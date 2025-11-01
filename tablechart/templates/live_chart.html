@@ -90,13 +90,13 @@
       <div class="card-body">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
           <h5 class="card-title" id="chartTitle" style="margin-bottom: 0;">
-            Dzisiaj <span id="lastUpdateSpan">| Ostatnia aktualizacja: {{ lastdate }}</span>
+            Dzisiaj
           </h5>
-          <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-            <button type="button" id="todayBtn" class="btn btn-outline-primary btn-sm" title="Pokaż dzisiejsze dane">
+          <div style="margin-top: 10px; display: flex; align-items: center;">
+            <button type="button" id="todayBtn" class="btn btn-outline-primary btn-sm" title="Pokaż dzisiejsze dane" style="margin-right: 4px; display: none;">
               Dzisiaj
             </button>
-            <input type="date" id="datePicker" class="form-control form-control-sm" style="width: auto; height: 31px;" title="Wybierz dzień">
+            <input type="date" id="datePicker" class="form-control form-control-sm" style="width: auto; height: 31px; margin-left: 0;" title="Wybierz dzień">
           </div>
         </div>
 
@@ -115,6 +115,9 @@
             <i class="bi bi-x-lg"></i>
           </button>
           <div id="reportsChart"></div>
+          <div id="lastUpdateSpan" style="margin-top: 6px; text-align: right; font-size: 0.85rem; color: #6c757d;">
+            Ostatnia aktualizacja: {{ lastdate }}
+          </div>
         </div>
 
         <script>
@@ -386,6 +389,21 @@
             const chartTitle = document.querySelector("#chartTitle");
             const lastUpdateSpan = document.querySelector("#lastUpdateSpan");
             const loadingOverlay = chartContainer.querySelector('#loadingOverlay');
+
+            const getTodayString = () => new Date().toISOString().split('T')[0];
+
+            const updateTodayButtonVisibility = (currentDateStr = datePicker.value) => {
+              if (!todayBtn) {
+                return;
+              }
+              const todayString = getTodayString();
+              const dateToCompare = currentDateStr || datePicker.value;
+              if (dateToCompare && dateToCompare !== todayString) {
+                todayBtn.style.display = 'inline-block';
+              } else {
+                todayBtn.style.display = 'none';
+              }
+            };
             
             // Store original data (using proper JSON parsing)
             const originalData = {
@@ -398,10 +416,10 @@
             };
 
             // Set max date to today and initialize date picker with today's date
-            const today = new Date();
-            const maxDate = today.toISOString().split('T')[0];
+            const maxDate = getTodayString();
             datePicker.setAttribute('max', maxDate);
             datePicker.value = maxDate; // Set initial value to today's date
+            updateTodayButtonVisibility(maxDate);
 
             // Helper function to safely update title
             function updateChartTitle(titleText, updateText) {
@@ -409,15 +427,16 @@
                 chartTitle.textContent = titleText + ' ';
               }
               if (lastUpdateSpan) {
-                lastUpdateSpan.textContent = '| Ostatnia aktualizacja: ' + updateText;
+                lastUpdateSpan.textContent = 'Ostatnia aktualizacja: ' + updateText;
               }
             }
 
             // Helper function to restore today's data
             function restoreTodayData() {
               // Set the date picker back to today's date
-              const today = new Date();
-              datePicker.value = today.toISOString().split('T')[0];
+              const todayString = getTodayString();
+              datePicker.value = todayString;
+              datePicker.setAttribute('max', todayString);
               
               // Restore original title and data
               updateChartTitle('Dzisiaj', originalData.lastdate);
@@ -433,6 +452,7 @@
                   categories: originalData.date
                 }
               });
+              updateTodayButtonVisibility(todayString);
             }
 
             // "Dzisiaj" button click handler
@@ -452,13 +472,14 @@
               }
 
               // Check if this is actually today's date - if so, restore today's data without blur
-              const today = new Date();
-              const todayStr = today.toISOString().split('T')[0];
+              const todayStr = getTodayString();
               if (selectedDate === todayStr) {
                 // User selected today's date, just restore today's data
                 restoreTodayData();
                 return;
               }
+
+              updateTodayButtonVisibility(selectedDate);
 
               try {
                 // Show loading overlay while fetching data
@@ -508,6 +529,7 @@
                 if (loadingOverlay) {
                   loadingOverlay.style.display = 'none';
                 }
+                updateTodayButtonVisibility(selectedDate);
               }
             });
           });
