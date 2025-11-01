@@ -138,6 +138,40 @@
               portrait: ['portrait-primary', 'portrait', 'portrait-secondary']
             };
 
+            const delay = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
+            const getFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+            const canUseNativeFullscreen = (element) => Boolean(
+              element.requestFullscreen ||
+              element.webkitRequestFullscreen ||
+              element.webkitRequestFullScreen
+            );
+
+            const requestElementFullscreen = async (element) => {
+              if (element.requestFullscreen) {
+                return element.requestFullscreen();
+              }
+              const webkitRequest = element.webkitRequestFullscreen || element.webkitRequestFullScreen;
+              if (webkitRequest) {
+                webkitRequest.call(element);
+                return Promise.resolve();
+              }
+              throw new Error('Fullscreen API not supported');
+            };
+
+            const exitElementFullscreen = () => {
+              if (document.exitFullscreen) {
+                return document.exitFullscreen();
+              }
+              const webkitExit = document.webkitExitFullscreen || document.webkitCancelFullScreen;
+              if (webkitExit) {
+                webkitExit.call(document);
+              }
+              return Promise.resolve();
+            };
+
+            let isFallbackFullscreen = false;
+            let orientationLocked = false;
+
             const tryLockOrientation = async (preferences = []) => {
               if (!screen.orientation || !screen.orientation.lock) {
                 return false;
@@ -218,7 +252,7 @@
               if (!chart) {
                 return;
               }
-              if (document.fullscreenElement === chartContainer) {
+              if (chartContainer.classList.contains('fullscreen')) {
                 const availableWidth = Math.max(window.innerWidth - FULLSCREEN_PADDING, 320);
                 const availableHeight = Math.max(window.innerHeight - FULLSCREEN_PADDING, 320);
                 chart.updateOptions({
@@ -245,7 +279,7 @@
             };
 
             const updateFullscreenButtonVisibility = () => {
-              if (document.fullscreenElement === chartContainer) {
+              if (chartContainer.classList.contains('fullscreen')) {
                 fullscreenBtn.style.display = 'none';
               } else {
                 fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
@@ -408,25 +442,85 @@
             chart.render();
 
             // Only enable fullscreen functionality if it's a mobile device
-            if (isMobile()) {
-              fullscreenBtn.addEventListener("click", async () => {
-                try {
-                  if (!document.fullscreenElement) {
-                    fullscreenBtn.disabled = true;
-                    await chartContainer.requestFullscreen();
-                    chartElement.classList.add('fullscreen');
-                    chartContainer.classList.add('fullscreen');
-                    const locked = await tryLockOrientation(orientationPreferences.landscape);
+            const finalizeFullscreenExit = () => {
+              if (!chartContainer.classList.contains('fullscreen')) {
+                updateFullscreenButtonVisibility();
+                return;
+              }
+              isFallbackFullscreen = false;
+              chartElement.classList.remove('fullscreen');
+              chartContainer.classList.remove('fullscreen');
+
+              chartContainer.style.opacity = '0';
+              chart.destroy();
+              chart = new ApexCharts(chartElement, defaultChartOptions);
+              chart.render();
+
+              setTimeout(() => {
+                chartContainer.style.opacity = '1';
+              }, 500);
+
+              if (orientationLocked) {
+                orientationLocked = false;
+                restorePortraitOrientation();
+              }
+              updateFullscreenButtonVisibility();
+            };
+
+            const handleFullscreenChange = () => {
+              const activeElement = getFullscreenElement();
+              if (activeElement === chartContainer) {
+                isFallbackFullscreen = false;
+                if (!orientationLocked) {
+                  tryLockOrientation(orientationPreferences.landscape).then((locked) => {
+                    orientationLocked = locked;
                     if (!locked) {
                       console.warn("Unable to lock screen orientation to landscape");
                     }
+                  });
+                }
+                updateFullscreenButtonVisibility();
+                updateChartDimensions();
+              } else if (!activeElement) {
+                finalizeFullscreenExit();
+              }
+            };
+
+            if (isMobile()) {
+              fullscreenBtn.addEventListener("click", async () => {
+                fullscreenBtn.disabled = true;
+                try {
+                  const isAlreadyFullscreen = chartContainer.classList.contains('fullscreen');
+                  if (!isAlreadyFullscreen) {
+                    let usedNativeFullscreen = false;
+
+                    if (canUseNativeFullscreen(chartContainer)) {
+                      try {
+                        await requestElementFullscreen(chartContainer);
+                        await delay();
+                        usedNativeFullscreen = getFullscreenElement() === chartContainer;
+                      } catch (requestError) {
+                        console.warn('Native fullscreen request failed, using fallback mode instead', requestError);
+                      }
+                    }
+
+                    isFallbackFullscreen = !usedNativeFullscreen;
+                    chartElement.classList.add('fullscreen');
+                    chartContainer.classList.add('fullscreen');
 
                     updateChartDimensions();
+                    updateFullscreenButtonVisibility();
                   } else {
-                    await document.exitFullscreen();
+                    const usingNativeFullscreen = !isFallbackFullscreen && getFullscreenElement() === chartContainer;
+                    if (usingNativeFullscreen) {
+                      await exitElementFullscreen();
+                    } else {
+                      finalizeFullscreenExit();
+                    }
                   }
                 } catch (err) {
                   console.error("Error toggling fullscreen:", err);
+                  finalizeFullscreenExit();
                 } finally {
                   fullscreenBtn.disabled = false;
                 }
@@ -434,53 +528,25 @@
 
               // Add close button functionality
               closeFullscreenBtn.addEventListener("click", async () => {
-                if (document.fullscreenElement) {
-                  await document.exitFullscreen();
+                const activeElement = getFullscreenElement();
+                if (!isFallbackFullscreen && activeElement === chartContainer) {
+                  await exitElementFullscreen();
+                } else if (chartContainer.classList.contains('fullscreen')) {
+                  finalizeFullscreenExit();
                 }
               });
             }
-
-            document.addEventListener("fullscreenchange", () => {
-              const containerWasFullscreen = chartContainer.classList.contains('fullscreen');
-              if (document.fullscreenElement === chartContainer) {
-                updateFullscreenButtonVisibility();
-                updateChartDimensions();
-              } else if (!document.fullscreenElement && containerWasFullscreen) {
-                chartElement.classList.remove('fullscreen');
-                chartContainer.classList.remove('fullscreen');
-            
-                // Hide the chart container
-                chartContainer.style.opacity = '0';
-                
-                // Destroy the existing chart
-                chart.destroy();
-            
-                // Create a new chart with the default options
-                chart = new ApexCharts(chartElement, defaultChartOptions);
-            
-                // Render the new chart
-                chart.render();
-            
-                // Show the chart container after a short delay to ensure smooth transition
-                setTimeout(() => {
-                  chartContainer.style.opacity = '1';
-                }, 500);
-                
-                restorePortraitOrientation();
-            
-                // Show the fullscreen button when exiting fullscreen mode on mobile devices
-                updateFullscreenButtonVisibility();
-              }
-            });
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
             window.addEventListener('resize', () => {
-              if (document.fullscreenElement === chartContainer) {
+              if (chartContainer.classList.contains('fullscreen')) {
                 updateChartDimensions();
               }
             });
 
             window.addEventListener('orientationchange', () => {
-              if (document.fullscreenElement === chartContainer) {
+              if (chartContainer.classList.contains('fullscreen')) {
                 setTimeout(updateChartDimensions, 150);
               }
               updateFullscreenButtonVisibility();

@@ -132,7 +132,7 @@ def get_date_data(request):
         
         if len(data) == 0:
             return JsonResponse({
-                'error': 'No data available for selected date',
+                'error': 'Brak danych dla wybranej daty.',
                 'date': [],
                 'sport': [],
                 'family': [],
