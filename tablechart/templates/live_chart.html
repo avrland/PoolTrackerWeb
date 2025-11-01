@@ -171,7 +171,7 @@
           </div>
         </div>
 
-        <div id="chartContainer">
+  <div id="chartContainer" data-session-id="{{ session_id }}">
           <div id="loadingOverlay">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
@@ -227,6 +227,7 @@
             const colors = ['#ff771d', '#00aeff', '#2eca6a', '#1804ad'];
             const chartElement = document.querySelector("#reportsChart");
             const chartContainer = document.querySelector("#chartContainer");
+            const sessionId = chartContainer?.dataset?.sessionId || '';
             const fullscreenBtn = document.querySelector("#fullscreenBtn");
             const closeFullscreenBtn = document.querySelector("#closeFullscreenBtn");
             const instructionsBox = document.querySelector(".chart-instructions");
@@ -245,6 +246,10 @@
               element.webkitRequestFullscreen ||
               element.webkitRequestFullScreen
             );
+
+            if (!sessionId) {
+              console.warn('Brak identyfikatora sesji dla zapytań o dane historyczne.');
+            }
 
             const requestElementFullscreen = async (element) => {
               if (element.requestFullscreen) {
@@ -768,7 +773,17 @@
                 }
 
                 // Fetch data for selected date
-                const response = await fetch(`/get_date_data/?date=${encodeURIComponent(selectedDate)}`);
+                if (!sessionId) {
+                  alert('Brak uprawnień do pobrania danych. Odśwież stronę.');
+                  return;
+                }
+
+                const response = await fetch(`/get_date_data/?date=${encodeURIComponent(selectedDate)}`, {
+                  headers: {
+                    'X-Session-Key': sessionId
+                  },
+                  credentials: 'same-origin'
+                });
                 const data = await response.json();
 
                 if (data.error) {
