@@ -87,6 +87,73 @@
       display: flex;
     }
   }
+
+  .chart-instructions {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e2e6ea;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    position: relative;
+    padding-right: 44px;
+  }
+
+  .chart-instructions__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #343a40;
+  }
+
+  .chart-instructions__list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  }
+
+  .chart-instructions__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #495057;
+  }
+
+  .chart-instructions__list li span {
+    flex: 1;
+  }
+
+  .chart-instructions__icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    color: #0d6efd;
+    line-height: 1.4;
+  }
+
+  .chart-instructions__close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 1rem;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .chart-instructions__close:hover,
+  .chart-instructions__close:focus {
+    background: rgba(108, 117, 125, 0.12);
+    color: #212529;
+    outline: none;
+  }
 </style>
 
 <div class="col-12">
@@ -119,7 +186,38 @@
             <i class="bi bi-x-lg"></i>
           </button>
           <div id="reportsChart"></div>
-          <div id="lastUpdateSpan" style="margin-top: 6px; text-align: right; font-size: 0.85rem; color: #6c757d;">
+          <div class="chart-instructions" aria-label="Instrukcja obsługi wykresu">
+            <button type="button" class="chart-instructions__close" id="instructionsCloseBtn" aria-label="Zamknij instrukcję">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <div class="chart-instructions__title">
+              <i class="bi bi-info-circle chart-instructions__icon" aria-hidden="true"></i>
+              Jak korzystać z serwisu
+            </div>
+            <ul class="chart-instructions__list">
+              <li>
+                <i class="bi bi-geo-alt chart-instructions__icon" aria-hidden="true"></i>
+                <span>Kliknij ikonę obiektu w kafelkach poniżej, aby sprawdzić godziny otwarcia.</span>
+              </li>
+              <li>
+                <i class="bi bi-hand-index-thumb chart-instructions__icon" aria-hidden="true"></i>
+                <span>Dotknij lub najedź na linię wykresu, aby zobaczyć dokładną godzinę i liczbę osób.</span>
+              </li>
+              <li>
+                <i class="bi bi-eye chart-instructions__icon" aria-hidden="true"></i>
+                <span>Kliknij nazwę obiektu w legendzie, aby ukryć lub wyświetlić jego dane.</span>
+              </li>
+              <li>
+                <i class="bi bi-calendar3 chart-instructions__icon" aria-hidden="true"></i>
+                <span>Wybierz inną datę w kalendarzu, żeby porównać frekwencję z poprzednich dni.</span>
+              </li>
+              <li>
+                <i class="bi bi-arrows-fullscreen chart-instructions__icon" aria-hidden="true"></i>
+                <span>Na telefonie użyj przycisku powiększenia, by zobaczyć wykres na pełnym ekranie.</span>
+              </li>
+            </ul>
+          </div>
+          <div id="lastUpdateSpan" style="margin-top: 12px; text-align: right; font-size: 0.85rem; color: #6c757d;">
             Ostatnia aktualizacja: {{ lastdate }}
           </div>
         </div>
@@ -131,6 +229,8 @@
             const chartContainer = document.querySelector("#chartContainer");
             const fullscreenBtn = document.querySelector("#fullscreenBtn");
             const closeFullscreenBtn = document.querySelector("#closeFullscreenBtn");
+            const instructionsBox = document.querySelector(".chart-instructions");
+            const instructionsCloseBtn = document.querySelector("#instructionsCloseBtn");
             let chart;
             const FULLSCREEN_PADDING = 40;
             const orientationPreferences = {
@@ -270,6 +370,12 @@
                 }, false, true);
               }
             };
+
+            if (instructionsCloseBtn && instructionsBox) {
+              instructionsCloseBtn.addEventListener("click", () => {
+                instructionsBox.style.display = "none";
+              });
+            }
 
             // Check if device is mobile
             const isMobile = () => {
