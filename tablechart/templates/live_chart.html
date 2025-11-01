@@ -21,6 +21,10 @@
     padding: 20px;
   }
   
+  #chartContainer.fullscreen #lastUpdateSpan {
+    display: none;
+  }
+  
   #chartContainer {
     width: 100%;
     min-height: 350px;
@@ -83,16 +87,91 @@
       display: flex;
     }
   }
+
+  .chart-instructions {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e2e6ea;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    position: relative;
+    padding-right: 44px;
+  }
+
+  .chart-instructions__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #343a40;
+  }
+
+  .chart-instructions__list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+  }
+
+  .chart-instructions__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #495057;
+  }
+
+  .chart-instructions__list li span {
+    flex: 1;
+  }
+
+  .chart-instructions__icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    color: #0d6efd;
+    line-height: 1.4;
+  }
+
+  .chart-instructions__close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    font-size: 1rem;
+    padding: 4px;
+    line-height: 1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .chart-instructions__close:hover,
+  .chart-instructions__close:focus {
+    background: rgba(108, 117, 125, 0.12);
+    color: #212529;
+    outline: none;
+  }
 </style>
 
 <div class="col-12">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">
-          Dzisiaj <span>| Ostatnia aktualizacja: {{ lastdate }}</span>
-        </h5>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <h5 class="card-title" id="chartTitle" style="margin-bottom: 0;">
+            Dzisiaj
+          </h5>
+          <div style="margin-top: 10px; display: flex; align-items: center;">
+            <button type="button" id="todayBtn" class="btn btn-outline-primary btn-sm" title="Pokaż dzisiejsze dane" style="margin-right: 4px; display: none;">
+              Dzisiaj
+            </button>
+            <input type="date" id="datePicker" class="form-control form-control-sm" style="width: auto; height: 31px; margin-left: 0;" title="Wybierz dzień">
+          </div>
+        </div>
 
-        <div id="chartContainer">
+  <div id="chartContainer" data-session-id="{{ session_id }}">
           <div id="loadingOverlay">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
@@ -107,6 +186,40 @@
             <i class="bi bi-x-lg"></i>
           </button>
           <div id="reportsChart"></div>
+          <div class="chart-instructions" aria-label="Instrukcja obsługi wykresu">
+            <button type="button" class="chart-instructions__close" id="instructionsCloseBtn" aria-label="Zamknij instrukcję">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+            <div class="chart-instructions__title">
+              <i class="bi bi-info-circle chart-instructions__icon" aria-hidden="true"></i>
+              Jak korzystać z serwisu
+            </div>
+            <ul class="chart-instructions__list">
+              <li>
+                <i class="bi bi-geo-alt chart-instructions__icon" aria-hidden="true"></i>
+                <span>Kliknij ikonę obiektu w kafelkach poniżej, aby sprawdzić godziny otwarcia.</span>
+              </li>
+              <li>
+                <i class="bi bi-hand-index-thumb chart-instructions__icon" aria-hidden="true"></i>
+                <span>Dotknij lub najedź na linię wykresu, aby zobaczyć dokładną godzinę i liczbę osób.</span>
+              </li>
+              <li>
+                <i class="bi bi-eye chart-instructions__icon" aria-hidden="true"></i>
+                <span>Kliknij nazwę obiektu w legendzie, aby ukryć lub wyświetlić jego dane.</span>
+              </li>
+              <li>
+                <i class="bi bi-calendar3 chart-instructions__icon" aria-hidden="true"></i>
+                <span>Wybierz inną datę w kalendarzu, żeby porównać frekwencję z poprzednich dni.</span>
+              </li>
+              <li>
+                <i class="bi bi-arrows-fullscreen chart-instructions__icon" aria-hidden="true"></i>
+                <span>Na telefonie użyj przycisku powiększenia, by zobaczyć wykres na pełnym ekranie.</span>
+              </li>
+            </ul>
+          </div>
+          <div id="lastUpdateSpan" style="margin-top: 12px; text-align: right; font-size: 0.85rem; color: #6c757d;">
+            Ostatnia aktualizacja: {{ lastdate }}
+          </div>
         </div>
 
         <script>
@@ -114,22 +227,181 @@
             const colors = ['#ff771d', '#00aeff', '#2eca6a', '#1804ad'];
             const chartElement = document.querySelector("#reportsChart");
             const chartContainer = document.querySelector("#chartContainer");
+            const sessionId = chartContainer?.dataset?.sessionId || '';
             const fullscreenBtn = document.querySelector("#fullscreenBtn");
             const closeFullscreenBtn = document.querySelector("#closeFullscreenBtn");
+            const instructionsBox = document.querySelector(".chart-instructions");
+            const instructionsCloseBtn = document.querySelector("#instructionsCloseBtn");
+            let chart;
+            const FULLSCREEN_PADDING = 40;
+            const orientationPreferences = {
+              landscape: ['landscape-primary', 'landscape', 'landscape-secondary'],
+              portrait: ['portrait-primary', 'portrait', 'portrait-secondary']
+            };
+
+            const delay = (ms = 0) => new Promise((resolve) => setTimeout(resolve, ms));
+            const getFullscreenElement = () => document.fullscreenElement || document.webkitFullscreenElement || null;
+            const canUseNativeFullscreen = (element) => Boolean(
+              element.requestFullscreen ||
+              element.webkitRequestFullscreen ||
+              element.webkitRequestFullScreen
+            );
+
+            if (!sessionId) {
+              console.warn('Brak identyfikatora sesji dla zapytań o dane historyczne.');
+            }
+
+            const requestElementFullscreen = async (element) => {
+              if (element.requestFullscreen) {
+                return element.requestFullscreen();
+              }
+              const webkitRequest = element.webkitRequestFullscreen || element.webkitRequestFullScreen;
+              if (webkitRequest) {
+                webkitRequest.call(element);
+                return Promise.resolve();
+              }
+              throw new Error('Fullscreen API not supported');
+            };
+
+            const exitElementFullscreen = () => {
+              if (document.exitFullscreen) {
+                return document.exitFullscreen();
+              }
+              const webkitExit = document.webkitExitFullscreen || document.webkitCancelFullScreen;
+              if (webkitExit) {
+                webkitExit.call(document);
+              }
+              return Promise.resolve();
+            };
+
+            let isFallbackFullscreen = false;
+            let orientationLocked = false;
+
+            const tryLockOrientation = async (preferences = []) => {
+              if (!screen.orientation || !screen.orientation.lock) {
+                return false;
+              }
+              for (const orientation of preferences) {
+                try {
+                  await screen.orientation.lock(orientation);
+                  return true;
+                } catch (error) {
+                  console.warn(`Orientation lock failed for ${orientation}`, error);
+                }
+              }
+              return false;
+            };
+
+            const unlockOrientation = () => {
+              if (screen.orientation && screen.orientation.unlock) {
+                try {
+                  screen.orientation.unlock();
+                } catch (error) {
+                  console.warn("Orientation unlock failed", error);
+                }
+              }
+            };
+
+            const restorePortraitOrientation = () => {
+              tryLockOrientation(orientationPreferences.portrait).then((locked) => {
+                if (locked && screen.orientation) {
+                  let originalOnChange = null;
+
+                  function detachOrientationListeners() {
+                    if (typeof screen.orientation.removeEventListener === 'function') {
+                      screen.orientation.removeEventListener('change', handleOrientationChange);
+                    } else if ('onchange' in screen.orientation) {
+                      screen.orientation.onchange = originalOnChange;
+                    }
+                  }
+
+                  function handleOrientationChange(event) {
+                    if (typeof originalOnChange === 'function') {
+                      originalOnChange.call(screen.orientation, event);
+                    }
+                    if (screen.orientation && screen.orientation.type && screen.orientation.type.startsWith('portrait')) {
+                      detachOrientationListeners();
+                      unlockOrientation();
+                    }
+                  }
+
+                  if (typeof screen.orientation.addEventListener === 'function') {
+                    screen.orientation.addEventListener('change', handleOrientationChange);
+                  } else if ('onchange' in screen.orientation) {
+                    originalOnChange = screen.orientation.onchange;
+                    screen.orientation.onchange = handleOrientationChange;
+                  }
+
+                  const schedulePortraitCheck = (attempt = 0) => {
+                    if (!screen.orientation) {
+                      detachOrientationListeners();
+                      unlockOrientation();
+                      return;
+                    }
+                    if (screen.orientation.type && screen.orientation.type.startsWith('portrait')) {
+                      detachOrientationListeners();
+                      unlockOrientation();
+                    } else if (attempt < 5) {
+                      setTimeout(() => schedulePortraitCheck(attempt + 1), 500);
+                    }
+                  };
+
+                  schedulePortraitCheck();
+                } else {
+                  unlockOrientation();
+                }
+              });
+            };
+
+            const updateChartDimensions = () => {
+              if (!chart) {
+                return;
+              }
+              if (chartContainer.classList.contains('fullscreen')) {
+                const availableWidth = Math.max(window.innerWidth - FULLSCREEN_PADDING, 320);
+                const availableHeight = Math.max(window.innerHeight - FULLSCREEN_PADDING, 320);
+                chart.updateOptions({
+                  chart: {
+                    width: availableWidth,
+                    height: availableHeight
+                  }
+                }, false, true);
+              } else {
+                chart.updateOptions({
+                  chart: {
+                    width: '100%',
+                    height: 350
+                  }
+                }, false, true);
+              }
+            };
+
+            if (instructionsCloseBtn && instructionsBox) {
+              instructionsCloseBtn.addEventListener("click", () => {
+                instructionsBox.style.display = "none";
+              });
+            }
 
             // Check if device is mobile
             const isMobile = () => {
-              return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && 
-                     window.innerWidth <= 767;
+              const userAgentMatch = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+              const pointerCoarse = window.matchMedia ? window.matchMedia('(pointer:coarse)').matches : false;
+              return userAgentMatch || (pointerCoarse && window.innerWidth <= 1024);
+            };
+
+            const updateFullscreenButtonVisibility = () => {
+              if (chartContainer.classList.contains('fullscreen')) {
+                fullscreenBtn.style.display = 'none';
+              } else {
+                fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
+              }
             };
 
             // Show/hide fullscreen button based on device
-            fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
+            updateFullscreenButtonVisibility();
 
             // Update button visibility on resize
-            window.addEventListener('resize', () => {
-              fullscreenBtn.style.display = isMobile() ? 'flex' : 'none';
-            });
+            window.addEventListener('resize', updateFullscreenButtonVisibility);
             
             const defaultChartOptions = {
               series: [
@@ -277,100 +549,284 @@
               }
             };
             
-            let chart = new ApexCharts(chartElement, defaultChartOptions);
+            chart = new ApexCharts(chartElement, defaultChartOptions);
             chart.render();
 
             // Only enable fullscreen functionality if it's a mobile device
+            const finalizeFullscreenExit = () => {
+              if (!chartContainer.classList.contains('fullscreen')) {
+                updateFullscreenButtonVisibility();
+                return;
+              }
+              isFallbackFullscreen = false;
+              chartElement.classList.remove('fullscreen');
+              chartContainer.classList.remove('fullscreen');
+
+              chartContainer.style.opacity = '0';
+              chart.destroy();
+              chart = new ApexCharts(chartElement, defaultChartOptions);
+              chart.render();
+
+              setTimeout(() => {
+                chartContainer.style.opacity = '1';
+              }, 500);
+
+              if (orientationLocked) {
+                orientationLocked = false;
+                restorePortraitOrientation();
+              }
+              updateFullscreenButtonVisibility();
+            };
+
+            const handleFullscreenChange = () => {
+              const activeElement = getFullscreenElement();
+              if (activeElement === chartContainer) {
+                isFallbackFullscreen = false;
+                if (!orientationLocked) {
+                  tryLockOrientation(orientationPreferences.landscape).then((locked) => {
+                    orientationLocked = locked;
+                    if (!locked) {
+                      console.warn("Unable to lock screen orientation to landscape");
+                    }
+                  });
+                }
+                updateFullscreenButtonVisibility();
+                updateChartDimensions();
+              } else if (!activeElement) {
+                finalizeFullscreenExit();
+              }
+            };
+
             if (isMobile()) {
               fullscreenBtn.addEventListener("click", async () => {
+                fullscreenBtn.disabled = true;
                 try {
-                  if (!document.fullscreenElement) {
-                    await chartContainer.requestFullscreen();
-                    chartElement.classList.add('fullscreen');
-                    chartContainer.classList.add('fullscreen');
-                    
-                    if (screen.orientation && screen.orientation.lock) {
+                  const isAlreadyFullscreen = chartContainer.classList.contains('fullscreen');
+                  if (!isAlreadyFullscreen) {
+                    let usedNativeFullscreen = false;
+
+                    if (canUseNativeFullscreen(chartContainer)) {
                       try {
-                        await screen.orientation.lock("landscape");
-                      } catch (err) {
-                        console.log("Orientation lock not supported");
+                        await requestElementFullscreen(chartContainer);
+                        await delay();
+                        usedNativeFullscreen = getFullscreenElement() === chartContainer;
+                      } catch (requestError) {
+                        console.warn('Native fullscreen request failed, using fallback mode instead', requestError);
                       }
                     }
-                    
-                    const screenWidth = window.innerWidth;
-                    const screenHeight = window.innerHeight;
-                    chart.updateOptions({
-                      chart: {
-                        width: screenWidth - 40,
-                        height: screenHeight - 40
-                      }
-                    });
+
+                    isFallbackFullscreen = !usedNativeFullscreen;
+                    chartElement.classList.add('fullscreen');
+                    chartContainer.classList.add('fullscreen');
+
+                    updateChartDimensions();
+                    updateFullscreenButtonVisibility();
                   } else {
-                    await document.exitFullscreen();
+                    const usingNativeFullscreen = !isFallbackFullscreen && getFullscreenElement() === chartContainer;
+                    if (usingNativeFullscreen) {
+                      await exitElementFullscreen();
+                    } else {
+                      finalizeFullscreenExit();
+                    }
                   }
                 } catch (err) {
                   console.error("Error toggling fullscreen:", err);
+                  finalizeFullscreenExit();
+                } finally {
+                  fullscreenBtn.disabled = false;
                 }
               });
 
               // Add close button functionality
               closeFullscreenBtn.addEventListener("click", async () => {
-                if (document.fullscreenElement) {
-                  await document.exitFullscreen();
+                const activeElement = getFullscreenElement();
+                if (!isFallbackFullscreen && activeElement === chartContainer) {
+                  await exitElementFullscreen();
+                } else if (chartContainer.classList.contains('fullscreen')) {
+                  finalizeFullscreenExit();
                 }
               });
             }
+            document.addEventListener("fullscreenchange", handleFullscreenChange);
+            document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
 
-            document.addEventListener("fullscreenchange", () => {
-              if (!document.fullscreenElement) {
-                chartElement.classList.remove('fullscreen');
-                chartContainer.classList.remove('fullscreen');
-            
-                // Hide the chart container
-                chartContainer.style.opacity = '0';
-                
-                // Destroy the existing chart
-                chart.destroy();
-            
-                // Create a new chart with the default options
-                chart = new ApexCharts(chartElement, defaultChartOptions);
-            
-                // Render the new chart
-                chart.render();
-            
-                // Show the chart container after a short delay to ensure smooth transition
-                setTimeout(() => {
-                  chartContainer.style.opacity = '1';
-                }, 500);
-                
-                if (screen.orientation && screen.orientation.unlock) {
-                  screen.orientation.unlock();
-                }
-            
-                // Show the fullscreen button when exiting fullscreen mode on mobile devices
-                if (isMobile()) {
-                  fullscreenBtn.style.display = 'flex';
-                }
+            window.addEventListener('resize', () => {
+              if (chartContainer.classList.contains('fullscreen')) {
+                updateChartDimensions();
               }
             });
 
-            window.addEventListener('resize', () => {
-              if (document.fullscreenElement) {
-                const screenWidth = window.innerWidth;
-                const screenHeight = window.innerHeight;
-                chart.updateOptions({
-                  chart: {
-                    width: screenWidth - 40,
-                    height: screenHeight - 40
-                  }
-                });
+            window.addEventListener('orientationchange', () => {
+              if (chartContainer.classList.contains('fullscreen')) {
+                setTimeout(updateChartDimensions, 150);
               }
+              updateFullscreenButtonVisibility();
             });
 
             chartElement.addEventListener("contextmenu", (e) => {
               e.preventDefault();
               chart.resetSeries();
-            }); 
+            });
+
+            // Date picker functionality
+            const datePicker = document.querySelector("#datePicker");
+            const todayBtn = document.querySelector("#todayBtn");
+            const chartTitle = document.querySelector("#chartTitle");
+            const lastUpdateSpan = document.querySelector("#lastUpdateSpan");
+            const loadingOverlay = chartContainer.querySelector('#loadingOverlay');
+
+            const getTodayString = () => new Date().toISOString().split('T')[0];
+
+            const updateTodayButtonVisibility = (currentDateStr = datePicker.value) => {
+              if (!todayBtn) {
+                return;
+              }
+              const todayString = getTodayString();
+              const dateToCompare = currentDateStr || datePicker.value;
+              if (dateToCompare && dateToCompare !== todayString) {
+                todayBtn.style.display = 'inline-block';
+              } else {
+                todayBtn.style.display = 'none';
+              }
+            };
+            
+            // Store original data (using proper JSON parsing)
+            const originalData = {
+              date: {{ date|safe }},
+              sport: {{ sport|safe }},
+              family: {{ family|safe }},
+              small: {{ small|safe }},
+              ice: {{ ice|safe }},
+              lastdate: "{{ lastdate|escapejs }}"
+            };
+
+            // Set max date to today and initialize date picker with today's date
+            const maxDate = getTodayString();
+            datePicker.setAttribute('max', maxDate);
+            datePicker.value = maxDate; // Set initial value to today's date
+            updateTodayButtonVisibility(maxDate);
+
+            // Helper function to safely update title
+            function updateChartTitle(titleText, updateText) {
+              if (chartTitle) {
+                chartTitle.textContent = titleText + ' ';
+              }
+              if (lastUpdateSpan) {
+                lastUpdateSpan.textContent = 'Ostatnia aktualizacja: ' + updateText;
+              }
+            }
+
+            // Helper function to restore today's data
+            function restoreTodayData() {
+              // Set the date picker back to today's date
+              const todayString = getTodayString();
+              datePicker.value = todayString;
+              datePicker.setAttribute('max', todayString);
+              
+              // Restore original title and data
+              updateChartTitle('Dzisiaj', originalData.lastdate);
+              chart.updateSeries([
+                { name: 'Pływalnia Kameralna', data: originalData.small },
+                { name: 'Pływalnia Sportowa', data: originalData.sport },
+                { name: 'Pływalnia Rodzinna', data: originalData.family },
+                { name: 'Lodowisko', data: originalData.ice }
+              ]);
+              chart.updateOptions({
+                xaxis: {
+                  type: 'datetime',
+                  categories: originalData.date
+                }
+              });
+              updateTodayButtonVisibility(todayString);
+            }
+
+            // "Dzisiaj" button click handler
+            if (todayBtn) {
+              todayBtn.addEventListener("click", () => {
+                restoreTodayData();
+              });
+            }
+
+            datePicker.addEventListener("change", async (e) => {
+              const selectedDate = e.target.value;
+              
+              if (!selectedDate) {
+                // If date is cleared, restore today's data
+                restoreTodayData();
+                return;
+              }
+
+              // Check if this is actually today's date - if so, restore today's data without blur
+              const todayStr = getTodayString();
+              if (selectedDate === todayStr) {
+                // User selected today's date, just restore today's data
+                restoreTodayData();
+                return;
+              }
+
+              updateTodayButtonVisibility(selectedDate);
+
+              try {
+                // Show loading overlay while fetching data
+                if (loadingOverlay) {
+                  loadingOverlay.style.display = 'block';
+                }
+
+                // Fetch data for selected date
+                if (!sessionId) {
+                  alert('Brak uprawnień do pobrania danych. Odśwież stronę.');
+                  return;
+                }
+
+                const response = await fetch(`/get_date_data/?date=${encodeURIComponent(selectedDate)}`, {
+                  headers: {
+                    'X-Session-Key': sessionId
+                  },
+                  credentials: 'same-origin'
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                  alert('Błąd: ' + data.error);
+                  return;
+                }
+
+                // Update chart title safely
+                const displayDate = data.display_date || selectedDate;
+                const lastUpdate = data.lastdate || 'Brak danych';
+                updateChartTitle(displayDate, lastUpdate);
+
+                // Update chart with new data
+                chart.updateSeries([
+                  { name: 'Pływalnia Kameralna', data: data.small },
+                  { name: 'Pływalnia Sportowa', data: data.sport },
+                  { name: 'Pływalnia Rodzinna', data: data.family },
+                  { name: 'Lodowisko', data: data.ice }
+                ]);
+
+                chart.updateOptions({
+                  xaxis: {
+                    type: 'datetime',
+                    categories: data.date
+                  }
+                });
+
+                // Close the date picker after successful data load (for mobile compatibility)
+                setTimeout(() => {
+                  datePicker.blur();
+                }, 100);
+
+              } catch (error) {
+                console.error('Error fetching date data:', error);
+                alert('Wystąpił błąd podczas pobierania danych.');
+              } finally {
+                // Hide loading overlay after data is loaded or error occurred
+                if (loadingOverlay) {
+                  loadingOverlay.style.display = 'none';
+                }
+                updateTodayButtonVisibility(selectedDate);
+              }
+            });
           });
         </script>
       </div>
