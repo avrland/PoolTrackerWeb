@@ -24,6 +24,9 @@
   #chartContainer.fullscreen #lastUpdateSpan {
     display: none;
   }
+  #chartContainer.fullscreen .chart-instructions {
+    display: none;
+  }
   
   #chartContainer {
     width: 100%;
@@ -563,13 +566,10 @@
               chartContainer.classList.remove('fullscreen');
 
               chartContainer.style.opacity = '0';
-              chart.destroy();
-              chart = new ApexCharts(chartElement, defaultChartOptions);
-              chart.render();
-
-              setTimeout(() => {
-                chartContainer.style.opacity = '1';
-              }, 500);
+              updateChartDimensions();
+              requestAnimationFrame(() => {
+                chartContainer.style.removeProperty('opacity');
+              });
 
               if (orientationLocked) {
                 orientationLocked = false;
