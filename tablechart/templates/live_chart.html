@@ -175,20 +175,21 @@
         </div>
 
   <div id="chartContainer" data-session-id="{{ session_id }}">
-          <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.9); z-index: 1000;">
-            <div class="d-flex justify-content-center">
-              <div class="spinner-border" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
           <button id="fullscreenBtn" class="btn btn-sm">
             <i class="bi bi-arrows-fullscreen"></i>
           </button>
           <button id="closeFullscreenBtn">
             <i class="bi bi-x-lg"></i>
           </button>
-          <div id="reportsChart"></div>
+          <div id="reportsChart" style="position: relative;">
+            <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; z-index: 1000;" class="chart-loading-overlay">
+              <div class="d-flex justify-content-center">
+                <div class="spinner-border" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="chart-instructions" aria-label="Instrukcja obsługi wykresu">
             <button type="button" class="chart-instructions__close" id="instructionsCloseBtn" aria-label="Zamknij instrukcję">
               <i class="bi bi-x-lg" aria-hidden="true"></i>

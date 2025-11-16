@@ -1775,9 +1775,14 @@ body.dark-mode .apexcharts-marker {
   stroke: transparent !important;
 }
 
+/* Loading overlay styles */
+.chart-loading-overlay {
+  background: rgba(255, 255, 255, 0.9);
+}
+
 /* Loading overlay dark mode */
-body.dark-mode #loadingOverlay {
-  background: rgba(26, 29, 41, 0.9);
+body.dark-mode .chart-loading-overlay {
+  background: rgba(26, 29, 41, 0.95) !important;
 }
 
 body.dark-mode .spinner-border {
