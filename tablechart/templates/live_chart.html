@@ -175,7 +175,7 @@
         </div>
 
   <div id="chartContainer" data-session-id="{{ session_id }}">
-          <div id="loadingOverlay">
+          <div id="loadingOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.9); z-index: 1000;">
             <div class="d-flex justify-content-center">
               <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -479,7 +479,13 @@
                 },
               },
               markers: {
-                size: 2.5
+                size: 2.5,
+                strokeWidth: 0,
+                strokeColors: 'transparent',
+                hover: {
+                  size: 4,
+                  sizeOffset: 0
+                }
               },
               colors: colors,
               fill: {
@@ -785,7 +791,7 @@
               try {
                 // Show loading overlay while fetching data
                 if (loadingOverlay) {
-                  loadingOverlay.style.display = 'block';
+                  loadingOverlay.style.display = 'flex';
                 }
 
                 // Fetch data for selected date

@@ -1769,3 +1769,19 @@ body.dark-mode .apexcharts-yaxis-label,
 body.dark-mode .apexcharts-xaxis-label {
   fill: #8893a8 !important;
 }
+
+/* ApexCharts markers dark mode - remove white outline */
+body.dark-mode .apexcharts-marker {
+  stroke: transparent !important;
+}
+
+/* Loading overlay dark mode */
+body.dark-mode #loadingOverlay {
+  background: rgba(26, 29, 41, 0.9);
+}
+
+body.dark-mode .spinner-border {
+  color: #6c8aef;
+  border-color: currentColor;
+  border-right-color: transparent;
+}
