@@ -1456,3 +1456,198 @@ h6 {
   object-fit: contain;
   display: block;
 }
+
+/*--------------------------------------------------------------
+# Dark Mode Styles
+--------------------------------------------------------------*/
+/* Dark mode toggle button */
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  color: #012970;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 8px;
+  margin-right: 10px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dark-mode-toggle:hover {
+  color: #4154f1;
+}
+
+/* Dark mode variables and styles */
+body.dark-mode {
+  background: #1a1d29;
+  color: #c5c9d4;
+}
+
+body.dark-mode a {
+  color: #6c8aef;
+}
+
+body.dark-mode a:hover {
+  color: #8da3f5;
+}
+
+body.dark-mode .header {
+  background-color: #1e2230;
+  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .header .toggle-sidebar-btn,
+body.dark-mode .dark-mode-toggle {
+  color: #c5c9d4;
+}
+
+body.dark-mode .header .toggle-sidebar-btn:hover,
+body.dark-mode .dark-mode-toggle:hover {
+  color: #6c8aef;
+}
+
+body.dark-mode .logo span {
+  color: #c5c9d4;
+}
+
+body.dark-mode .pagetitle h1 {
+  color: #c5c9d4;
+}
+
+body.dark-mode .card {
+  background-color: #1e2230;
+  box-shadow: 0px 0 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .card-title {
+  color: #c5c9d4;
+}
+
+body.dark-mode .card-title span {
+  color: #8893a8;
+}
+
+body.dark-mode .card-body {
+  color: #c5c9d4;
+}
+
+body.dark-mode .dashboard .info-card h6 {
+  color: #c5c9d4;
+}
+
+body.dark-mode .text-muted {
+  color: #8893a8 !important;
+}
+
+body.dark-mode .footer {
+  border-top: 1px solid #2a2e3e;
+  background-color: #1e2230;
+}
+
+body.dark-mode .footer .copyright,
+body.dark-mode .footer .credits {
+  color: #c5c9d4;
+}
+
+body.dark-mode .footer .credits a {
+  color: #6c8aef;
+}
+
+body.dark-mode .dropdown-menu {
+  background-color: #1e2230;
+  box-shadow: 0 5px 30px 0 rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .dropdown-menu .dropdown-item {
+  color: #c5c9d4;
+}
+
+body.dark-mode .dropdown-menu .dropdown-item:hover {
+  background-color: #252937;
+}
+
+body.dark-mode .header .search-form input {
+  background-color: #252937;
+  color: #c5c9d4;
+  border: 1px solid #2a2e3e;
+}
+
+body.dark-mode .header .search-form input:focus,
+body.dark-mode .header .search-form input:hover {
+  box-shadow: 0 0 10px 0 rgba(108, 138, 239, 0.3);
+  border: 1px solid #3a4054;
+}
+
+body.dark-mode .header .search-form button i {
+  color: #c5c9d4;
+}
+
+body.dark-mode .modal-content {
+  background-color: #1e2230;
+  color: #c5c9d4;
+}
+
+body.dark-mode .modal-header {
+  border-bottom: 1px solid #2a2e3e;
+}
+
+body.dark-mode .modal-footer {
+  border-top: 1px solid #2a2e3e;
+}
+
+body.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+body.dark-mode .table {
+  color: #c5c9d4;
+}
+
+body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+  background-color: #252937;
+  border-color: #2a2e3e;
+  color: #c5c9d4;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+  background-color: #252937;
+  border-color: #3a4054;
+  color: #c5c9d4;
+}
+
+/* Card icon colors for dark mode */
+body.dark-mode .dashboard .small-card .card-icon {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+body.dark-mode .dashboard .sport-card .card-icon {
+  background: rgba(13, 202, 240, 0.1);
+}
+
+body.dark-mode .dashboard .family-card .card-icon {
+  background: rgba(25, 135, 84, 0.1);
+}
+
+body.dark-mode .dashboard .ice-card .card-icon {
+  background: rgba(13, 110, 253, 0.1);
+}
+
+body.dark-mode .dashboard .weather-card .card-icon {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+body.dark-mode .dashboard .aquapark-card .card-icon {
+  background: rgba(106, 38, 154, 0.1);
+}
+
+body.dark-mode .dashboard .fb-card .card-icon {
+  background: rgba(111, 66, 193, 0.1);
+}

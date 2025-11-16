@@ -318,4 +318,49 @@
     }, 200);
   }
 
+  /**
+   * Dark Mode Toggle
+   */
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeIcon = document.getElementById('darkModeIcon');
+  
+  // Function to set dark mode
+  function setDarkMode(isDark) {
+    if (isDark) {
+      document.body.classList.add('dark-mode');
+      darkModeIcon.classList.remove('bi-moon-fill');
+      darkModeIcon.classList.add('bi-sun-fill');
+      localStorage.setItem('darkMode', 'enabled');
+    } else {
+      document.body.classList.remove('dark-mode');
+      darkModeIcon.classList.remove('bi-sun-fill');
+      darkModeIcon.classList.add('bi-moon-fill');
+      localStorage.setItem('darkMode', 'disabled');
+    }
+  }
+  
+  // Check for saved user preference, if none, check system preference
+  const savedDarkMode = localStorage.getItem('darkMode');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (savedDarkMode === 'enabled' || (savedDarkMode === null && systemPrefersDark)) {
+    setDarkMode(true);
+  }
+  
+  // Toggle dark mode on button click
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('click', () => {
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      setDarkMode(!isDarkMode);
+    });
+  }
+  
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    // Only auto-switch if user hasn't set a preference
+    if (localStorage.getItem('darkMode') === null) {
+      setDarkMode(e.matches);
+    }
+  });
+
 })();
