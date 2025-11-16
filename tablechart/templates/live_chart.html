@@ -424,7 +424,7 @@
               chart: {
                 height: 350,
                 type: 'area',
-                background: 'white',
+                background: document.body.classList.contains('dark-mode') ? '#1e2230' : 'white',
                 toolbar: {
                   show: false
                 },
@@ -554,6 +554,21 @@
             
             chart = new ApexCharts(chartElement, defaultChartOptions);
             chart.render();
+
+            // Update chart background when dark mode changes
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+              darkModeToggle.addEventListener('click', () => {
+                setTimeout(() => {
+                  const isDarkMode = document.body.classList.contains('dark-mode');
+                  chart.updateOptions({
+                    chart: {
+                      background: isDarkMode ? '#1e2230' : 'white'
+                    }
+                  });
+                }, 100);
+              });
+            }
 
             // Only enable fullscreen functionality if it's a mobile device
             const finalizeFullscreenExit = () => {

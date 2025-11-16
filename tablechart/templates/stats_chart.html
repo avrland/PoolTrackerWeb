@@ -294,6 +294,7 @@
                         chart: {
                             height: 350,
                             type: 'area',
+                            background: document.body.classList.contains('dark-mode') ? '#1e2230' : 'white',
                             toolbar: {
                                 show: false
                             },
@@ -386,6 +387,21 @@
                     chart2 = new ApexCharts(chartElement2, defaultChartOptions);
                     chart2.render();
 
+                    // Update chart background when dark mode changes
+                    const darkModeToggle = document.getElementById('darkModeToggle');
+                    if (darkModeToggle) {
+                        darkModeToggle.addEventListener('click', () => {
+                            setTimeout(() => {
+                                const isDarkMode = document.body.classList.contains('dark-mode');
+                                chart2.updateOptions({
+                                    chart: {
+                                        background: isDarkMode ? '#1e2230' : 'white'
+                                    }
+                                });
+                            }, 100);
+                        });
+                    }
+
                     const isMobile = () => {
                         const userAgentMatch = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                         const pointerCoarse = window.matchMedia ? window.matchMedia('(pointer:coarse)').matches : false;
@@ -414,6 +430,11 @@
 
                         chartContainer2.style.opacity = '0';
                         chart2.destroy();
+                        
+                        // Update default options with current dark mode state
+                        const currentBackground = document.body.classList.contains('dark-mode') ? '#1e2230' : 'white';
+                        defaultChartOptions.chart.background = currentBackground;
+                        
                         chart2 = new ApexCharts(chartElement2, defaultChartOptions);
                         chart2.render();
 

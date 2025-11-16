@@ -1651,3 +1651,121 @@ body.dark-mode .dashboard .aquapark-card .card-icon {
 body.dark-mode .dashboard .fb-card .card-icon {
   background: rgba(111, 66, 193, 0.1);
 }
+
+/* Chart dark mode styles */
+body.dark-mode #reportsChart.fullscreen,
+body.dark-mode #reportsChart2.fullscreen {
+  background: #1e2230 !important;
+}
+
+body.dark-mode #chartContainer.fullscreen,
+body.dark-mode #chartContainer2.fullscreen {
+  background: #1e2230 !important;
+}
+
+body.dark-mode #fullscreenBtn,
+body.dark-mode #fullscreenBtn2 {
+  background: #252937;
+  border-color: #3a4054;
+  color: #c5c9d4;
+}
+
+body.dark-mode #fullscreenBtn:hover,
+body.dark-mode #fullscreenBtn2:hover {
+  background: #2a2e3e;
+}
+
+body.dark-mode #closeFullscreenBtn,
+body.dark-mode #closeFullscreenBtn2 {
+  background: #252937;
+  border-color: #3a4054;
+  color: #c5c9d4;
+}
+
+body.dark-mode #closeFullscreenBtn:hover,
+body.dark-mode #closeFullscreenBtn2:hover {
+  background: #2a2e3e;
+}
+
+body.dark-mode .chart-instructions {
+  background: #252937;
+  border-color: #3a4054;
+}
+
+body.dark-mode .chart-instructions__title {
+  color: #c5c9d4;
+}
+
+body.dark-mode .chart-instructions__list li {
+  color: #c5c9d4;
+}
+
+body.dark-mode .chart-instructions__icon {
+  color: #6c8aef;
+}
+
+body.dark-mode .chart-instructions__close {
+  color: #8893a8;
+}
+
+body.dark-mode .chart-instructions__close:hover,
+body.dark-mode .chart-instructions__close:focus {
+  background: rgba(200, 200, 200, 0.08);
+  color: #c5c9d4;
+}
+
+/* ApexCharts tooltip dark mode */
+body.dark-mode .apexcharts-tooltip {
+  background: #252937 !important;
+  border-color: #3a4054 !important;
+  color: #c5c9d4 !important;
+}
+
+body.dark-mode .apexcharts-tooltip-title {
+  background: #2a2e3e !important;
+  border-color: #3a4054 !important;
+  color: #c5c9d4 !important;
+}
+
+body.dark-mode .apexcharts-tooltip-text-y-label,
+body.dark-mode .apexcharts-tooltip-text-y-value,
+body.dark-mode .apexcharts-tooltip-text-goals-label,
+body.dark-mode .apexcharts-tooltip-text-goals-value,
+body.dark-mode .apexcharts-tooltip-text-z-label,
+body.dark-mode .apexcharts-tooltip-text-z-value {
+  color: #c5c9d4 !important;
+}
+
+body.dark-mode .apexcharts-xaxistooltip {
+  background: #252937 !important;
+  border-color: #3a4054 !important;
+  color: #c5c9d4 !important;
+}
+
+body.dark-mode .apexcharts-xaxistooltip-text {
+  color: #c5c9d4 !important;
+}
+
+body.dark-mode .apexcharts-xaxistooltip:before,
+body.dark-mode .apexcharts-xaxistooltip:after {
+  border-bottom-color: #252937 !important;
+}
+
+/* ApexCharts legend dark mode */
+body.dark-mode .apexcharts-legend-text {
+  color: #c5c9d4 !important;
+}
+
+/* ApexCharts grid and axis dark mode */
+body.dark-mode .apexcharts-gridline {
+  stroke: #3a4054 !important;
+}
+
+body.dark-mode .apexcharts-text {
+  fill: #8893a8 !important;
+}
+
+body.dark-mode .apexcharts-yaxis-label,
+body.dark-mode .apexcharts-xaxis-label {
+  fill: #8893a8 !important;
+}
