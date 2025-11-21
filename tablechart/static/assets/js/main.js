@@ -324,28 +324,48 @@
   const darkModeToggle = document.getElementById('darkModeToggle');
   const darkModeIcon = document.getElementById('darkModeIcon');
   
+  // Cookie helper functions
+  function setCookie(name, value, days) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+  }
+  
+  function getCookie(name) {
+    const nameEQ = name + '=';
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
+  
   // Function to set dark mode
   function setDarkMode(isDark) {
     if (isDark) {
       document.body.classList.add('dark-mode');
       darkModeIcon.classList.remove('bi-moon-fill');
       darkModeIcon.classList.add('bi-sun-fill');
-      localStorage.setItem('darkMode', 'enabled');
+      setCookie('darkMode', 'enabled', 365);
     } else {
       document.body.classList.remove('dark-mode');
       darkModeIcon.classList.remove('bi-sun-fill');
       darkModeIcon.classList.add('bi-moon-fill');
-      localStorage.setItem('darkMode', 'disabled');
+      setCookie('darkMode', 'disabled', 365);
     }
   }
   
-  // Check for saved user preference, if none, check system preference
-  const savedDarkMode = localStorage.getItem('darkMode');
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  // Check for saved user preference in cookie
+  const savedDarkMode = getCookie('darkMode');
   
-  if (savedDarkMode === 'enabled' || (savedDarkMode === null && systemPrefersDark)) {
+  if (savedDarkMode === 'enabled') {
     setDarkMode(true);
+  } else if (savedDarkMode === 'disabled') {
+    setDarkMode(false);
   }
+  // If no cookie exists, default to light mode (no action needed)
   
   // Toggle dark mode on button click
   if (darkModeToggle) {
@@ -354,13 +374,5 @@
       setDarkMode(!isDarkMode);
     });
   }
-  
-  // Listen for system theme changes
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    // Only auto-switch if user hasn't set a preference
-    if (localStorage.getItem('darkMode') === null) {
-      setDarkMode(e.matches);
-    }
-  });
 
 })();
