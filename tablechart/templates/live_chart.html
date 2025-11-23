@@ -832,14 +832,7 @@
                 const lastUpdate = data.lastdate || 'Brak danych';
                 updateChartTitle(displayDate, lastUpdate);
 
-                // Update chart with new data with animation
-                chart.updateSeries([
-                  { name: 'Pływalnia Kameralna', data: data.small },
-                  { name: 'Pływalnia Sportowa', data: data.sport },
-                  { name: 'Pływalnia Rodzinna', data: data.family },
-                  { name: 'Lodowisko', data: data.ice }
-                ], true);
-
+                // Update chart options first to ensure animation settings are applied
                 chart.updateOptions({
                   chart: {
                     animations: {
@@ -860,7 +853,15 @@
                     type: 'datetime',
                     categories: data.date
                   }
-                });
+                }, false, false);
+
+                // Then update series with animation enabled
+                chart.updateSeries([
+                  { name: 'Pływalnia Kameralna', data: data.small },
+                  { name: 'Pływalnia Sportowa', data: data.sport },
+                  { name: 'Pływalnia Rodzinna', data: data.family },
+                  { name: 'Lodowisko', data: data.ice }
+                ], true);
 
                 // Close the date picker after successful data load (for mobile compatibility)
                 setTimeout(() => {
