@@ -429,6 +429,19 @@
                 toolbar: {
                   show: false
                 },
+                animations: {
+                  enabled: true,
+                  easing: 'easeinout',
+                  speed: 800,
+                  animateGradually: {
+                    enabled: true,
+                    delay: 150
+                  },
+                  dynamicAnimation: {
+                    enabled: true,
+                    speed: 350
+                  }
+                },
                 events: {
                   legendClick: function(chartContext, seriesIndex, config) {
                     const annotations = chartContext.w.config.annotations.yaxis || [];
@@ -819,15 +832,30 @@
                 const lastUpdate = data.lastdate || 'Brak danych';
                 updateChartTitle(displayDate, lastUpdate);
 
-                // Update chart with new data
+                // Update chart with new data with animation
                 chart.updateSeries([
                   { name: 'Pływalnia Kameralna', data: data.small },
                   { name: 'Pływalnia Sportowa', data: data.sport },
                   { name: 'Pływalnia Rodzinna', data: data.family },
                   { name: 'Lodowisko', data: data.ice }
-                ]);
+                ], true);
 
                 chart.updateOptions({
+                  chart: {
+                    animations: {
+                      enabled: true,
+                      easing: 'easeinout',
+                      speed: 800,
+                      animateGradually: {
+                        enabled: true,
+                        delay: 150
+                      },
+                      dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                      }
+                    }
+                  },
                   xaxis: {
                     type: 'datetime',
                     categories: data.date
