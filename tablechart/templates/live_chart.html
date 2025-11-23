@@ -832,36 +832,21 @@
                 const lastUpdate = data.lastdate || 'Brak danych';
                 updateChartTitle(displayDate, lastUpdate);
 
-                // Update chart options first to ensure animation settings are applied
-                chart.updateOptions({
-                  chart: {
-                    animations: {
-                      enabled: true,
-                      easing: 'easeinout',
-                      speed: 800,
-                      animateGradually: {
-                        enabled: true,
-                        delay: 150
-                      },
-                      dynamicAnimation: {
-                        enabled: true,
-                        speed: 350
-                      }
-                    }
-                  },
-                  xaxis: {
-                    type: 'datetime',
-                    categories: data.date
-                  }
-                }, false, false);
-
-                // Then update series with animation enabled
+                // Update series first with animation enabled
                 chart.updateSeries([
                   { name: 'Pływalnia Kameralna', data: data.small },
                   { name: 'Pływalnia Sportowa', data: data.sport },
                   { name: 'Pływalnia Rodzinna', data: data.family },
                   { name: 'Lodowisko', data: data.ice }
                 ], true);
+
+                // Then update xaxis categories separately
+                chart.updateOptions({
+                  xaxis: {
+                    type: 'datetime',
+                    categories: data.date
+                  }
+                }, false, true);
 
                 // Close the date picker after successful data load (for mobile compatibility)
                 setTimeout(() => {

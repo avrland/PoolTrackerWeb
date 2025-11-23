@@ -562,29 +562,8 @@
                                 if (todayElement) {
                                     todayElement.textContent = currentDate;
                                 }
-                                chart2.updateOptions({
-                                    chart: {
-                                        animations: {
-                                            enabled: true,
-                                            easing: 'easeinout',
-                                            speed: 1000,
-                                            animateGradually: {
-                                                enabled: true,
-                                                delay: 150
-                                            },
-                                            dynamicAnimation: {
-                                                enabled: true,
-                                                speed: 350
-                                            }
-                                        }
-                                    },
-                                    xaxis: {
-                                        type: 'time',
-                                        tickAmount: 16,
-                                        tickInterval: 'hour',
-                                        categories: data.date_stat
-                                    }
-                                }, false, false);
+                                
+                                // Update series first with animation enabled
                                 chart2.updateSeries([
                                     {
                                         name: 'Kameralna',
@@ -599,6 +578,16 @@
                                         data: data.family_stat
                                     }
                                 ], true);
+                                
+                                // Then update xaxis categories separately
+                                chart2.updateOptions({
+                                    xaxis: {
+                                        type: 'time',
+                                        tickAmount: 16,
+                                        tickInterval: 'hour',
+                                        categories: data.date_stat
+                                    }
+                                }, false, true);
 
                                 if (loadingOverlay3) {
                                     loadingOverlay3.style.display = 'none';
