@@ -8,6 +8,7 @@
 (function() {
   "use strict";
 
+
   /**
    * Easy selector helper function
    */
@@ -20,6 +21,7 @@
     }
   }
 
+
   /**
    * Easy event listener function
    */
@@ -31,12 +33,14 @@
     }
   }
 
+
   /**
    * Easy on scroll event listener 
    */
   const onscroll = (el, listener) => {
     el.addEventListener('scroll', listener)
   }
+
 
   /**
    * Sidebar toggle
@@ -47,6 +51,7 @@
     })
   }
 
+
   /**
    * Search bar toggle
    */
@@ -55,6 +60,7 @@
       select('.search-bar').classList.toggle('search-bar-show')
     })
   }
+
 
   /**
    * Navbar links active state on scroll
@@ -76,6 +82,7 @@
   window.addEventListener('load', navbarlinksActive)
   onscroll(document, navbarlinksActive)
 
+
   /**
    * Toggle .header-scrolled class to #header when page is scrolled
    */
@@ -91,6 +98,7 @@
     window.addEventListener('load', headerScrolled)
     onscroll(document, headerScrolled)
   }
+
 
   /**
    * Back to top button
@@ -108,6 +116,7 @@
     onscroll(document, toggleBacktotop)
   }
 
+
   /**
    * Initiate tooltips
    */
@@ -115,6 +124,7 @@
   var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl)
   })
+
 
   /**
    * Initiate quill editors
@@ -125,11 +135,13 @@
     });
   }
 
+
   if (select('.quill-editor-bubble')) {
     new Quill('.quill-editor-bubble', {
       theme: 'bubble'
     });
   }
+
 
   if (select('.quill-editor-full')) {
     new Quill(".quill-editor-full", {
@@ -179,11 +191,13 @@
     });
   }
 
+
   /**
    * Initiate TinyMCE Editor
    */
   const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const isSmallScreen = window.matchMedia('(max-width: 1023.5px)').matches;
+
 
   tinymce.init({
     selector: 'textarea.tinymce-editor',
@@ -235,12 +249,14 @@
         });
       }
 
+
       /* Provide image and alt text for the image dialog */
       if (meta.filetype === 'image') {
         callback('https://www.google.com/logos/google.jpg', {
           alt: 'My alt text'
         });
       }
+
 
       /* Provide alternative source and posted for the media dialog */
       if (meta.filetype === 'media') {
@@ -279,10 +295,12 @@
     content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
   });
 
+
   /**
    * Initiate Bootstrap validation check
    */
   var needsValidation = document.querySelectorAll('.needs-validation')
+
 
   Array.prototype.slice.call(needsValidation)
     .forEach(function(form) {
@@ -292,9 +310,11 @@
           event.stopPropagation()
         }
 
+
         form.classList.add('was-validated')
       }, false)
     })
+
 
   /**
    * Initiate Datatables
@@ -303,6 +323,7 @@
   datatables.forEach(datatable => {
     new simpleDatatables.DataTable(datatable);
   })
+
 
   /**
    * Autoresize echart charts
@@ -318,54 +339,42 @@
     }, 200);
   }
 
+
   /**
    * Dark Mode Toggle
+   * UPDATED: Uses localStorage instead of cookies for better compatibility
    */
   const darkModeToggle = document.getElementById('darkModeToggle');
   const darkModeIcon = document.getElementById('darkModeIcon');
-  
-  // Cookie helper functions
-  function setCookie(name, value, days) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
-  }
-  
-  function getCookie(name) {
-    const nameEQ = name + '=';
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  }
   
   // Function to set dark mode
   function setDarkMode(isDark) {
     if (isDark) {
       document.body.classList.add('dark-mode');
-      darkModeIcon.classList.remove('bi-moon-fill');
-      darkModeIcon.classList.add('bi-sun-fill');
-      setCookie('darkMode', 'enabled', 365);
+      if (darkModeIcon) {
+        darkModeIcon.classList.remove('bi-moon-fill');
+        darkModeIcon.classList.add('bi-sun-fill');
+      }
+      localStorage.setItem('darkMode', 'enabled');
     } else {
       document.body.classList.remove('dark-mode');
-      darkModeIcon.classList.remove('bi-sun-fill');
-      darkModeIcon.classList.add('bi-moon-fill');
-      setCookie('darkMode', 'disabled', 365);
+      if (darkModeIcon) {
+        darkModeIcon.classList.remove('bi-sun-fill');
+        darkModeIcon.classList.add('bi-moon-fill');
+      }
+      localStorage.setItem('darkMode', 'disabled');
     }
   }
   
-  // Check for saved user preference in cookie
-  const savedDarkMode = getCookie('darkMode');
+  // Check for saved user preference in localStorage
+  const savedDarkMode = localStorage.getItem('darkMode');
   
   if (savedDarkMode === 'enabled') {
     setDarkMode(true);
   } else if (savedDarkMode === 'disabled') {
     setDarkMode(false);
   }
-  // If no cookie exists, default to light mode (no action needed)
+  // If no preference exists, default to light mode (no action needed)
   
   // Toggle dark mode on button click
   if (darkModeToggle) {
@@ -374,5 +383,6 @@
       setDarkMode(!isDarkMode);
     });
   }
+
 
 })();
