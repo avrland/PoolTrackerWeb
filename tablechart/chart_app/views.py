@@ -14,7 +14,7 @@ import requests
 from django.conf import settings
 from django.views.decorators.http import require_GET
 
-ver_num = "0.2.8"
+ver_num = "0.2.9"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
