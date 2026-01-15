@@ -554,6 +554,11 @@
                         if (loadingOverlay3) {
                             loadingOverlay3.style.display = 'flex';
                         }
+                        
+                        // Capture current series visibility state before update
+                        const seriesVisibility = chart2.w.globals.collapsedSeriesIndices || [];
+                        const hiddenSeries = new Set(seriesVisibility);
+                        
                         const buttonId = event.target.id;
                         fetch(`/update_chart/${buttonId}`)
                             .then(response => response.json())
@@ -589,6 +594,13 @@
                                         categories: data.date_stat
                                     }
                                 }, false, true);
+                                
+                                // Restore the hidden series state after a brief delay to allow chart to render
+                                setTimeout(() => {
+                                    hiddenSeries.forEach(seriesIndex => {
+                                        chart2.hideSeries(chart2.w.config.series[seriesIndex].name);
+                                    });
+                                }, 50);
 
                                 if (loadingOverlay3) {
                                     loadingOverlay3.style.display = 'none';
