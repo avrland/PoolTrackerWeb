@@ -596,11 +596,16 @@
                                 }, false, true);
                                 
                                 // Restore the hidden series state after a brief delay to allow chart to render
+                                // 50ms delay ensures the chart has completed its update cycle before we hide series
+                                const SERIES_RESTORE_DELAY_MS = 50;
                                 setTimeout(() => {
                                     hiddenSeries.forEach(seriesIndex => {
-                                        chart2.hideSeries(chart2.w.config.series[seriesIndex].name);
+                                        // Bounds check to prevent accessing series that don't exist
+                                        if (seriesIndex < chart2.w.config.series.length) {
+                                            chart2.hideSeries(chart2.w.config.series[seriesIndex].name);
+                                        }
                                     });
-                                }, 50);
+                                }, SERIES_RESTORE_DELAY_MS);
 
                                 if (loadingOverlay3) {
                                     loadingOverlay3.style.display = 'none';
