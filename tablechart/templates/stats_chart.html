@@ -549,6 +549,9 @@
                         chart2.resetSeries();
                     });
 
+                    // Delay to ensure chart has completed its update cycle before restoring series visibility
+                    const SERIES_RESTORE_DELAY_MS = 50;
+
                     function handleButtonClick(event) {
                         const loadingOverlay3 = chartContainer2.querySelector('#loadingOverlay');
                         if (loadingOverlay3) {
@@ -595,9 +598,7 @@
                                     }
                                 }, false, true);
                                 
-                                // Restore the hidden series state after a brief delay to allow chart to render
-                                // 50ms delay ensures the chart has completed its update cycle before we hide series
-                                const SERIES_RESTORE_DELAY_MS = 50;
+                                // Restore the hidden series state after chart update completes
                                 setTimeout(() => {
                                     hiddenSeries.forEach(seriesIndex => {
                                         // Bounds check to prevent accessing series that don't exist
