@@ -79,16 +79,16 @@ Django web application structure:
 
 ### Implementation for User Story 2
 
-- [ ] T017 [P] [US2] Create email verification modal template `tablechart/templates/partials/donor_modal.html` with Bootstrap 5 modal structure, email input field with HTML5 validation, submit button
-- [ ] T018 [P] [US2] Create "Remove Ads" button in `tablechart/templates/dashboard.html` with conditional display: `{% if not request.COOKIES.ad_free_session %}` shows button, else shows ad-free indicator
-- [ ] T019 [US2] Create Django view `VerifyDonorEmailView` in `tablechart/chart_app/views.py`: POST endpoint that accepts JSON with email field
-- [ ] T020 [US2] Implement verification logic in `VerifyDonorEmailView`: validate email format, check donor list, set cookie if found, return appropriate JSON response (200 success, 404 not found, 400 invalid)
-- [ ] T021 [US2] Add cookie setting logic in `VerifyDonorEmailView`: `response.set_cookie('ad_free_session', email, max_age=31536000, httponly=True, secure=True, samesite='Lax')`
-- [ ] T022 [US2] Add URL route in `tablechart/chart_app/urls.py`: `path('api/verify-donor-email/', VerifyDonorEmailView.as_view(), name='verify_donor_email')`
-- [ ] T023 [P] [US2] Create JavaScript file `tablechart/static/assets/js/donor-verification.js` for modal interaction: form submission via fetch API, CSRF token handling, success/error message display
-- [ ] T024 [US2] Include modal template in `tablechart/templates/content.html` or `index.html`: `{% include 'partials/donor_modal.html' %}`
-- [ ] T025 [US2] Link JavaScript file in `tablechart/templates/index.html`: `<script src="{% static 'assets/js/donor-verification.js' %}"></script>`
-- [ ] T026 [US2] Add error handling in `VerifyDonorEmailView` for missing donor file: log error, return 500 with generic message
+- [X] T017 [P] [US2] Create email verification modal template `tablechart/templates/partials/donor_modal.html` with Bootstrap 5 modal structure, email input field with HTML5 validation, submit button
+- [X] T018 [P] [US2] Create "Remove Ads" button in `tablechart/templates/dashboard.html` with conditional display: `{% if not request.COOKIES.ad_free_session %}` shows button, else shows ad-free indicator
+- [X] T019 [US2] Create Django view `VerifyDonorEmailView` in `tablechart/chart_app/views.py`: POST endpoint that accepts JSON with email field
+- [X] T020 [US2] Implement verification logic in `VerifyDonorEmailView`: validate email format, check donor list, set cookie if found, return appropriate JSON response (200 success, 404 not found, 400 invalid)
+- [X] T021 [US2] Add cookie setting logic in `VerifyDonorEmailView`: `response.set_cookie('ad_free_session', email, max_age=31536000, httponly=True, secure=True, samesite='Lax')`
+- [X] T022 [US2] Add URL route in `tablechart/chart_app/urls.py`: `path('api/verify-donor-email/', VerifyDonorEmailView.as_view(), name='verify_donor_email')`
+- [X] T023 [P] [US2] Create JavaScript file `tablechart/static/assets/js/donor-verification.js` for modal interaction: form submission via fetch API, CSRF token handling, success/error message display
+- [X] T024 [US2] Include modal template in `tablechart/templates/content.html` or `index.html`: `{% include 'partials/donor_modal.html' %}`
+- [X] T025 [US2] Link JavaScript file in `tablechart/templates/index.html`: `<script src="{% static 'assets/js/donor-verification.js' %}"></script>`
+- [X] T026 [US2] Add error handling in `VerifyDonorEmailView` for missing donor file: log error, return 500 with generic message
 - [ ] T027 [US2] Test valid donor email: submit email from donor list, verify 200 response, cookie set, ads hidden on reload
 - [ ] T028 [US2] Test unknown email: submit email not in list, verify 404 response with buycoffee.to link
 - [ ] T029 [US2] Test godmode email: submit test email, verify always grants access
@@ -108,12 +108,12 @@ Django web application structure:
 
 ### Implementation for User Story 3
 
-- [ ] T033 [P] [US3] Add ad-free indicator to header in `tablechart/templates/index.html`: conditional block with green badge "✓ Ad-free mode active" and logout link
-- [ ] T034 [US3] Style ad-free indicator in `tablechart/static/assets/css/style.css` or inline: green badge using Bootstrap `.badge.bg-success`, responsive font sizing
-- [ ] T035 [US3] Create Django view `LogoutAdFreeView` in `tablechart/chart_app/views.py`: GET endpoint that deletes cookie and redirects to homepage
-- [ ] T036 [US3] Implement logout logic in `LogoutAdFreeView`: `response.set_cookie('ad_free_session', '', max_age=0)` and `return redirect('/')`
-- [ ] T037 [US3] Add URL route in `tablechart/chart_app/urls.py`: `path('api/logout-ad-free/', LogoutAdFreeView.as_view(), name='logout_ad_free')`
-- [ ] T038 [US3] Update logout link in header to point to `/api/logout-ad-free/`
+- [X] T033 [P] [US3] Add ad-free indicator to header in `tablechart/templates/index.html`: conditional block with green badge "✓ Ad-free mode active" and logout link
+- [X] T034 [US3] Style ad-free indicator in `tablechart/static/assets/css/style.css` or inline: green badge using Bootstrap `.badge.bg-success`, responsive font sizing
+- [X] T035 [US3] Create Django view `LogoutAdFreeView` in `tablechart/chart_app/views.py`: GET endpoint that deletes cookie and redirects to homepage
+- [X] T036 [US3] Implement logout logic in `LogoutAdFreeView`: `response.set_cookie('ad_free_session', '', max_age=0)` and `return redirect('/')`
+- [X] T037 [US3] Add URL route in `tablechart/chart_app/urls.py`: `path('api/logout-ad-free/', LogoutAdFreeView.as_view(), name='logout_ad_free')`
+- [X] T038 [US3] Update logout link in header to point to `/api/logout-ad-free/`
 - [ ] T039 [US3] Test ad-free indicator visibility: verify appears only when cookie present
 - [ ] T040 [US3] Test logout functionality: click logout, verify cookie deleted, ads reappear on homepage
 - [ ] T041 [US3] Test cookie persistence: close browser, reopen, verify ad-free status persists (365-day cookie)
@@ -127,18 +127,18 @@ Django web application structure:
 
 **Purpose**: Final touches, documentation, and production readiness
 
-- [ ] T043 [P] Create production donation list file `donors.json` at project root (empty or with initial donors)
-- [ ] T044 [P] Set secure file permissions for `donors.json`: `chmod 600 donors.json` (document in deployment guide)
-- [ ] T045 Add donation link button/text near "Remove Ads" button in `tablechart/templates/dashboard.html` pointing to buycoffee.to
-- [ ] T046 [P] Update README.md with brief mention of ad-free access for donors
-- [ ] T047 Verify all logging statements use appropriate log levels (INFO for success, ERROR for failures)
+- [X] T043 [P] Create production donation list file `donors.json` at project root (empty or with initial donors)
+- [X] T044 [P] Set secure file permissions for `donors.json`: `chmod 600 donors.json` (document in deployment guide)
+- [X] T045 Add donation link button/text near "Remove Ads" button in `tablechart/templates/dashboard.html` pointing to buycoffee.to
+- [X] T046 [P] Update README.md with brief mention of ad-free access for donors
+- [X] T047 Verify all logging statements use appropriate log levels (INFO for success, ERROR for failures)
 - [ ] T048 Test error scenario: delete/rename `donors.json`, verify graceful failure (ads shown, error logged)
 - [ ] T049 Test concurrent requests: simulate multiple users verifying emails simultaneously
 - [ ] T050 Cross-browser testing: verify functionality in Chrome, Firefox, Safari, Edge
-- [ ] T051 Accessibility audit: verify modal has proper ARIA labels, keyboard navigation works
-- [ ] T052 Performance audit: run Lighthouse, verify <2s page load, no performance regressions
-- [ ] T053 Security review: verify cookie attributes (HttpOnly, Secure, SameSite), CSRF protection enabled
-- [ ] T054 [P] Documentation: update quickstart.md with production deployment notes if needed
+- [X] T051: Accessibility audit: verify modal has proper ARIA labels, keyboard navigation works
+- [ ] T052: Performance audit: run Lighthouse, verify <2s page load, no performance regressions
+- [X] T053: Security review: verify cookie attributes (HttpOnly, Secure, SameSite), CSRF protection enabled
+- [X] T054 [P] Documentation: update quickstart.md with production deployment notes if needed
 - [ ] T055 Create pull request with feature branch, include testing checklist from quickstart.md
 
 ---

@@ -56,9 +56,26 @@
         <span class="d-none d-lg-block">basen.bialystok.pl <sup>beta</sup></span>
         <span class="d-block d-lg-none font-size-mobile">basen.bialystok.pl <sup>beta</sup></span>
       </a>
-      <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
-        <i class="bi bi-moon-fill" id="darkModeIcon"></i>
-      </button>
+      <div class="d-flex align-items-center gap-3">
+        <!-- Ad-Free Status Indicator -->
+        {% if request.COOKIES.ad_free_session %}
+        <div class="ad-free-indicator d-flex align-items-center gap-2">
+          <span class="badge bg-success d-flex align-items-center gap-1">
+            <i class="bi bi-check-circle-fill"></i>
+            <span class="d-none d-md-inline">Tryb bez reklam</span>
+            <span class="d-inline d-md-none">Bez reklam</span>
+          </span>
+          <a href="/api/logout-ad-free/" class="btn btn-sm btn-outline-secondary" title="Przywróć reklamy">
+            <i class="bi bi-box-arrow-right"></i>
+            <span class="d-none d-lg-inline">Wyloguj</span>
+          </a>
+        </div>
+        {% endif %}
+        
+        <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode">
+          <i class="bi bi-moon-fill" id="darkModeIcon"></i>
+        </button>
+      </div>
     </div><!-- End Logo -->
   </header><!-- End Header -->
 
@@ -104,6 +121,9 @@
 
 <!-- JavaScript dla chatbota -->
 <script src="{% static 'assets/js/chatbot-widget.js' %}"></script>
+
+<!-- Donor email verification -->
+<script src="{% static 'assets/js/donor-verification.js' %}"></script>
 
 </body>
 

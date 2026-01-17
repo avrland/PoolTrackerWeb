@@ -1,0 +1,66 @@
+<!-- Email Verification Modal for Donor Ad-Free Access -->
+<div class="modal fade" id="donorVerificationModal" tabindex="-1" aria-labelledby="donorVerificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="donorVerificationModalLabel">
+          <i class="bi bi-gift-fill text-success me-2"></i>Usuń reklamy - Weryfikacja wsparcia
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">
+          Dziękujemy za wsparcie projektu! Wpisz adres e-mail użyty przy wspieraniu, aby cieszyć się stroną bez reklam przez 365 dni.
+        </p>
+        
+        <form id="donorVerificationForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="donorEmail" class="form-label">Adres e-mail</label>
+            <input 
+              type="email" 
+              class="form-control" 
+              id="donorEmail" 
+              name="email"
+              placeholder="your@email.com" 
+              required
+              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            >
+            <div class="invalid-feedback" id="emailError">
+              Please enter a valid email address.
+            </div>
+          </div>
+          
+          <!-- Success message (hidden by default) -->
+          <div class="alert alert-success d-none" id="successMessage" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>Success!</strong> Ad-free access granted for 365 days. Page will reload...
+          </div>
+          
+          <!-- Error message (hidden by default) -->
+          <div class="alert alert-danger d-none" id="errorMessage" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span id="errorText">Wystąpił błąd. Spróbuj ponownie.</span>
+          </div>
+          
+          <!-- Not found message with donation link -->
+          <div class="alert alert-warning d-none" id="notFoundMessage" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>E-mail nie znaleziony na liście wspierających.</strong>
+            <p class="mb-2 mt-2">Nie wsparłeś jeszcze? Wesprzyj projekt, aby cieszyć się stroną bez reklam!</p>
+            <a href="{{ BUYCOFFEE_URL }}" target="_blank" class="btn btn-sm btn-warning">
+              <i class="bi bi-cup-hot-fill me-1"></i>Wesprzyj przez BuyCoffee
+            </a>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+        <button type="submit" form="donorVerificationForm" class="btn btn-primary" id="verifyBtn">
+          <span class="spinner-border spinner-border-sm d-none me-2" id="verifySpinner" role="status" aria-hidden="true"></span>
+          <span id="verifyBtnText">Zweryfikuj e-mail</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

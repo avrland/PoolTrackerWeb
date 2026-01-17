@@ -9,6 +9,7 @@ Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/
 - max lines showing max pool cap
 - charts are zoomable, right click brings back to standard view 
 - dashboard showing % occupancy live for each pool, colouring red when it's over 80%, green when below
+- **ad-free experience for supporters**: donors can verify their email to remove ads for 365 days
 
 ## Installation (for local development)
 
@@ -35,6 +36,9 @@ DB_PORT=
 SECRET_KEY=
 OPENWEATHER_API_KEY=
 GEMINI_API_KEY=
+DONATION_LIST_PATH=donors.json
+GODMODE_EMAIL=test@pooltrackerdev.local
+BUYCOFFEE_URL=https://buycoffee.to/pooltracker
 ```
 5. Run django server
 ```

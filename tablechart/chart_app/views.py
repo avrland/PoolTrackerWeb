@@ -13,8 +13,15 @@ import pytz
 import requests
 from django.conf import settings
 from django.views.decorators.http import require_GET
+import json
+import logging
 
-ver_num = "0.2.12"
+# Import ad-free utilities
+from chart_app.utils.ad_free import verify_donor_email, validate_email
+
+logger = logging.getLogger(__name__)
+
+ver_num = "0.2.13"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -40,7 +47,7 @@ def content_view(request):
                             'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
                             'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0",
                             'session_id': request.session.session_key,
-                            'opening': days_until_opening()})
+                            'opening': days_until_opening(), 'BUYCOFFEE_URL': settings.BUYCOFFEE_URL})
     
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
 
@@ -67,7 +74,7 @@ def content_view(request):
                                             'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
                                             'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
                                             'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
-                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening(), 'session_id': request.session.session_key})
+                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening(), 'session_id': request.session.session_key, 'BUYCOFFEE_URL': settings.BUYCOFFEE_URL})
 
 def stats_view(request, weekday):
     data = cache.get('fulldata')
@@ -229,3 +236,112 @@ def get_weather_data():
         return weather
     except requests.RequestException:
         return None
+
+
+# ============================================================================
+# Google Ads Donor Verification Views
+# ============================================================================
+
+class VerifyDonorEmailView(View):
+    """
+    POST endpoint for verifying donor email and setting ad-free cookie.
+    
+    Returns:
+        200: Email verified, cookie set
+        400: Invalid email format or missing field
+        404: Email not in donor list
+        500: Server error (donor list missing/corrupted)
+    """
+    
+    def post(self, request):
+        try:
+            # Parse JSON body
+            data = json.loads(request.body)
+            email = data.get('email', '').strip()
+            
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Email field is required'
+                }, status=400)
+            
+            # Validate email format
+            validated_email = validate_email(email)
+            if not validated_email:
+                logger.warning(f"Email verification attempt with invalid format: {email}")
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Nieprawidłowy format adresu e-mail'
+                }, status=400)
+            
+            # Verify donor email
+            is_donor = verify_donor_email(validated_email)
+            
+            if is_donor:
+                # Create response with success message
+                response = JsonResponse({
+                    'success': True,
+                    'message': 'Dostęp bez reklam przyznany! Dziękujemy za wsparcie.',
+                    'expires_in_days': 365
+                })
+                
+                # Set ad-free cookie (365 days = 31536000 seconds)
+                response.set_cookie(
+                    key='ad_free_session',
+                    value=validated_email,
+                    max_age=31536000,  # 365 days
+                    httponly=True,
+                    secure=not settings.DEBUG,  # HTTPS only in production
+                    samesite='Lax',
+                    path='/'
+                )
+                
+                logger.info(f"Ad-free cookie set for: {validated_email}")
+                return response
+            else:
+                # Email not found in donor list
+                logger.info(f"Email verification failed - not in donor list: {validated_email}")
+                return JsonResponse({
+                    'success': False,
+                    'error': 'E-mail nie znaleziony na liście wspierających',
+                    'donation_link': settings.BUYCOFFEE_URL
+                }, status=404)
+                
+        except json.JSONDecodeError:
+            logger.error("Email verification failed: invalid JSON in request body")
+            return JsonResponse({
+                'success': False,
+                'error': 'Nieprawidłowy format żądania'
+            }, status=400)
+            
+        except Exception as e:
+            logger.error(f"Email verification failed with unexpected error: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.'
+            }, status=500)
+
+
+class LogoutAdFreeView(View):
+    """
+    GET endpoint for removing ad-free cookie and redirecting to homepage.
+    """
+    
+    def get(self, request):
+        from django.shortcuts import redirect
+        
+        response = redirect('/')
+        
+        # Delete ad-free cookie by setting max_age=0
+        response.set_cookie(
+            key='ad_free_session',
+            value='',
+            max_age=0,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite='Lax',
+            path='/'
+        )
+        
+        logger.info("Ad-free session logged out")
+        return response

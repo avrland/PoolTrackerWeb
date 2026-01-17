@@ -20,7 +20,39 @@
     position: relative;
   }
 
+  .ad-free-banner {
+    margin-bottom: 1.5rem;
+  }
+
 </style>
+
+<!-- Ad-Free Status / Remove Ads Banner -->
+{% if request.COOKIES.ad_free_session %}
+  <!-- Ad-Free Active Status -->
+  <div class="alert alert-success ad-free-banner d-flex align-items-center justify-content-between" role="alert">
+    <div>
+      <i class="bi bi-check-circle-fill me-2"></i>
+      <strong>Tryb bez reklam aktywny!</strong> Dziękujemy za wsparcie.
+    </div>
+  </div>
+{% else %}
+  <!-- Remove Ads Button -->
+  <div class="alert alert-info ad-free-banner d-flex align-items-center justify-content-between flex-wrap gap-2" role="alert">
+    <div>
+      <i class="bi bi-gift-fill me-2"></i>
+      <strong>Wesprzyj projekt</strong> i ciesz się stroną bez reklam!
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ BUYCOFFEE_URL }}" target="_blank" class="btn btn-sm btn-success" title="Wesprzyj projekty przez dotację">
+        <i class="bi bi-heart-fill me-1"></i>Wesprzyj
+      </a>
+      <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#donorVerificationModal">
+        <i class="bi bi-x-circle me-1"></i>Usuń reklamy
+      </button>
+    </div>
+  </div>
+{% endif %}
+
 <div class="row"> <!-- Current number of people -->
     <!-- Small -->
     <div class="col-xxl-4 col-md-6">
