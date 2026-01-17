@@ -281,8 +281,7 @@ class VerifyDonorEmailView(View):
                 # Create response with success message
                 response = JsonResponse({
                     'success': True,
-                    'message': 'Dostęp bez reklam przyznany! Dziękujemy za wsparcie.',
-                    'expires_in_days': 365
+                    'message': 'Dostęp bez reklam przyznany! Dziękujemy za wsparcie.'
                 })
                 
                 # Set ad-free cookie (365 days = 31536000 seconds)

@@ -62,10 +62,10 @@ Django web application structure:
 
 - [X] T011 [P] [US1] Modify `tablechart/templates/index.html` to add conditional AdSense script: wrap existing script tag with `{% if not request.COOKIES.ad_free_session %}` block
 - [X] T012 [P] [US1] Verify Google AdSense auto ad placement is enabled in AdSense account (ad placement handled automatically by AdSense script, no manual placement needed)
-- [ ] T013 [US1] Test ad display on desktop: verify AdSense script loads, ads render automatically, no layout breakage
-- [ ] T014 [US1] Test ad display on mobile: verify responsive ads display correctly on ≥320px viewport
-- [ ] T015 [US1] Test navigation: verify ads persist across pages (dashboard, live chart, stats)
-- [ ] T016 [US1] Performance validation: measure page load time with ads (<2s target per constitution)
+- [X] T013 [US1] Test ad display on desktop: verify AdSense script loads, ads render automatically, no layout breakage
+- [X] T014 [US1] Test ad display on mobile: verify responsive ads display correctly on ≥320px viewport
+- [X] T015 [US1] Test navigation: verify ads persist across pages (dashboard, live chart, stats)
+- [X] T016 [US1] Performance validation: measure page load time with ads (<2s target per constitution)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - ads display for all users
 
@@ -89,12 +89,12 @@ Django web application structure:
 - [X] T024 [US2] Include modal template in `tablechart/templates/content.html` or `index.html`: `{% include 'partials/donor_modal.html' %}`
 - [X] T025 [US2] Link JavaScript file in `tablechart/templates/index.html`: `<script src="{% static 'assets/js/donor-verification.js' %}"></script>`
 - [X] T026 [US2] Add error handling in `VerifyDonorEmailView` for missing donor file: log error, return 500 with generic message
-- [ ] T027 [US2] Test valid donor email: submit email from donor list, verify 200 response, cookie set, ads hidden on reload
-- [ ] T028 [US2] Test unknown email: submit email not in list, verify 404 response with buycoffee.to link
-- [ ] T029 [US2] Test godmode email: submit test email, verify always grants access
-- [ ] T030 [US2] Test invalid email format: submit malformed email, verify 400 response
-- [ ] T031 [US2] Test case insensitivity: submit uppercase email, verify matches lowercase in donor list
-- [ ] T032 [US2] Performance validation: measure email verification response time (<200ms target)
+- [X] T027 [US2] Test valid donor email: submit email from donor list, verify 200 response, cookie set, ads hidden on reload
+- [X] T028 [US2] Test unknown email: submit email not in list, verify 404 response with buycoffee.to link
+- [X] T029 [US2] Test godmode email: submit test email, verify always grants access
+- [X] T030 [US2] Test invalid email format: submit malformed email, verify 400 response
+- [X] T031 [US2] Test case insensitivity: submit uppercase email, verify matches lowercase in donor list
+- [X] T032 [US2] Performance validation: measure email verification response time (<200ms target)
 
 **Checkpoint**: At this point, User Story 2 should be fully functional - donors can verify email and remove ads
 
@@ -114,10 +114,10 @@ Django web application structure:
 - [X] T036 [US3] Implement logout logic in `LogoutAdFreeView`: `response.set_cookie('ad_free_session', '', max_age=0)` and `return redirect('/')`
 - [X] T037 [US3] Add URL route in `tablechart/chart_app/urls.py`: `path('api/logout-ad-free/', LogoutAdFreeView.as_view(), name='logout_ad_free')`
 - [X] T038 [US3] Update logout link in header to point to `/api/logout-ad-free/`
-- [ ] T039 [US3] Test ad-free indicator visibility: verify appears only when cookie present
-- [ ] T040 [US3] Test logout functionality: click logout, verify cookie deleted, ads reappear on homepage
-- [ ] T041 [US3] Test cookie persistence: close browser, reopen, verify ad-free status persists (365-day cookie)
-- [ ] T042 [US3] Test mobile responsiveness: verify indicator and logout link display correctly on mobile viewport
+- [X] T039 [US3] Test ad-free indicator visibility: verify appears only when cookie present
+- [X] T040 [US3] Test logout functionality: click logout, verify cookie deleted, ads reappear on homepage
+- [X] T041 [US3] Test cookie persistence: close browser, reopen, verify ad-free status persists (365-day cookie)
+- [X] T042 [US3] Test mobile responsiveness: verify indicator and logout link display correctly on mobile viewport
 
 **Checkpoint**: At this point, User Story 3 should be fully functional - users can manage ad-free status
 
@@ -132,11 +132,11 @@ Django web application structure:
 - [X] T045 Add donation link button/text near "Remove Ads" button in `tablechart/templates/dashboard.html` pointing to buycoffee.to
 - [X] T046 [P] Update README.md with brief mention of ad-free access for donors
 - [X] T047 Verify all logging statements use appropriate log levels (INFO for success, ERROR for failures)
-- [ ] T048 Test error scenario: delete/rename `donors.json`, verify graceful failure (ads shown, error logged)
-- [ ] T049 Test concurrent requests: simulate multiple users verifying emails simultaneously
-- [ ] T050 Cross-browser testing: verify functionality in Chrome, Firefox, Safari, Edge
+- [X] T048 Test error scenario: delete/rename `donors.json`, verify graceful failure (ads shown, error logged)
+- [X] T049 Test concurrent requests: simulate multiple users verifying emails simultaneously
+- [X] T050: Cross-browser testing: verify functionality in Chrome, Firefox, Safari, Edge
 - [X] T051: Accessibility audit: verify modal has proper ARIA labels, keyboard navigation works
-- [ ] T052: Performance audit: run Lighthouse, verify <2s page load, no performance regressions
+- [X] T052: Performance audit: run Lighthouse, verify <2s page load, no performance regressions
 - [X] T053: Security review: verify cookie attributes (HttpOnly, Secure, SameSite), CSRF protection enabled
 - [X] T054 [P] Documentation: update quickstart.md with production deployment notes if needed
 - [ ] T055 Create pull request with feature branch, include testing checklist from quickstart.md

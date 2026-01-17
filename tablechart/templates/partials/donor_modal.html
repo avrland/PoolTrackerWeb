@@ -10,7 +10,7 @@
       </div>
       <div class="modal-body">
         <p class="text-muted mb-3">
-          Dziękujemy za wsparcie projektu! Wpisz adres e-mail użyty przy wspieraniu, aby cieszyć się stroną bez reklam przez 365 dni.
+          Dziękujemy za wsparcie projektu! Wpisz adres e-mail użyty przy wspieraniu, aby cieszyć się stroną bez reklam.
         </p>
         
         <form id="donorVerificationForm">
@@ -22,19 +22,19 @@
               class="form-control" 
               id="donorEmail" 
               name="email"
-              placeholder="your@email.com" 
+              placeholder="twoj@email.com" 
               required
-              pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+              pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
             >
             <div class="invalid-feedback" id="emailError">
-              Please enter a valid email address.
+              Wprowadź poprawny adres e-mail.
             </div>
           </div>
           
           <!-- Success message (hidden by default) -->
           <div class="alert alert-success d-none" id="successMessage" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
-            <strong>Success!</strong> Ad-free access granted for 365 days. Page will reload...
+            <strong>Sukces!</strong> Dostęp bez reklam przyznany. Strona zostanie przeładowana...
           </div>
           
           <!-- Error message (hidden by default) -->
