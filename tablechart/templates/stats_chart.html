@@ -555,6 +555,11 @@
                             loadingOverlay3.style.display = 'flex';
                         }
                         const buttonId = event.target.id;
+                        
+                        // Capture current series visibility state before update
+                        const seriesVisibility = chart2.w.globals.collapsedSeriesIndices || [];
+                        const hiddenSeries = new Set(seriesVisibility);
+                        
                         fetch(`/update_chart/${buttonId}`)
                             .then(response => response.json())
                             .then(data => {
@@ -589,6 +594,11 @@
                                         categories: data.date_stat
                                     }
                                 }, false, true);
+                                
+                                // Restore hidden series state immediately
+                                hiddenSeries.forEach(seriesIndex => {
+                                    chart2.toggleSeries(chart2.w.globals.seriesNames[seriesIndex]);
+                                });
 
                                 if (loadingOverlay3) {
                                     loadingOverlay3.style.display = 'none';
