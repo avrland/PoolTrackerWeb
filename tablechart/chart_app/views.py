@@ -21,7 +21,7 @@ from chart_app.utils.ad_free import verify_donor_email, validate_email
 
 logger = logging.getLogger(__name__)
 
-ver_num = "0.2.13"
+ver_num = "0.2.14"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
