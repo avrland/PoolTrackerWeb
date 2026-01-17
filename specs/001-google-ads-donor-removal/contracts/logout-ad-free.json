@@ -1,0 +1,80 @@
+{
+  "endpoint": "/api/logout-ad-free/",
+  "method": "GET",
+  "description": "Remove ad-free cookie and redirect to homepage with ads enabled",
+  "authentication": "None (public endpoint)",
+  
+  "request": {
+    "method": "GET",
+    "parameters": "None",
+    "headers": {
+      "Cookie": "ad_free_session={email} (if present)"
+    }
+  },
+  
+  "responses": {
+    "302": {
+      "description": "Cookie deleted, redirect to homepage",
+      "headers": {
+        "Set-Cookie": "ad_free_session=; Max-Age=0; HttpOnly; Secure; SameSite=Lax; Path=/",
+        "Location": "/"
+      },
+      "body": "Redirect (no body)"
+    }
+  },
+  
+  "behavior": {
+    "cookie_deletion": "Sets Max-Age=0 to immediately expire cookie",
+    "redirect": "Redirects to homepage (/) to show ads",
+    "idempotent": "Safe to call multiple times, even without cookie"
+  },
+  
+  "examples": {
+    "logoutWithCookie": {
+      "request": {
+        "method": "GET",
+        "url": "/api/logout-ad-free/",
+        "headers": {
+          "Cookie": "ad_free_session=user@example.com"
+        }
+      },
+      "response": {
+        "status": 302,
+        "headers": {
+          "Set-Cookie": "ad_free_session=; Max-Age=0; HttpOnly; Secure; SameSite=Lax; Path=/",
+          "Location": "/"
+        }
+      }
+    },
+    
+    "logoutWithoutCookie": {
+      "request": {
+        "method": "GET",
+        "url": "/api/logout-ad-free/"
+      },
+      "response": {
+        "status": 302,
+        "headers": {
+          "Set-Cookie": "ad_free_session=; Max-Age=0; HttpOnly; Secure; SameSite=Lax; Path=/",
+          "Location": "/"
+        }
+      }
+    }
+  },
+  
+  "performance": {
+    "target": "<50ms",
+    "expected": "<10ms"
+  },
+  
+  "testing": {
+    "unit_tests": [
+      "test_logout_deletes_cookie",
+      "test_logout_redirects_to_homepage",
+      "test_logout_without_cookie_succeeds"
+    ],
+    "integration_tests": [
+      "test_logout_shows_ads_after_redirect"
+    ]
+  }
+}

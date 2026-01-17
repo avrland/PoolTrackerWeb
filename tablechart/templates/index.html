@@ -14,8 +14,12 @@
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
 
+  <!-- Google AdSense (conditional - hidden for donors) -->
+  {% if not request.COOKIES.ad_free_session %}
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5991927434708691"
      crossorigin="anonymous"></script>
+  {% endif %}
+  
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">

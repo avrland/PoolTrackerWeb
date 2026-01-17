@@ -1,0 +1,253 @@
+{
+  "endpoint": "/api/verify-donor-email/",
+  "method": "POST",
+  "description": "Verify donor email and set ad-free cookie if found in donation list",
+  "authentication": "None (public endpoint)",
+  "rateLimit": "10 requests per hour per IP (future enhancement)",
+  
+  "request": {
+    "headers": {
+      "Content-Type": "application/json",
+      "X-CSRFToken": "Django CSRF token (required)"
+    },
+    "body": {
+      "type": "object",
+      "required": ["email"],
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Donor's email address to verify",
+          "example": "user@example.com",
+          "minLength": 5,
+          "maxLength": 254
+        }
+      }
+    }
+  },
+  
+  "responses": {
+    "200": {
+      "description": "Email verified successfully, ad-free cookie set",
+      "headers": {
+        "Set-Cookie": "ad_free_session={email}; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax; Path=/"
+      },
+      "body": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Ad-free access granted! Thank you for your support."
+          },
+          "expires_in_days": {
+            "type": "integer",
+            "example": 365
+          }
+        }
+      },
+      "example": {
+        "success": true,
+        "message": "Ad-free access granted! Thank you for your support.",
+        "expires_in_days": 365
+      }
+    },
+    
+    "404": {
+      "description": "Email not found in donor list",
+      "body": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Email not found in donor list"
+          },
+          "donation_link": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://buycoffee.to/pooltracker"
+          }
+        }
+      },
+      "example": {
+        "success": false,
+        "error": "Email not found in donor list",
+        "donation_link": "https://buycoffee.to/pooltracker"
+      }
+    },
+    
+    "400": {
+      "description": "Invalid email format or missing required fields",
+      "body": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Invalid email format"
+          }
+        }
+      },
+      "examples": [
+        {
+          "success": false,
+          "error": "Invalid email format"
+        },
+        {
+          "success": false,
+          "error": "Email field is required"
+        }
+      ]
+    },
+    
+    "500": {
+      "description": "Server error (e.g., donor list file missing or corrupted)",
+      "body": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Unable to verify donation at this time. Please try again later."
+          }
+        }
+      },
+      "example": {
+        "success": false,
+        "error": "Unable to verify donation at this time. Please try again later."
+      }
+    }
+  },
+  
+  "examples": {
+    "validDonor": {
+      "request": {
+        "method": "POST",
+        "url": "/api/verify-donor-email/",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "abc123def456"
+        },
+        "body": {
+          "email": "john.doe@example.com"
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Set-Cookie": "ad_free_session=john.doe@example.com; Max-Age=31536000; HttpOnly; Secure; SameSite=Lax; Path=/"
+        },
+        "body": {
+          "success": true,
+          "message": "Ad-free access granted! Thank you for your support.",
+          "expires_in_days": 365
+        }
+      }
+    },
+    
+    "godmodeEmail": {
+      "request": {
+        "method": "POST",
+        "url": "/api/verify-donor-email/",
+        "body": {
+          "email": "test@pooltrackerdev.local"
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "message": "Ad-free access granted! Thank you for your support.",
+          "expires_in_days": 365
+        }
+      }
+    },
+    
+    "notFound": {
+      "request": {
+        "method": "POST",
+        "url": "/api/verify-donor-email/",
+        "body": {
+          "email": "unknown@example.com"
+        }
+      },
+      "response": {
+        "status": 404,
+        "body": {
+          "success": false,
+          "error": "Email not found in donor list",
+          "donation_link": "https://buycoffee.to/pooltracker"
+        }
+      }
+    },
+    
+    "invalidFormat": {
+      "request": {
+        "method": "POST",
+        "url": "/api/verify-donor-email/",
+        "body": {
+          "email": "not-an-email"
+        }
+      },
+      "response": {
+        "status": 400,
+        "body": {
+          "success": false,
+          "error": "Invalid email format"
+        }
+      }
+    }
+  },
+  
+  "performance": {
+    "target_p95": "200ms",
+    "expected_average": "50ms",
+    "breakdown": {
+      "validation": "<1ms",
+      "file_read_cached": "<1ms",
+      "file_read_cold": "~5ms",
+      "lookup": "<1ms",
+      "cookie_set": "~2ms"
+    }
+  },
+  
+  "security": {
+    "csrf_protection": "Required - Django CSRF token in X-CSRFToken header",
+    "rate_limiting": "10 requests/hour/IP (future)",
+    "input_validation": "Email format validated server-side",
+    "cookie_security": "HttpOnly, Secure, SameSite=Lax",
+    "error_messages": "Generic errors to prevent email enumeration"
+  },
+  
+  "testing": {
+    "unit_tests": [
+      "test_verify_valid_donor_email_success",
+      "test_verify_godmode_email_success",
+      "test_verify_unknown_email_404",
+      "test_verify_invalid_email_format_400",
+      "test_verify_missing_email_field_400",
+      "test_verify_case_insensitive_email",
+      "test_verify_whitespace_trimmed",
+      "test_cookie_attributes_set_correctly",
+      "test_missing_donor_file_500"
+    ],
+    "integration_tests": [
+      "test_full_flow_verify_and_reload",
+      "test_ads_hidden_after_verification",
+      "test_logout_clears_cookie"
+    ]
+  }
+}

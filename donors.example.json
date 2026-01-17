@@ -1,0 +1,13 @@
+{
+  "donors": [
+    {
+      "email": "example@donor.com",
+      "donation_date": "2026-01-01"
+    },
+    {
+      "email": "supporter@pool-lover.org",
+      "donation_date": "2026-01-15"
+    }
+  ],
+  "godmode_email": "test@pooltrackerdev.local"
+}
