@@ -1,6 +1,7 @@
 python-dotenv
 django
 pymysql
+cryptography
 plotly
 pandas
 whitenoise

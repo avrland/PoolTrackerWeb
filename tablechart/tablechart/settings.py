@@ -14,6 +14,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import json
+import pymysql
+
+# Configure PyMySQL as MySQLdb replacement
+pymysql.install_as_MySQLdb()
 
 load_dotenv()
 
