@@ -1,5 +1,6 @@
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django_ratelimit.decorators import ratelimit
 import json
 import uuid
 from .langchain_utils import create_conversational_chain
@@ -9,6 +10,8 @@ import pandas as pd
 import os
 import csv
 from datetime import datetime
+import bleach
+import re
 
 
 def save_chat_history(session_id, user_message, bot_response):
@@ -36,7 +39,44 @@ def chatbot_home(request):
     return render(request, 'chat_home.html')
 
 
-@csrf_exempt
+def sanitize_message(message):
+    """
+    Sanitize user input to prevent XSS and prompt injection attacks.
+    
+    Args:
+        message: User input string
+        
+    Returns:
+        Sanitized string safe for processing
+    """
+    # Remove HTML tags
+    message = bleach.clean(message, tags=[], strip=True)
+    
+    # Remove potential prompt injection patterns
+    dangerous_patterns = [
+        r'<\|.*?\|>',  # Special tokens
+        r'\[INST\]|\[/INST\]',  # Instruction markers
+        r'###.*?###',  # System prompts
+        r'\b(?:SYSTEM|ASSISTANT|USER)\s*:',  # Role markers with optional whitespace
+    ]
+    
+    for pattern in dangerous_patterns:
+        message = re.sub(pattern, '', message, flags=re.IGNORECASE)
+    
+    # Remove excessive whitespace
+    message = ' '.join(message.split())
+    
+    return message.strip()
+
+
+def get_session_key(group, request):
+    """Custom key function for session-based rate limiting"""
+    return request.session.session_key or request.META.get('REMOTE_ADDR')
+
+
+@require_http_methods(["POST"])
+@ratelimit(key='ip', rate='20/m', method='POST', block=True)
+@ratelimit(key=get_session_key, rate='30/m', method='POST', block=True)
 def chat_view(request):
     if request.method == 'POST':
         try:
@@ -47,6 +87,13 @@ def chat_view(request):
                 request.session.save()
                 session_id = request.session.session_key
 
+            # Sanitize input to prevent XSS and prompt injection
+            message = sanitize_message(message)
+
+            # Validate message length (after sanitization)
+            if not message or len(message.strip()) == 0:
+                return JsonResponse({'error': 'Wiadomość nie może być pusta'}, status=400)
+            
             # Enforce max message length 250
             if len(message) > 250:
                 message = message[:250]

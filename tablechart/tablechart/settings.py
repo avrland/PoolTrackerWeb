@@ -20,6 +20,11 @@ load_dotenv()
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
+# Google Ads Donor Removal Feature
+DONATION_LIST_PATH = os.getenv('DONATION_LIST_PATH', 'donors.json')
+GODMODE_EMAIL = os.getenv('GODMODE_EMAIL', 'test@pooltrackerdev.local')
+BUYCOFFEE_URL = os.getenv('BUYCOFFEE_URL', 'https://buycoffee.to/basen.bialystok.pl')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -141,3 +146,22 @@ else:
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security Settings (Production)
+if not DEBUG:
+    # HTTPS Security
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Browser Security
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
+# Session Security (Always enabled)
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False

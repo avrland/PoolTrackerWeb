@@ -13,8 +13,9 @@ import pytz
 import requests
 from django.conf import settings
 from django.views.decorators.http import require_GET
+from django_ratelimit.decorators import ratelimit
 
-ver_num = "0.2.11"
+ver_num = "0.2.12"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
@@ -32,8 +33,8 @@ def content_view(request):
     now = datetime.now().astimezone(pl)
     today = datetime(now.year, now.month, now.day, 6)
     with connection.cursor() as cursor:
-        sql_query = f"SELECT date, sport, family, small, ice FROM poolStats WHERE date >= '{today}' ORDER BY `poolStats`.`date` ASC"
-        cursor.execute(sql_query)
+        sql_query = "SELECT date, sport, family, small, ice FROM poolStats WHERE date >= %s ORDER BY `poolStats`.`date` ASC"
+        cursor.execute(sql_query, [today])
         data = cursor.fetchall()
     if len(data) == 0:
         return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
@@ -115,6 +116,7 @@ def update_chart(request, day):
     return JsonResponse(response_data)
 
 @require_GET
+@ratelimit(key='ip', rate='60/m', method='GET', block=True)
 def get_date_data(request):
     """Fetch occupancy data for a specific date"""
     session_id = request.headers.get('X-Session-Key') or request.GET.get('session_id')

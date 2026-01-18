@@ -10,3 +10,5 @@ langchain
 langchain-google-genai
 qdrant-client
 gunicorn
+bleach
+django-ratelimit
