@@ -149,7 +149,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security Settings (Production)
 if not DEBUG:
-    # HTTPS Security
+    # Cloudflare Proxy Configuration
+    # Cloudflare terminates SSL and forwards requests via HTTP
+    # Django needs to trust X-Forwarded-Proto header to detect HTTPS
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # HTTPS Security (works with Cloudflare)
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
