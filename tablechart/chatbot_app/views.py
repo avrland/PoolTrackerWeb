@@ -87,16 +87,16 @@ def chat_view(request):
                 request.session.save()
                 session_id = request.session.session_key
 
-            # Validate message length
+            # Sanitize input to prevent XSS and prompt injection
+            message = sanitize_message(message)
+
+            # Validate message length (after sanitization)
             if not message or len(message.strip()) == 0:
                 return JsonResponse({'error': 'Wiadomość nie może być pusta'}, status=400)
             
             # Enforce max message length 250
             if len(message) > 250:
                 message = message[:250]
-            
-            # Sanitize input to prevent XSS and prompt injection
-            message = sanitize_message(message)
 
             # Pobranie danych o basenach z cache
             pool_data_raw = cache.get('fulldata')
