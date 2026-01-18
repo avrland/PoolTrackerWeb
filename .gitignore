@@ -1,5 +1,14 @@
 tablechart/pw.json
 *.pyc
 .DS_Store
+
+# Environment files (all locations)
 .env
+**/.env
+*.env
+!.env.example
+!**/.env.example
+
+# Sensitive data files
 donors.json
+logs/chat_history.csv
