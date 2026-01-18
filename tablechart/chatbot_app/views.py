@@ -57,7 +57,7 @@ def sanitize_message(message):
         r'<\|.*?\|>',  # Special tokens
         r'\[INST\]|\[/INST\]',  # Instruction markers
         r'###.*?###',  # System prompts
-        r'SYSTEM:|ASSISTANT:|USER:',  # Role markers
+        r'\b(?:SYSTEM|ASSISTANT|USER)\s*:',  # Role markers with optional whitespace
     ]
     
     for pattern in dangerous_patterns:
