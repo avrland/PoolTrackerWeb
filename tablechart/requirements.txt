@@ -12,4 +12,3 @@ qdrant-client
 gunicorn
 bleach
 django-ratelimit
-mysqlclient
