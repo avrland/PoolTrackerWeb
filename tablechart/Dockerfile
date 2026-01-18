@@ -8,6 +8,13 @@ COPY .env .
 # Set environment variable for Django DEBUG setting
 ENV DJANGO_DEBUG=False
 
+# Install system dependencies for mysqlclient
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    gcc \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy the requirements file into the container
 COPY requirements.txt .
 

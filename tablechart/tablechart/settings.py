@@ -15,13 +15,6 @@ import os
 from dotenv import load_dotenv
 import json
 
-# Configure PyMySQL as MySQLdb replacement (only if mysqlclient not available)
-try:
-    import MySQLdb
-except ImportError:
-    import pymysql
-    pymysql.install_as_MySQLdb()
-
 load_dotenv()
 
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
