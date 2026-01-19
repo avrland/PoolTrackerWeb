@@ -15,7 +15,7 @@ from django.conf import settings
 from django.views.decorators.http import require_GET
 from django_ratelimit.decorators import ratelimit
 
-ver_num = "0.2.12"
+ver_num = "0.2.13"
 
 def content_view(request):
     #TODO do one sql query and fetch data to live view
