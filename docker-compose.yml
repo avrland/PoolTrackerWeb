@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pooltracker-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./tablechart/initdb:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+  web:
+    build: ./tablechart
+    container_name: pooltracker-web
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    volumes:
+      - logs_data:/logs
+    restart: unless-stopped
+
+  scrapper:
+    build: ./scrapper
+    container_name: pooltracker-scrapper
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - TZ=Europe/Warsaw
+    restart: unless-stopped
+
+  backup:
+    image: prodrigestivill/postgres-backup-local
+    container_name: pooltracker-backup
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      SCHEDULE: ${SCHEDULE:-@weekly}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-30}
+      BACKUP_KEEP_WEEKS: ${BACKUP_KEEP_WEEKS:-4}
+    volumes:
+      - ./backups:/backups
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  logs_data:

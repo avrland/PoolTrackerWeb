@@ -13,3 +13,6 @@ tablechart/pw.json
 # Sensitive data files
 donors.json
 logs/chat_history.csv
+
+# Database backup files (bind mount — backups stored on host, not in repo)
+backups/

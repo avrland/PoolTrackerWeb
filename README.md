@@ -35,37 +35,89 @@ python manage.py runserver
 
 ## Docker Setup (production)
 
-**Requirements**: Docker Desktop (or Docker Engine + Compose plugin)
+**Requirements**: Docker Engine ≥ 24.0 + Docker Compose v2
+
+The system runs as **4 containers** orchestrated from the repository root:
+- `pooltracker-db` — PostgreSQL 16 database
+- `pooltracker-web` — Django web application (Gunicorn on port 8000)
+- `pooltracker-scrapper` — Data scrapper (collects pool occupancy every 15 min)
+- `pooltracker-backup` — Automatic weekly database backup to `./backups/`
+
+### Quick start
 
 1. Copy and fill in the environment file:
 ```
-cd tablechart/
 cp .env.example .env
-# Edit .env — set DB_NAME, DB_USER, DB_PASSWORD, SECRET_KEY, API keys
+# Edit .env — set DB_PASSWORD, SECRET_KEY and optionally API keys
 ```
 
-2. Build and start all containers (PostgreSQL + Django):
+2. Start all containers from the repository root:
 ```
-docker compose up --build
+docker compose up -d
 ```
 
-This single command will:
-- Start a PostgreSQL 16 container and wait until it is healthy
-- Run `python manage.py migrate` automatically
-- Run `python manage.py collectstatic` automatically
-- Start Gunicorn on port 80
-
-3. To stop and preserve data:
+3. Verify all services are running:
 ```
+docker compose ps
+```
+
+Expected output:
+```
+pooltracker-db       running (healthy)
+pooltracker-web      running
+pooltracker-scrapper running
+pooltracker-backup   running
+```
+
+4. Open the app at http://localhost:8000
+
+### Environment variables
+
+All configuration is in `.env` (copy from `.env.example`):
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DB_NAME` | PostgreSQL database name | Yes |
+| `DB_USER` | PostgreSQL user | Yes |
+| `DB_PASSWORD` | PostgreSQL password | Yes |
+| `SECRET_KEY` | Django secret key (min 50 chars) | Yes |
+| `DJANGO_DEBUG` | Django debug mode (`False` in production) | No |
+| `GEMINI_API_KEY` | Gemini API key for chatbot | No |
+| `SCHEDULE` | Backup schedule (default: `@weekly`) | No |
+| `BACKUP_KEEP_DAYS` | Days to keep backups (default: `30`) | No |
+
+### Verifying the scrapper
+
+After 15 minutes, check that data is being collected:
+```
+docker compose exec db psql -U $DB_USER -d $DB_NAME -c 'SELECT * FROM "poolStats" ORDER BY date DESC LIMIT 5;'
+```
+
+### Manual backup and restore
+
+Trigger an immediate backup:
+```
+docker compose exec backup /bin/sh -c "/backup.sh"
+```
+
+Backup files are stored in `./backups/` on the host as `*.sql.gz` files.
+
+Restore from a backup:
+```
+gunzip -c ./backups/<filename>.sql.gz | docker compose exec -T db psql -U $DB_USER -d $DB_NAME
+```
+
+### Stop and reset
+
+```
+# Stop containers (preserves data)
 docker compose down
-```
 
-4. To reset everything including the database:
-```
+# Stop and delete all data (including database!)
 docker compose down -v
 ```
 
-For detailed troubleshooting see [specs/001-postgres-docker-setup/quickstart.md](specs/001-postgres-docker-setup/quickstart.md).
+For detailed troubleshooting see [specs/002-scrapper-docker-integration/quickstart.md](specs/002-scrapper-docker-integration/quickstart.md).
 
 ## Repository sctructure
 ```
