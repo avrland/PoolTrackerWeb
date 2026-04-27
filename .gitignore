@@ -1,6 +1,7 @@
 tablechart/pw.json
 *.pyc
 .DS_Store
+**/staticfiles/
 
 # Environment files (all locations)
 .env

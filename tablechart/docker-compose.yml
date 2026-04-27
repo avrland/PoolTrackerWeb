@@ -1,22 +1,41 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: pooltracker-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
   web:
     build: .
-    container_name: django-tablechart
+    container_name: pooltracker-web
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
-      - "80:8000"
+      - "8000:8000"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
-      - DJANGO_DEBUG=False
     env_file:
       - .env
     volumes:
       - logs_data:/logs
     restart: unless-stopped
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-             gunicorn tablechart.wsgi:application --bind 0.0.0.0:8000 --workers 3 --log-level info"
+
 volumes:
+  postgres_data:
   logs_data:

@@ -23,7 +23,7 @@ def content_view(request):
         request.session.save()
 
     with connection.cursor() as cursor:
-        sql_query = f"SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY `poolStats_history`.`time` ASC"
+        sql_query = "SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY time ASC"
         cursor.execute(sql_query)
         fulldata = cursor.fetchall()
         cache.set('fulldata', fulldata)
@@ -33,7 +33,7 @@ def content_view(request):
     now = datetime.now().astimezone(pl)
     today = datetime(now.year, now.month, now.day, 6)
     with connection.cursor() as cursor:
-        sql_query = "SELECT date, sport, family, small, ice FROM poolStats WHERE date >= %s ORDER BY `poolStats`.`date` ASC"
+        sql_query = 'SELECT date, sport, family, small, ice FROM "poolStats" WHERE date >= %s ORDER BY date ASC'
         cursor.execute(sql_query, [today])
         data = cursor.fetchall()
     if len(data) == 0:
@@ -147,7 +147,7 @@ def get_date_data(request):
         
         # Query database for the selected date range
         with connection.cursor() as cursor:
-            sql_query = "SELECT date, sport, family, small, ice FROM poolStats WHERE date >= %s AND date <= %s ORDER BY `poolStats`.`date` ASC"
+            sql_query = 'SELECT date, sport, family, small, ice FROM "poolStats" WHERE date >= %s AND date <= %s ORDER BY date ASC'
             cursor.execute(sql_query, [start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')])
             data = cursor.fetchall()
         
@@ -221,6 +221,7 @@ def get_weather_data():
         response.raise_for_status()
         data = response.json()
         print(data)
+        print("WEATHER DATA FETCHED SUCCESSFULLY")
         weather = {
             'icon': data['weather'][0]['icon'],
             'description': data['weather'][0]['description'].capitalize(),

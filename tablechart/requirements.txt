@@ -1,6 +1,6 @@
 python-dotenv
 django
-mysqlclient
+psycopg2-binary
 plotly
 pandas
 whitenoise
@@ -12,4 +12,4 @@ qdrant-client
 gunicorn
 bleach
 django-ratelimit
-pymysql
+pytz

@@ -1,7 +1,7 @@
 # PoolTrackerWeb
 ![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
-Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
+Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker PostgreSQL database, puts it on line chart and does some calculations.
 
 ## Features
 - occupancy live chart for current day (for my observed pools it's from 6:00 AM)
@@ -12,40 +12,60 @@ Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/
 
 ## Installation (for local development)
 
-1. Use latest python, install pip requirments
-```
-pip install django pymysql plotly pandas
-```
-2. Clone repo
+1. Clone repo
 ```
 git clone https://github.com/avrland/PoolTrackerWeb.git
+cd PoolTrackerWeb/tablechart
 ```
-3. Generate django secret key.
-```python
-from django.core.management.utils import get_random_secret_key
-print(get_random_secret_key())
+2. Install requirements
 ```
-4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker), django secret key, gemini api key, openweathermap api key into .env file:
-```env
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-SECRET_KEY=
-OPENWEATHER_API_KEY=
-GEMINI_API_KEY=
+pip install -r requirements.txt
 ```
-5. Run django server
+3. Copy and fill in the environment file:
 ```
-python manage.py runserver 0.0.0.0:80
+cp .env.example .env
+```
+Edit `.env` and set your database credentials, Django secret key, and API keys.
+
+4. Run Django migrations and start the dev server:
+```
+python manage.py migrate
+python manage.py runserver
 ```
 
-## Docker image (for production)
+## Docker Setup (production)
+
+**Requirements**: Docker Desktop (or Docker Engine + Compose plugin)
+
+1. Copy and fill in the environment file:
 ```
-docker compose build --no-cache
-docker compose up -d
+cd tablechart/
+cp .env.example .env
+# Edit .env — set DB_NAME, DB_USER, DB_PASSWORD, SECRET_KEY, API keys
 ```
+
+2. Build and start all containers (PostgreSQL + Django):
+```
+docker compose up --build
+```
+
+This single command will:
+- Start a PostgreSQL 16 container and wait until it is healthy
+- Run `python manage.py migrate` automatically
+- Run `python manage.py collectstatic` automatically
+- Start Gunicorn on port 80
+
+3. To stop and preserve data:
+```
+docker compose down
+```
+
+4. To reset everything including the database:
+```
+docker compose down -v
+```
+
+For detailed troubleshooting see [specs/001-postgres-docker-setup/quickstart.md](specs/001-postgres-docker-setup/quickstart.md).
 
 ## Repository sctructure
 ```
