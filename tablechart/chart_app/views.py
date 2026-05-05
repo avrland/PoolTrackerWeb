@@ -23,7 +23,7 @@ def content_view(request):
         request.session.save()
 
     with connection.cursor() as cursor:
-        sql_query = "SELECT weekday, time, sport, family, small, ice FROM poolStats_history ORDER BY time ASC"
+        sql_query = "SELECT weekday, time, sport, family, small, ice FROM poolstats_history ORDER BY time ASC"
         cursor.execute(sql_query)
         fulldata = cursor.fetchall()
         cache.set('fulldata', fulldata)
@@ -70,9 +70,22 @@ def content_view(request):
                                             'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
                                             'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening(), 'session_id': request.session.session_key})
 
-def stats_view(request, weekday):
+def _load_fulldata():
+    """Load historical data from cache or DB fallback."""
     data = cache.get('fulldata')
-    if len(data) == 0:
+    if not data:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT weekday, time, sport, family, small, ice FROM poolstats_history ORDER BY time ASC"
+            )
+            data = cursor.fetchall()
+        if data:
+            cache.set('fulldata', data)
+    return data
+
+def stats_view(request, weekday):
+    data = _load_fulldata()
+    if not data or len(data) == 0:
         stats_chart = render_to_string('stats_chart.html', {'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0})
         return stats_chart   
     pl = pytz.timezone('Europe/Warsaw')
@@ -84,7 +97,11 @@ def stats_view(request, weekday):
     weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
     df_sunday = df[df['weekday'] == weekday_names_en[weekday]]
     time_sunday = df_sunday['time']
-    time_sunday_formatted = [dt.strftime("%H:%M") for dt in time_sunday]
+    # T012: subtract 1h to correct scrapper's +1h offset stored in naive TIME column
+    time_sunday_formatted = [
+        (datetime.combine(datetime.today().date(), t) - timedelta(hours=1)).strftime("%H:%M")
+        for t in time_sunday
+    ]
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
@@ -94,8 +111,8 @@ def stats_view(request, weekday):
     return stats_chart
 
 def update_chart(request, day):
-    data = cache.get('fulldata')   
-    if len(data) == 0:
+    data = _load_fulldata()
+    if not data or len(data) == 0:
         response_data = {'today': 0, 'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0}
         return JsonResponse(response_data)
     
@@ -104,7 +121,11 @@ def update_chart(request, day):
     weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
     df_sunday = df[df['weekday'] == weekday_names_en[day]]
     time_sunday = df_sunday['time']
-    time_sunday_formatted = [dt.strftime("%H:%M") for dt in time_sunday]
+    # T011: subtract 1h to correct scrapper's +1h offset stored in naive TIME column
+    time_sunday_formatted = [
+        (datetime.combine(datetime.today().date(), t) - timedelta(hours=1)).strftime("%H:%M")
+        for t in time_sunday
+    ]
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
@@ -196,6 +217,84 @@ def handler404(request, exception):
     return render(request, '404.html', status=404)
 
 
+@require_GET
+def api_current_view(request):
+    """Return current pool occupancy data as JSON for the React SPA frontend."""
+    if not request.session.session_key:
+        request.session.save()
+
+    # Populate fulldata cache so update_chart/stats<day> endpoints work
+    # (previously done by content_view on every page load)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT weekday, time, sport, family, small, ice FROM poolstats_history ORDER BY time ASC"
+        )
+        fulldata = cursor.fetchall()
+        cache.set('fulldata', fulldata)
+
+    pl = pytz.timezone('Europe/Warsaw')
+    now = datetime.now().astimezone(pl)
+    today = datetime(now.year, now.month, now.day, 6)
+
+    with connection.cursor() as cursor:
+        sql_query = 'SELECT date, sport, family, small, ice FROM "poolStats" WHERE date >= %s ORDER BY date ASC'
+        cursor.execute(sql_query, [today])
+        data = cursor.fetchall()
+
+    if len(data) == 0:
+        return JsonResponse({
+            'date': [],
+            'sport': [],
+            'family': [],
+            'small': [],
+            'ice': [],
+            'lastdate': 'Brak danych z bieżącego dnia.',
+            'lastsport': 0,
+            'lastfamily': 0,
+            'lastsmall': 0,
+            'lastice': 0,
+            'sport_percent': 0,
+            'family_percent': 0,
+            'small_percent': 0,
+            'ice_percent': 0,
+            'session_id': request.session.session_key,
+            'opening': days_until_opening(),
+        })
+
+    df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
+    tz = pytz.timezone('Europe/Warsaw')
+    date_series = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+
+    sport = df['sport']
+    family = df['family']
+    small = df['small']
+    ice = df['ice']
+
+    last_sport = int(sport.iloc[-1])
+    last_family = int(family.iloc[-1])
+    last_small = int(small.iloc[-1])
+    last_ice = int(ice.iloc[-1])
+
+    return JsonResponse({
+        'date': list(date_series.dt.strftime('%Y-%m-%d %H:%M')),
+        'sport': list(sport),
+        'family': list(family),
+        'small': list(small),
+        'ice': list(ice),
+        'lastdate': df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M'),
+        'lastsport': last_sport,
+        'lastfamily': last_family,
+        'lastsmall': last_small,
+        'lastice': last_ice,
+        'sport_percent': round((last_sport / 105) * 100),
+        'family_percent': round((last_family / 150) * 100),
+        'small_percent': round((last_small / 30) * 100),
+        'ice_percent': round((last_ice / 300) * 100),
+        'session_id': request.session.session_key,
+        'opening': days_until_opening(),
+    })
+
+
 def days_until_opening():
     tz = pytz.timezone('Europe/Warsaw')
     today = datetime.now(tz)
@@ -216,19 +315,35 @@ CITY = 'Białystok,pl'
 URL = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={API_KEY}&units=metric&lang=pl'
 
 def get_weather_data():
+    """Fetch weather data for Białystok with 10-minute server-side cache."""
+    # T013: cache weather response to avoid hitting API on every request
+    cache_key = 'weather_data'
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, timeout=5)
         response.raise_for_status()
         data = response.json()
-        print(data)
-        print("WEATHER DATA FETCHED SUCCESSFULLY")
         weather = {
             'icon': data['weather'][0]['icon'],
             'description': data['weather'][0]['description'].capitalize(),
             'temp': round(data['main']['temp']),
             'feels_like': round(data['main']['feels_like']),
-            'humidity': data['main']['humidity']
+            'humidity': data['main']['humidity'],
         }
+        cache.set(cache_key, weather, 600)  # cache for 10 minutes
         return weather
     except requests.RequestException:
         return None
+
+
+@require_GET
+def api_weather_view(request):
+    """Return cached weather data for Białystok as JSON for the React frontend."""
+    weather = get_weather_data()
+    if weather is None:
+        return JsonResponse({'error': 'Usługa pogodowa niedostępna'}, status=503)
+    response = JsonResponse(weather)
+    response['Cache-Control'] = 'public, max-age=600'
+    return response

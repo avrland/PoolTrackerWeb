@@ -23,8 +23,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8000:8000"
     environment:
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
@@ -32,6 +30,16 @@ services:
       - .env
     volumes:
       - logs_data:/logs
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: pooltracker-frontend
+    depends_on:
+      web:
+        condition: service_started
+    ports:
+      - "8000:80"
     restart: unless-stopped
 
   scrapper:

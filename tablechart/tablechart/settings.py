@@ -41,6 +41,8 @@ ALLOWED_HOSTS = ['*']
 
 SESSION_COOKIE_AGE = 1800
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_HTTPONLY = True   # prevent JS access to session cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # required for React SPA same-origin cookie passing
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,6 +65,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware"
 ]
+
+# CORS — active only in development (React Vite dev server on :5173)
+# In production, nginx serves everything from the same origin — no CORS needed
+if DEBUG:
+    INSTALLED_APPS += ['corsheaders']
+    MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
+
+# CORS allowed origins (only applied when DEBUG=True)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tablechart.urls'
 

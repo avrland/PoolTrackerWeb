@@ -15,7 +15,7 @@ Build an specification that help me:
 ```text
 $ARGUMENTS
 ```
-
+Ask for any missing information you need to create a complete specification.
 You **MUST** consider the user input before proceeding (if not empty).
 
 ## Pre-Execution Checks

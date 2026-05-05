@@ -1,6 +1,7 @@
 python-dotenv
 django
 psycopg2-binary
+django-cors-headers
 plotly
 pandas
 whitenoise
