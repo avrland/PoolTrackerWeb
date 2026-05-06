@@ -84,9 +84,9 @@ export default function HistoricalChart() {
   const series = (isEmpty || isFilteredEmpty)
     ? []
     : [
-        { name: 'Sportowy', data: filteredSport },
-        { name: 'Rodzinny', data: filteredFamily },
-        { name: 'Mały',     data: filteredSmall },
+        { name: 'Pływalnia Sportowa', data: filteredSport },
+        { name: 'Pływalnia Rodzinna', data: filteredFamily },
+        { name: 'Pływalnia Kameralna', data: filteredSmall },
       ]
 
   return (

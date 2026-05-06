@@ -39,7 +39,7 @@ export default function Dashboard() {
           Wykres dnia
         </h2>
         <ErrorBoundary>
-          <TodayChart />
+          <TodayChart sessionId={sessionId} />
         </ErrorBoundary>
 
         <h2 className="section-heading" style={{ marginTop: '1.5rem' }}>

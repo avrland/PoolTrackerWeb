@@ -7,7 +7,7 @@ import PoolModal from './PoolModal.jsx'
 const POOLS = [
   {
     key: 'sport',
-    label: 'Basen Sportowy',
+    label: 'Pływalnia Sportowa',
     icon: '🏊',
     lastKey: 'lastsport',
     pctKey: 'sport_percent',
@@ -26,7 +26,7 @@ const POOLS = [
   },
   {
     key: 'family',
-    label: 'Basen Rodzinny',
+    label: 'Pływalnia Rodzinna',
     icon: '🏊',
     lastKey: 'lastfamily',
     pctKey: 'family_percent',
@@ -45,7 +45,7 @@ const POOLS = [
   },
   {
     key: 'small',
-    label: 'Basen Kameralny',
+    label: 'Pływalnia Kameralna',
     icon: '🏊',
     lastKey: 'lastsmall',
     pctKey: 'small_percent',

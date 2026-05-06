@@ -13,6 +13,7 @@ import pytz
 import requests
 from django.conf import settings
 from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django_ratelimit.decorators import ratelimit
 
 ver_num = "0.2.13"
@@ -217,6 +218,7 @@ def handler404(request, exception):
     return render(request, '404.html', status=404)
 
 
+@ensure_csrf_cookie
 @require_GET
 def api_current_view(request):
     """Return current pool occupancy data as JSON for the React SPA frontend."""
