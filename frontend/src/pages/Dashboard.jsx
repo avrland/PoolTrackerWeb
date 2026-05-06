@@ -4,6 +4,7 @@ import HistoricalChart from '../components/HistoricalChart.jsx'
 import TodayChart from '../components/TodayChart.jsx'
 import WeatherCard from '../components/WeatherCard.jsx'
 import FacebookCard from '../components/FacebookCard.jsx'
+import CountdownCard from '../components/CountdownCard.jsx'
 import DarkModeToggle from '../components/DarkModeToggle.jsx'
 import ChatbotWidget from '../components/ChatbotWidget.jsx'
 import ErrorBoundary from '../components/ErrorBoundary.jsx'
@@ -27,6 +28,9 @@ export default function Dashboard() {
         <div className="extra-cards">
           <ErrorBoundary>
             <WeatherCard />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <CountdownCard />
           </ErrorBoundary>
           <FacebookCard />
         </div>

@@ -8,6 +8,7 @@ const POOLS = [
   {
     key: 'sport',
     label: 'Basen Sportowy',
+    icon: '🏊',
     lastKey: 'lastsport',
     pctKey: 'sport_percent',
     capacity: 105,
@@ -26,6 +27,7 @@ const POOLS = [
   {
     key: 'family',
     label: 'Basen Rodzinny',
+    icon: '🏊',
     lastKey: 'lastfamily',
     pctKey: 'family_percent',
     capacity: 150,
@@ -44,6 +46,7 @@ const POOLS = [
   {
     key: 'small',
     label: 'Basen Kameralny',
+    icon: '🏊',
     lastKey: 'lastsmall',
     pctKey: 'small_percent',
     capacity: 30,
@@ -62,6 +65,7 @@ const POOLS = [
   {
     key: 'ice',
     label: 'Lodowisko',
+    icon: '⛸️',
     lastKey: 'lastice',
     pctKey: 'ice_percent',
     capacity: 300,
@@ -115,9 +119,6 @@ export default function CurrentOccupancy({ onSessionId }) {
       {isEmpty ? (
         <div style={{ padding: '1rem', textAlign: 'center', color: '#6c757d' }}>
           <p>Brak danych z bieżącego dnia.</p>
-          {data?.opening && (
-            <p>Lodowisko otwarte za: <strong>{data.opening} dni</strong></p>
-          )}
         </div>
       ) : (
         <>
@@ -138,7 +139,7 @@ export default function CurrentOccupancy({ onSessionId }) {
                     aria-label={`Godziny otwarcia: ${label}`}
                     title="Sprawdź godziny otwarcia"
                   >
-                    <span className="pool-card__icon" aria-hidden="true">🏊</span>
+                    <span className="pool-card__icon" aria-hidden="true">{pool.icon}</span>
                   </button>
                   <div className="pool-card__value">
                     {value}

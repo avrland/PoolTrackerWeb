@@ -55,11 +55,6 @@ export default function TodayChart() {
     return (
       <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-muted)' }}>
         <p>Brak danych z bieżącego dnia.</p>
-        {data?.opening != null && (
-          <p>
-            Sezon otwiera się za: <strong>{data.opening} dni</strong>
-          </p>
-        )}
       </div>
     )
   }

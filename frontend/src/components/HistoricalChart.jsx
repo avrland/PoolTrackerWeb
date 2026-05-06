@@ -38,7 +38,7 @@ const CHART_OPTIONS = (categories) => ({
   },
   colors: ['#4e73df', '#1cc88a', '#f6c23e'],
   tooltip: {
-    x: { formatter: (val) => val },
+    x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
     y: { formatter: (val) => `${val} os.` },
   },
   grid: { borderColor: '#e9ecef' },
@@ -67,12 +67,26 @@ export default function HistoricalChart() {
     data.date_stat.length === 0 ||
     data.date_stat === 0
 
-  const series = isEmpty
+  // Filter out entries before 06:00 — artefacts from the scrapper UTC offset correction
+  const validIndices = isEmpty
+    ? []
+    : data.date_stat
+        .map((t, i) => (t >= '06:00' ? i : -1))
+        .filter((i) => i !== -1)
+
+  const filteredCategories = validIndices.map((i) => data.date_stat[i])
+  const filteredSport      = validIndices.map((i) => data.sport_stat[i])
+  const filteredFamily     = validIndices.map((i) => data.family_stat[i])
+  const filteredSmall      = validIndices.map((i) => data.small_stat[i])
+
+  const isFilteredEmpty = !isEmpty && filteredCategories.length === 0
+
+  const series = (isEmpty || isFilteredEmpty)
     ? []
     : [
-        { name: 'Sportowy', data: data.sport_stat },
-        { name: 'Rodzinny', data: data.family_stat },
-        { name: 'Mały',     data: data.small_stat },
+        { name: 'Sportowy', data: filteredSport },
+        { name: 'Rodzinny', data: filteredFamily },
+        { name: 'Mały',     data: filteredSmall },
       ]
 
   return (
@@ -98,7 +112,7 @@ export default function HistoricalChart() {
           <div className="error-message" role="alert">
             Błąd ładowania wykresu: {error.message}
           </div>
-        ) : isEmpty ? (
+        ) : (isEmpty || isFilteredEmpty) ? (
           <p style={{ textAlign: 'center', color: '#6c757d', padding: '1rem' }}>
             Brak danych historycznych dla{' '}
             <strong>{data?.today ?? DAY_NAMES_FULL[selectedDay]}</strong>.
@@ -107,7 +121,7 @@ export default function HistoricalChart() {
           <Chart
             type="line"
             height={280}
-            options={CHART_OPTIONS(data.date_stat)}
+            options={CHART_OPTIONS(filteredCategories)}
             series={series}
           />
         )}
