@@ -165,6 +165,22 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Validate that tests pass and coverage meets requirements
    - Confirm the implementation follows the technical plan
    - Report final status with summary of completed work
+   - **Generate commit name and changelog**:
+     - Propose a conventional commit message (e.g. `feat(scope): short description`) summarizing all implemented changes
+     - Generate a concise **changelog** in the following format:
+       ```
+       ## Changelog
+
+       ### Added
+       - ...
+
+       ### Changed
+       - ...
+
+       ### Fixed
+       - ...
+       ```
+     - Display both the commit name and changelog clearly in the chat so the user can copy and use them
 
 Note: This command assumes a complete task breakdown exists in tasks.md. If tasks are incomplete or missing, suggest running `/speckit.tasks` first to regenerate the task list.
 
