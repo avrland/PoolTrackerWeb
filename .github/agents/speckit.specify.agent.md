@@ -7,7 +7,6 @@ handoffs:
   - label: Clarify Spec Requirements
     agent: speckit.clarify
     prompt: Clarify specification requirements
-    send: true
 ---
 
 ## User Input
@@ -216,6 +215,8 @@ Given that feature description, do this:
    d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
 
 7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/speckit.clarify` or `/speckit.plan`).
+
+   **STOP HERE. Do NOT automatically proceed to planning, clarification, or implementation. Wait for the user to explicitly choose a next step using the handoff buttons or a new command.**
 
 8. **Check for extension hooks**: After reporting completion, check if `.specify/extensions.yml` exists in the project root.
    - If it exists, read it and look for entries under the `hooks.after_specify` key
