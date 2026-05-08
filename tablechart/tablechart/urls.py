@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from chart_app.views import content_view, update_chart
 urlpatterns = [
     path('', include("chart_app.urls")),
     path('chatbot/', include('chatbot_app.urls')),

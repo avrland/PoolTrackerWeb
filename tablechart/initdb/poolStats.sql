@@ -54,4 +54,9 @@ INSERT INTO poolList (pool_name, pool_address, max_capacity) VALUES
     ('Aquapark Relaks',  'ul. Wodna 15, Kraków',       150),
     ('Basen Miejski',    'ul. Rekreacyjna 8, Poznań',  100);
 
+-- Seed poolStats from CSV file mounted by docker-compose
+COPY "poolStats" ("date", "sport", "family", "small", "ice", "guid")
+FROM '/var/lib/postgresql/poolStats.csv'
+WITH (FORMAT csv, HEADER true);
+
 COMMIT;

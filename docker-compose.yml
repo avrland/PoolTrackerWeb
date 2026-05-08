@@ -15,6 +15,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./tablechart/initdb:/docker-entrypoint-initdb.d:ro
+      - ./poolStats.csv:/var/lib/postgresql/poolStats.csv:ro
     restart: unless-stopped
 
   web:

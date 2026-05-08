@@ -95,6 +95,7 @@ export default function HistoricalChart() {
         {DAY_NAMES.map((name, idx) => (
           <button
             key={idx}
+            type="button"
             className={`day-tab${idx === selectedDay ? ' day-tab--active' : ''}`}
             onClick={() => setSelectedDay(idx)}
             aria-pressed={idx === selectedDay}

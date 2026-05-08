@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Chart from 'react-apexcharts'
-import { fetchCurrentData, fetchDateData } from '../services/api.js'
+import { fetchAvailableDates, fetchCurrentData, fetchDateData } from '../services/api.js'
 import LoadingSpinner from './LoadingSpinner.jsx'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
@@ -46,6 +46,7 @@ function formatDatePL(dateStr) {
 
 export default function TodayChart({ sessionId }) {
   const [selectedDate, setSelectedDate] = useState(todayStr())
+  const [dateError, setDateError] = useState('')
   const isToday = selectedDate === todayStr()
 
   const todayQuery = useQuery({
@@ -55,10 +56,20 @@ export default function TodayChart({ sessionId }) {
     enabled: isToday,
   })
 
+  const availableDatesQuery = useQuery({
+    queryKey: ['available-dates'],
+    queryFn: fetchAvailableDates,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const availableDates = availableDatesQuery.data?.dates ?? []
+  const availableDateSet = useMemo(() => new Set(availableDates), [availableDates])
+  const effectiveSessionId = sessionId ?? todayQuery.data?.session_id ?? null
+
   const dateQuery = useQuery({
     queryKey: ['date', selectedDate],
-    queryFn: () => fetchDateData(selectedDate, sessionId),
-    enabled: !isToday && !!sessionId,
+    queryFn: () => fetchDateData(selectedDate, effectiveSessionId),
+    enabled: !isToday && !!effectiveSessionId && availableDateSet.has(selectedDate),
     staleTime: Infinity,
   })
 
@@ -66,9 +77,20 @@ export default function TodayChart({ sessionId }) {
 
   const chartTitle = isToday ? 'Dzisiaj' : formatDatePL(selectedDate)
   const today = todayStr()
+  const minAvailableDate = availableDates.length > 0 ? availableDates[0] : undefined
+  const maxAvailableDate = availableDates.length > 0 ? availableDates[availableDates.length - 1] : today
 
   function handleDateChange(e) {
-    setSelectedDate(e.target.value)
+    const nextDate = e.target.value
+    if (!nextDate) return
+
+    if (nextDate === today || availableDateSet.has(nextDate)) {
+      setDateError('')
+      setSelectedDate(nextDate)
+      return
+    }
+
+    setDateError('Wybrany dzień nie ma danych w bazie.')
   }
 
   function handleTodayClick() {
@@ -111,21 +133,37 @@ export default function TodayChart({ sessionId }) {
           <input
             type="date"
             value={selectedDate}
-            max={today}
-            disabled={!sessionId}
+            min={minAvailableDate}
+            max={maxAvailableDate}
             onChange={handleDateChange}
+            list="available-chart-days"
             style={{
               fontSize: '0.85rem',
               padding: '0.2rem 0.4rem',
               borderRadius: '4px',
               border: '1px solid #ced4da',
-              cursor: sessionId ? 'pointer' : 'not-allowed',
-              opacity: sessionId ? 1 : 0.5,
+              cursor: availableDatesQuery.isLoading ? 'progress' : 'pointer',
+              opacity: availableDatesQuery.isLoading ? 0.7 : 1,
             }}
             aria-label="Wybierz datę"
           />
+          <datalist id="available-chart-days">
+            {availableDates.map((d) => (
+              <option key={d} value={d} />
+            ))}
+          </datalist>
         </div>
       </div>
+      {dateError && (
+        <div style={{ marginBottom: '0.5rem', color: '#b54708', fontSize: '0.85rem' }}>
+          {dateError}
+        </div>
+      )}
+      {!availableDatesQuery.isLoading && availableDates.length === 0 && (
+        <div style={{ marginBottom: '0.5rem', color: 'var(--color-muted)', fontSize: '0.85rem' }}>
+          Brak dostępnych dni historycznych w bazie.
+        </div>
+      )}
 
       {isLoading && <LoadingSpinner />}
 

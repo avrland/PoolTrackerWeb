@@ -26,16 +26,25 @@ const MOCK_DATA = {
   ice: [0, 0, 0],
   lastdate: '06.05.2026 10:00',
 }
+const AVAILABLE_DATES = ['2026-05-01', '2026-05-02', '2026-05-06']
+
+function mockUseQueryMap({
+  current = { data: MOCK_DATA, isLoading: false, isError: false },
+  date = { data: MOCK_DATA, isLoading: false, isError: false },
+  available = { data: { dates: AVAILABLE_DATES }, isLoading: false, isError: false },
+} = {}) {
+  useQuery.mockImplementation(({ queryKey }) => {
+    if (queryKey[0] === 'available-dates') return available
+    if (queryKey[0] === 'date') return date
+    return current
+  })
+}
 
 describe('TodayChart', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Default: data loaded, today's view
-    useQuery.mockReturnValue({
-      data: MOCK_DATA,
-      isLoading: false,
-      isError: false,
-    })
+    // Default: data loaded, today's view + available dates ready
+    mockUseQueryMap()
   })
 
   it('renders a date input with type="date"', () => {
@@ -56,58 +65,57 @@ describe('TodayChart', () => {
   it('shows the "Dzisiaj" button when a past date is selected', () => {
     render(<TodayChart sessionId="abc" />)
     const input = document.querySelector('input[type="date"]')
-    fireEvent.change(input, { target: { value: '2026-05-01' } })
+    fireEvent.change(input, { target: { value: AVAILABLE_DATES[0] } })
     expect(screen.getByRole('button', { name: /dzisiaj/i })).toBeInTheDocument()
   })
 
   it('clicking "Dzisiaj" button hides it again', () => {
     render(<TodayChart sessionId="abc" />)
     const input = document.querySelector('input[type="date"]')
-    fireEvent.change(input, { target: { value: '2026-05-01' } })
+    fireEvent.change(input, { target: { value: AVAILABLE_DATES[0] } })
     const btn = screen.getByRole('button', { name: /dzisiaj/i })
     fireEvent.click(btn)
     expect(screen.queryByRole('button', { name: /dzisiaj/i })).not.toBeInTheDocument()
   })
 
   it('shows "Brak danych z wybranego dnia." when API returns empty date array', () => {
-    useQuery.mockReturnValue({
-      data: { date: [], sport: [], family: [], small: [], ice: [] },
-      isLoading: false,
-      isError: false,
+    mockUseQueryMap({
+      current: {
+        data: { date: [], sport: [], family: [], small: [], ice: [] },
+        isLoading: false,
+        isError: false,
+      },
     })
     render(<TodayChart sessionId="abc" />)
     expect(screen.getByText(/Brak danych z wybranego dnia/i)).toBeInTheDocument()
   })
 
   it('shows error message on query error', () => {
-    useQuery.mockReturnValue({
-      data: undefined,
-      isLoading: false,
-      isError: true,
+    mockUseQueryMap({
+      current: { data: undefined, isLoading: false, isError: true },
     })
     render(<TodayChart sessionId="abc" />)
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 
   it('shows loading spinner while loading', () => {
-    useQuery.mockReturnValue({
-      data: undefined,
-      isLoading: true,
-      isError: false,
+    mockUseQueryMap({
+      current: { data: undefined, isLoading: true, isError: false },
     })
     render(<TodayChart sessionId="abc" />)
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
   })
 
-  it('datepicker is disabled when sessionId is null', () => {
+  it('datepicker is enabled when sessionId is null', () => {
     render(<TodayChart sessionId={null} />)
     const input = document.querySelector('input[type="date"]')
-    expect(input).toBeDisabled()
+    expect(input).not.toBeDisabled()
   })
 
-  it('datepicker is enabled when sessionId is provided', () => {
+  it('shows warning when selected day is not available in DB', () => {
     render(<TodayChart sessionId="abc" />)
     const input = document.querySelector('input[type="date"]')
-    expect(input).not.toBeDisabled()
+    fireEvent.change(input, { target: { value: '2026-05-03' } })
+    expect(screen.getByText(/nie ma danych w bazie/i)).toBeInTheDocument()
   })
 })

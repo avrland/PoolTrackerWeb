@@ -1,75 +1,14 @@
-from django.views import View
-from django.shortcuts import render
 from django.db import connection
-import datetime
-import plotly.express as px
 import pandas as pd
 from django.http import JsonResponse
-from django.template.loader import render_to_string
 from datetime import datetime, timedelta
 from django.core.cache import cache
-import time
 import pytz
 import requests
 from django.conf import settings
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django_ratelimit.decorators import ratelimit
-
-ver_num = "0.2.13"
-
-def content_view(request):
-    #TODO do one sql query and fetch data to live view
-    if not request.session.session_key:
-        request.session.save()
-
-    with connection.cursor() as cursor:
-        sql_query = "SELECT weekday, time, sport, family, small, ice FROM poolstats_history ORDER BY time ASC"
-        cursor.execute(sql_query)
-        fulldata = cursor.fetchall()
-        cache.set('fulldata', fulldata)
-    weekday = datetime.today().weekday()
-    stats_chart = stats_view(request, weekday)
-    pl = pytz.timezone('Europe/Warsaw')
-    now = datetime.now().astimezone(pl)
-    today = datetime(now.year, now.month, now.day, 6)
-    with connection.cursor() as cursor:
-        sql_query = 'SELECT date, sport, family, small, ice FROM "poolStats" WHERE date >= %s ORDER BY date ASC'
-        cursor.execute(sql_query, [today])
-        data = cursor.fetchall()
-    if len(data) == 0:
-        return render(request, 'content.html', {'lastdate': "Brak danych z bieżącego dnia.", 
-                            'lastsport' : "0", 'lastfamily' : "0", 'lastsmall': "0",
-                            'sport_percent': "0", 'family_percent': "0", 'small_percent': "0", "ice_percent": "0",
-                            'session_id': request.session.session_key,
-                            'opening': days_until_opening()})
-    
-    df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
-
-    tz = pytz.timezone('Europe/Warsaw')
-    date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
-
-    sport = df['sport']
-    family = df['family']
-    small = df['small']
-    ice = df['ice']
-
-    last_sport = sport.iloc[-1]
-    last_family = family.iloc[-1]
-    last_small = small.iloc[-1]
-    last_ice = ice.iloc[-1]
-
-    sport_percent = round((last_sport/105)*100)
-    family_percent = round((last_family/150)*100)
-    small_percent = round((last_small/30)*100)
-    ice_percent = round((last_ice/300)*100)
-    last_date = df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M')
-    return render(request, 'content.html', {'weather': get_weather_data(), 'ver_num': ver_num, 'stats_chart': stats_chart,
-                                             'date': list(date.dt.strftime('%Y-%m-%d %H:%M')),
-                                            'sport' : list(sport), 'family' : list(family), 'small': list(small), 'ice': list(ice),
-                                            'lastdate': last_date, 'lastsport' : last_sport, 'lastfamily' : last_family, 
-                                            'lastsmall': last_small, 'lastice': last_ice, 'sport_percent': sport_percent, 
-                                            'family_percent': family_percent, 'small_percent': small_percent, 'ice_percent': ice_percent, 'opening': days_until_opening(), 'session_id': request.session.session_key})
 
 def _load_fulldata():
     """Load historical data from cache or DB fallback."""
@@ -83,33 +22,6 @@ def _load_fulldata():
         if data:
             cache.set('fulldata', data)
     return data
-
-def stats_view(request, weekday):
-    data = _load_fulldata()
-    if not data or len(data) == 0:
-        stats_chart = render_to_string('stats_chart.html', {'date_stat': 0, 'sport_stat' : 0, 'family_stat' : 0, 'small_stat': 0})
-        return stats_chart   
-    pl = pytz.timezone('Europe/Warsaw')
-    now = datetime.now().astimezone(pl)
-    current_time = now.strftime("%H:%M")
-    df = pd.DataFrame(data, columns=['weekday', 'time', 'sport', 'family', 'small', 'ice'])
-    print(df)
-    weekday_names = {0: "Poniedziałek", 1: "Wtorek", 2: "Środa", 3: "Czwartek", 4: "Piątek", 5: "Sobota", 6: "Niedziela"}
-    weekday_names_en = {0: "Monday", 1: "Tuesday", 2: "Wednesday", 3: "Thursday", 4: "Friday", 5: "Saturday", 6: "Sunday"}
-    df_sunday = df[df['weekday'] == weekday_names_en[weekday]]
-    time_sunday = df_sunday['time']
-    # T012: subtract 1h to correct scrapper's +1h offset stored in naive TIME column
-    time_sunday_formatted = [
-        (datetime.combine(datetime.today().date(), t) - timedelta(hours=1)).strftime("%H:%M")
-        for t in time_sunday
-    ]
-    sport = df_sunday['sport']
-    family = df_sunday['family']
-    small = df_sunday['small']
-    stats_chart = render_to_string('stats_chart.html', {'current_time': current_time, 'today': weekday_names[weekday], 
-                                                        'date_stat': time_sunday_formatted, 'sport_stat' : list(sport), 
-                                                        'family_stat' : list(family), 'small_stat': list(small)})
-    return stats_chart
 
 def update_chart(request, day):
     data = _load_fulldata()
@@ -130,9 +42,6 @@ def update_chart(request, day):
     sport = df_sunday['sport']
     family = df_sunday['family']
     small = df_sunday['small']
-    stats_chart = render_to_string('stats_chart.html', {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 
-                                                        'sport_stat' : list(sport), 'family_stat' : list(family), 
-                                                        'small_stat': list(small)})
     response_data = {'today': weekday_names[day], 'date_stat': time_sunday_formatted, 
                      'sport_stat' : list(sport), 'family_stat' : list(family), 'small_stat': list(small)}
     return JsonResponse(response_data)
@@ -214,8 +123,16 @@ def get_date_data(request):
     except Exception:
         return JsonResponse({'error': 'Wystąpił błąd podczas pobierania danych'}, status=500)
 
-def handler404(request, exception):
-    return render(request, '404.html', status=404)
+@ensure_csrf_cookie
+@require_GET
+def api_available_dates_view(request):
+    """Return distinct available dates (YYYY-MM-DD) for day chart datepicker."""
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT DISTINCT DATE(date) AS day FROM "poolStats" ORDER BY day ASC')
+        rows = cursor.fetchall()
+
+    dates = [row[0].strftime('%Y-%m-%d') for row in rows if row and row[0]]
+    return JsonResponse({'dates': dates})
 
 
 @ensure_csrf_cookie
@@ -225,8 +142,7 @@ def api_current_view(request):
     if not request.session.session_key:
         request.session.save()
 
-    # Populate fulldata cache so update_chart/stats<day> endpoints work
-    # (previously done by content_view on every page load)
+    # Populate fulldata cache so update_chart/stats<day> endpoints work.
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT weekday, time, sport, family, small, ice FROM poolstats_history ORDER BY time ASC"
@@ -305,12 +221,6 @@ def days_until_opening():
     
     # Return just the days as integer
     return delta.days
-
-def weather_view(request):
-    weather = get_weather_data()
-    print(weather)
-    context = {'weather': weather}
-    return render(request, 'dashboard.html', context)
 
 API_KEY = settings.OPENWEATHER_API_KEY
 CITY = 'Białystok,pl'

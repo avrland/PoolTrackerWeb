@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchCurrentData } from '../services/api.js'
 import LoadingSpinner from './LoadingSpinner.jsx'
@@ -96,10 +96,11 @@ export default function CurrentOccupancy({ onSessionId }) {
     queryKey: ['current'],
     queryFn: fetchCurrentData,
     refetchInterval: 5 * 60 * 1000, // refresh every 5 minutes
-    onSuccess: (d) => {
-      if (onSessionId && d.session_id) onSessionId(d.session_id)
-    },
   })
+
+  useEffect(() => {
+    if (onSessionId && data?.session_id) onSessionId(data.session_id)
+  }, [data, onSessionId])
 
   if (isLoading) return <LoadingSpinner />
 

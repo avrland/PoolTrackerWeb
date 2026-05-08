@@ -63,6 +63,20 @@ export async function fetchDateData(date, sessionId) {
 }
 
 /**
+ * Fetches distinct days available in DB for the day chart datepicker.
+ * @returns {{dates: string[]}} dates in YYYY-MM-DD format
+ */
+export async function fetchAvailableDates() {
+  const response = await fetch(`${BASE_URL}/api/available-dates/`, {
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    throw new Error(`API error ${response.status}`)
+  }
+  return response.json()
+}
+
+/**
  * Fetches current weather data for Białystok from the backend cache.
  * Backend calls OpenWeatherMap and caches the result for 10 minutes.
  */
