@@ -16,7 +16,7 @@ export default function Dashboard() {
     <>
       <div className="dashboard">
         <header className="dashboard__header">
-          <h1>PoolTracker — Basen Białystok</h1>
+          <h1>basen.bialystok.pl</h1>
           <DarkModeToggle />
         </header>
 
@@ -42,9 +42,6 @@ export default function Dashboard() {
           <TodayChart sessionId={sessionId} />
         </ErrorBoundary>
 
-        <h2 className="section-heading" style={{ marginTop: '1.5rem' }}>
-          Statystyki historyczne
-        </h2>
         <ErrorBoundary>
           <HistoricalChart />
         </ErrorBoundary>

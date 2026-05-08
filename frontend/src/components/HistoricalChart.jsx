@@ -89,8 +89,16 @@ export default function HistoricalChart() {
         { name: 'Pływalnia Kameralna', data: filteredSmall },
       ]
 
+  if (!isLoading && !isError && (isEmpty || isFilteredEmpty)) {
+    return null
+  }
+
   return (
     <section aria-label="Wykresy historyczne">
+      <h2 className="section-heading" style={{ marginTop: '1.5rem' }}>
+        Statystyki historyczne
+      </h2>
+
       <nav className="day-tabs" aria-label="Wybór dnia tygodnia">
         {DAY_NAMES.map((name, idx) => (
           <button
@@ -113,11 +121,6 @@ export default function HistoricalChart() {
           <div className="error-message" role="alert">
             Błąd ładowania wykresu: {error.message}
           </div>
-        ) : (isEmpty || isFilteredEmpty) ? (
-          <p style={{ textAlign: 'center', color: '#6c757d', padding: '1rem' }}>
-            Brak danych historycznych dla{' '}
-            <strong>{data?.today ?? DAY_NAMES_FULL[selectedDay]}</strong>.
-          </p>
         ) : (
           <Chart
             type="line"

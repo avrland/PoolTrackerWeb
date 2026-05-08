@@ -254,7 +254,7 @@ body {
 
 /* Chart wrapper */
 .chart-wrapper {
-  padding: 0 1rem 1rem;
+  padding: 1rem;
   background: var(--color-card-bg);
   border-radius: 10px;
   margin: 0 1rem 1rem;

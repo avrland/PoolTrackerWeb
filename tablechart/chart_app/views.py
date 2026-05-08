@@ -97,7 +97,8 @@ def get_date_data(request):
         # Process the data
         df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
         tz = pytz.timezone('Europe/Warsaw')
-        date = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+        # Treat naive timestamps from DB as local Warsaw time (no double conversion)
+        date = pd.to_datetime(df['date']).dt.tz_localize(tz, ambiguous='infer')
         
         sport = df['sport']
         family = df['family']
@@ -181,7 +182,8 @@ def api_current_view(request):
 
     df = pd.DataFrame(data, columns=['date', 'sport', 'family', 'small', 'ice'])
     tz = pytz.timezone('Europe/Warsaw')
-    date_series = pd.to_datetime(df['date']).dt.tz_localize('UTC').dt.tz_convert(tz)
+    # Treat naive timestamps from DB as local Warsaw time (no double conversion)
+    date_series = pd.to_datetime(df['date']).dt.tz_localize(tz, ambiguous='infer')
 
     sport = df['sport']
     family = df['family']
@@ -199,7 +201,7 @@ def api_current_view(request):
         'family': list(family),
         'small': list(small),
         'ice': list(ice),
-        'lastdate': df['date'].iloc[-1].strftime('%d.%m.%Y %H:%M'),
+        'lastdate': date_series.iloc[-1].strftime('%d.%m.%Y %H:%M'),
         'lastsport': last_sport,
         'lastfamily': last_family,
         'lastsmall': last_small,
