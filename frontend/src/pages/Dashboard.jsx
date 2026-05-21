@@ -14,36 +14,25 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* Smart Suggestions Placeholder */}
-      <div className="hidden lg:flex bg-gradient-to-r from-primary/5 to-transparent p-4 rounded-2xl items-start gap-4 border border-primary/10">
-        <div className="bg-white p-2 rounded-xl shadow-sm border border-primary/5">
-          <span className="material-symbols-rounded text-primary text-[24px]">trending_up</span>
-        </div>
-        <div>
-          <p className="font-headline-sm text-[15px] text-on-surface font-semibold">Przewidywana zajętość</p>
-          <p className="text-[13px] text-on-surface-variant leading-relaxed mt-1">
-            System analizuje trendy. Najlepszy czas na trening to zazwyczaj godziny poranne lub późno wieczorne.
-          </p>
-        </div>
-      </div>
-
-      {/* Hero Section: Facility Cards */}
-      <ErrorBoundary>
-        <FacilityGrid onSessionId={setSessionId} />
-      </ErrorBoundary>
-
-      {/* Today Chart Section */}
-      <section className="flex flex-col gap-stack-lg">
+      {/* Hero Section: Header + Facility Cards */}
+      <section className="flex flex-col gap-6">
         <div className="flex justify-between items-end pb-2 border-b border-surface-variant/50">
           <h2 className="font-headline-lg-mobile md:text-3xl text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface/70 tracking-tight">
             Stan zajętości obiektów BOSiR
           </h2>
-          <div className="flex sm:hidden items-center gap-1.5 bg-error/10 px-2.5 py-1 rounded-full mb-1 border border-error/10">
+          <div className="flex items-center gap-1.5 bg-error/10 px-2.5 py-1 rounded-full mb-1 border border-error/10">
             <span className="w-2 h-2 rounded-full bg-error animate-pulse"></span>
             <span className="text-[10px] font-bold text-error uppercase tracking-wider">LIVE</span>
           </div>
         </div>
 
+        <ErrorBoundary>
+          <FacilityGrid onSessionId={setSessionId} />
+        </ErrorBoundary>
+      </section>
+
+      {/* Today Chart Section */}
+      <section className="flex flex-col gap-stack-lg">
         <div className="glass-panel p-5 md:p-8 flex flex-col gap-6">
           <ErrorBoundary>
             <TodayChart sessionId={sessionId} />

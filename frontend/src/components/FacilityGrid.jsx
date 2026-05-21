@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { fetchCurrentData } from '../services/api.js'
 import LoadingSpinner from './LoadingSpinner.jsx'
 
@@ -67,6 +67,7 @@ function getOccupancyColor(percent) {
 }
 
 export default function FacilityGrid({ onSessionId }) {
+  const location = useLocation()
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['current'],
     queryFn: fetchCurrentData,
@@ -155,8 +156,13 @@ export default function FacilityGrid({ onSessionId }) {
                 <span className={`text-[10px] font-semibold ${colorClass} leading-tight mt-0.5`}>{percent}%</span>
               </div>
             </div>
+            {/* 
+              Pass background state ONLY on mobile screens to trigger animated overlay.
+              On desktop, it will trigger a normal page navigation.
+            */}
             <Link 
               to={`/pool/${id}`} 
+              state={window.innerWidth < 1024 ? { background: location } : null}
               className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary hover:text-white transition-colors duration-200"
             >
               Szczegóły <span className="material-symbols-rounded text-[14px]">arrow_forward</span>
