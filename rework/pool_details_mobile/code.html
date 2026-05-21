@@ -1,0 +1,188 @@
+<!DOCTYPE html><html lang="pl"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Pływalnia Sportowa - BOSiR Live</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "outline": "#727787",
+                        "surface-tint": "#0057ce",
+                        "surface-subtle": "#F6F9FF",
+                        "occupancy-low": "#198754",
+                        "tertiary": "#405ba3",
+                        "tertiary-fixed": "#dae1ff",
+                        "tertiary-fixed-dim": "#b3c5ff",
+                        "surface-container-highest": "#e1e2ee",
+                        "on-tertiary-fixed": "#001849",
+                        "on-background": "#191b24",
+                        "background": "#faf8ff",
+                        "on-surface": "#191b24",
+                        "chart-line-1": "#0D6EFD",
+                        "surface-bright": "#faf8ff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#5c2400",
+                        "surface-variant": "#e1e2ee",
+                        "on-primary-fixed": "#001946",
+                        "surface-container-low": "#f2f3ff",
+                        "tertiary-container": "#5974be",
+                        "on-tertiary-fixed-variant": "#26438a",
+                        "on-surface-variant": "#424655",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface": "#faf8ff",
+                        "chart-line-3": "#20C997",
+                        "surface-container-high": "#e6e7f3",
+                        "secondary-fixed": "#ffdbcb",
+                        "occupancy-medium": "#FFC107",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#00419e",
+                        "chart-line-2": "#FF771D",
+                        "surface-dim": "#d8d9e5",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#fe761c",
+                        "primary-fixed": "#dae2ff",
+                        "on-primary-container": "#ffffff",
+                        "on-secondary-fixed-variant": "#783100",
+                        "secondary": "#9e4300",
+                        "on-secondary-fixed": "#341100",
+                        "surface-container": "#ecedf9",
+                        "inverse-primary": "#b1c5ff",
+                        "secondary-fixed-dim": "#ffb691",
+                        "inverse-surface": "#2d3039",
+                        "primary-fixed-dim": "#b1c5ff",
+                        "occupancy-high": "#DC3545",
+                        "primary-container": "#0d6efd",
+                        "primary": "#0057cd",
+                        "on-tertiary-container": "#ffffff",
+                        "inverse-on-surface": "#eff0fc",
+                        "outline-variant": "#c2c6d8",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "container-max": "1200px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-display": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-display": ["48px", {"lineHeight": "48px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-sm": ["16px", {"lineHeight": "24px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface-subtle font-body-md text-on-surface antialiased overflow-hidden min-h-screen">
+<!-- Faux Background Content to show overlay -->
+<div class="p-4 opacity-30 filter blur-sm">
+<div class="h-16 bg-surface-container-highest rounded-lg mb-4"></div>
+<div class="h-48 bg-surface-container-highest rounded-lg mb-4"></div>
+<div class="h-48 bg-surface-container-highest rounded-lg mb-4"></div>
+<div class="h-48 bg-surface-container-highest rounded-lg mb-4"></div>
+</div>
+<!-- Modal Overlay -->
+<div aria-modal="true" class="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-inverse-surface/40 backdrop-blur-sm transition-opacity" role="dialog">
+<!-- Modal Container -->
+<div class="bg-surface-container-lowest w-full md:w-[480px] md:max-h-[90vh] md:rounded-xl rounded-t-xl overflow-hidden flex flex-col shadow-2xl transform transition-transform translate-y-0 relative"><div class="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-surface-container-highest/60 rounded-full z-[60] md:hidden"></div>
+<!-- Hero Image Header -->
+<div class="relative h-56 md:h-64 w-full shrink-0">
+<img alt="Pływalnia Sportowa" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdtCywaOvtmac2Y_sJGwg271ruf7ILAeKCKluo8wpNjSEBSSKVna5v1VaM29gdEZjceYs7pk_h4bVIsLVTn1_zq6AFTEoomtIlrIsiK4m1XtknEyXf5y9XAJ6V-qO5qgLW5wCoyGftAGrb9mxxtScUqtw9uLlKy5dXtET4WIQwwB0kYNUz1EsEfUP1z3M40goJstmwZZEK5FGxFhg6rXZEUndvICTsrRmUdrNwAGL2j5CsEUwfxdLypgMqKQAzDgsntmAbYc2agPQ">
+<!-- Close Button (Absolute on Image) -->
+<button aria-label="Zamknij" class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-md rounded-full text-on-surface hover:bg-surface-container-highest transition-colors" onclick="window.location.href='index.html'">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Content Body -->
+<div class="flex-1 overflow-y-auto px-margin-mobile py-stack-md md:p-gutter flex flex-col gap-stack-lg">
+<!-- Header Info -->
+<div class="flex flex-col gap-stack-sm">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface">Pływalnia Sportowa</h2>
+<div class="flex items-start gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px] mt-0.5">location_on</span>
+<span class="">ul. Włókiennicza 4, 15-465 Białystok</span>
+</div>
+</div>
+<!-- Description -->
+<div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Największy obiekt sportowy w mieście, idealny do treningów pływackich i rekreacji.
+                    </p>
+</div>
+<!-- Capacity Status -->
+<div class="bg-surface p-stack-md border border-outline-variant rounded-lg flex flex-col gap-stack-sm">
+<div class="flex justify-between items-center mb-1">
+<span class="font-headline-sm text-headline-sm text-on-surface">Zapełnienie obiektu</span>
+<span class="font-headline-sm text-headline-sm text-occupancy-medium">50% zajęte</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-data-display text-data-display text-on-surface">52</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 105 osób</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden mt-1">
+<div class="h-full bg-occupancy-medium rounded-full" style="width: 50%;"></div>
+</div>
+</div>
+<!-- Opening Hours -->
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-outline mt-0.5">schedule</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface mb-1">Godziny otwarcia</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Poniedziałek - Niedziela</span>
+<span class="font-body-lg text-body-lg text-on-surface font-semibold mt-1">06:15 – 21:30</span>
+</div>
+</div>
+</div>
+<!-- Sticky Action Footer -->
+<div class="p-margin-mobile md:p-gutter bg-surface-container-lowest border-t border-outline-variant shrink-0 flex flex-col md:flex-row-reverse gap-stack-sm"><button class="w-full md:w-auto flex-1 bg-primary text-on-primary font-headline-sm text-headline-sm py-3 px-6 rounded-full hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center shadow-sm" onclick="window.location.href='index.html'">Zamknij</button><button class="w-full md:w-auto flex-1 border-2 border-primary text-primary font-headline-sm text-headline-sm py-3 px-6 rounded-full hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2"><span class="material-symbols-outlined icon-fill text-[20px]">directions</span>Nawiguj w Google Maps</button></div>
+</div>
+</div>
+
+
+
+
+</body></html>

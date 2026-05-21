@@ -9,9 +9,8 @@ const DAY_NAMES_FULL = [
   'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela',
 ]
 
-// Align JS getDay() (Sun=0) to our scale (Mon=0)
 function getTodayIndex() {
-  const jsDay = new Date().getDay() // 0=Sun
+  const jsDay = new Date().getDay()
   return jsDay === 0 ? 6 : jsDay - 1
 }
 
@@ -21,35 +20,41 @@ const CHART_OPTIONS = (categories) => ({
     toolbar: { show: false },
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
+    background: 'transparent',
+    fontFamily: 'Inter, sans-serif',
   },
-  stroke: { curve: 'smooth', width: 2 },
+  stroke: { curve: 'smooth', width: 3 },
   xaxis: {
     categories,
     tickAmount: 6,
-    labels: { rotate: 0, style: { fontSize: '11px' } },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: { rotate: 0, style: { fontSize: '11px', colors: '#727787' } },
   },
   yaxis: {
     min: 0,
-    labels: { style: { fontSize: '11px' } },
+    labels: { style: { fontSize: '11px', colors: '#727787' } },
   },
-  legend: {
-    position: 'top',
-    horizontalAlign: 'left',
+  legend: { 
+    position: 'bottom', 
+    horizontalAlign: 'center',
+    fontSize: '11px',
+    fontFamily: 'Inter',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    markers: { radius: 12 },
+    itemMargin: { horizontal: 10, vertical: 5 }
   },
-  colors: ['#4e73df', '#1cc88a', '#f6c23e'],
+  colors: ['#0D6EFD', '#FF771D', '#20C997'],
   tooltip: {
     x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
     y: { formatter: (val) => `${val} os.` },
+    theme: 'light',
   },
-  grid: { borderColor: '#e9ecef' },
-  responsive: [
-    {
-      breakpoint: 480,
-      options: {
-        legend: { position: 'bottom' },
-      },
-    },
-  ],
+  grid: { 
+    borderColor: '#e1e2ee',
+    strokeDashArray: 4,
+  },
 })
 
 export default function HistoricalChart() {
@@ -58,7 +63,7 @@ export default function HistoricalChart() {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['historical', selectedDay],
     queryFn: () => fetchHistoricalData(selectedDay),
-    staleTime: 24 * 60 * 60 * 1000, // 24 h — historical data changes rarely
+    staleTime: 24 * 60 * 60 * 1000,
   })
 
   const isEmpty =
@@ -67,7 +72,6 @@ export default function HistoricalChart() {
     data.date_stat.length === 0 ||
     data.date_stat === 0
 
-  // Filter out entries before 06:00 — artefacts from the scrapper UTC offset correction
   const validIndices = isEmpty
     ? []
     : data.date_stat
@@ -89,22 +93,18 @@ export default function HistoricalChart() {
         { name: 'Pływalnia Kameralna', data: filteredSmall },
       ]
 
-  if (!isLoading && !isError && (isEmpty || isFilteredEmpty)) {
-    return null
-  }
-
   return (
-    <section aria-label="Wykresy historyczne">
-      <h2 className="section-heading" style={{ marginTop: '1.5rem' }}>
-        Statystyki historyczne
-      </h2>
-
-      <nav className="day-tabs" aria-label="Wybór dnia tygodnia">
+    <div className="flex flex-col gap-5">
+      <nav className="flex flex-wrap gap-2" aria-label="Wybór dnia tygodnia">
         {DAY_NAMES.map((name, idx) => (
           <button
             key={idx}
             type="button"
-            className={`day-tab${idx === selectedDay ? ' day-tab--active' : ''}`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+              idx === selectedDay 
+              ? 'bg-primary text-white shadow-md' 
+              : 'bg-white text-on-surface-variant border border-outline-variant/30 hover:bg-surface-container-low'
+            }`}
             onClick={() => setSelectedDay(idx)}
             aria-pressed={idx === selectedDay}
             aria-label={DAY_NAMES_FULL[idx]}
@@ -114,22 +114,26 @@ export default function HistoricalChart() {
         ))}
       </nav>
 
-      <div className="chart-wrapper">
+      <div className="w-full h-[280px]">
         {isLoading ? (
           <LoadingSpinner />
         ) : isError ? (
-          <div className="error-message" role="alert">
+          <div className="text-error text-center p-8 bg-error/5 rounded-2xl" role="alert">
             Błąd ładowania wykresu: {error.message}
+          </div>
+        ) : isFilteredEmpty ? (
+          <div className="text-on-surface-variant text-center p-8 border border-dashed border-outline-variant/50 rounded-2xl">
+            Brak danych historycznych dla tego dnia.
           </div>
         ) : (
           <Chart
             type="line"
-            height={280}
+            height="100%"
             options={CHART_OPTIONS(filteredCategories)}
             series={series}
           />
         )}
       </div>
-    </section>
+    </div>
   )
 }

@@ -40,7 +40,7 @@ services:
       web:
         condition: service_started
     ports:
-      - "8000:80"
+      - "8008:80"
     restart: unless-stopped
 
   scrapper:

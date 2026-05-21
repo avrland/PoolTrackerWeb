@@ -13,29 +13,44 @@ const CHART_OPTIONS = (categories) => ({
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
     background: 'transparent',
+    fontFamily: 'Inter, sans-serif',
   },
-  stroke: { curve: 'smooth', width: 2 },
+  stroke: { curve: 'smooth', width: 3 },
   xaxis: {
     categories,
     tickAmount: 6,
-    labels: { rotate: 0, style: { fontSize: '11px' } },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: { rotate: 0, style: { fontSize: '11px', colors: '#727787' } },
   },
   yaxis: {
     min: 0,
-    labels: { style: { fontSize: '11px' } },
+    labels: { style: { fontSize: '11px', colors: '#727787' } },
   },
-  legend: { position: 'top', horizontalAlign: 'left' },
-  colors: ['#4e73df', '#1cc88a', '#f6c23e'],
+  legend: { 
+    position: 'bottom', 
+    horizontalAlign: 'center',
+    fontSize: '11px',
+    fontFamily: 'Inter',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    markers: { radius: 12 },
+    itemMargin: { horizontal: 10, vertical: 5 }
+  },
+  colors: ['#0D6EFD', '#FF771D', '#20C997'],
   tooltip: {
     x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
     y: { formatter: (val) => `${val} os.` },
+    theme: 'light',
   },
-  grid: { borderColor: '#e9ecef' },
-  responsive: [{ breakpoint: 480, options: { legend: { position: 'bottom' } } }],
+  grid: { 
+    borderColor: '#e1e2ee',
+    strokeDashArray: 4,
+    padding: { left: 10, right: 10 }
+  },
 })
 
 function formatDatePL(dateStr) {
-  // T12:00:00 prevents timezone shifting the date to previous day
   return new Intl.DateTimeFormat('pl-PL', {
     weekday: 'long',
     day: 'numeric',
@@ -100,81 +115,55 @@ export default function TodayChart({ sessionId }) {
   const isEmpty = !data || !Array.isArray(data.date) || data.date.length === 0
 
   return (
-    <div className="chart-wrapper">
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          marginBottom: '0.5rem',
-          gap: '0.5rem',
-        }}
-      >
-        <span style={{ fontWeight: 600, fontSize: '1rem' }}>{chartTitle}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center pb-2">
+        <span className="font-headline-sm text-lg text-on-surface font-semibold">{chartTitle}</span>
+        <div className="flex items-center gap-2">
           {!isToday && (
             <button
               type="button"
               onClick={handleTodayClick}
-              style={{
-                padding: '0.25rem 0.75rem',
-                fontSize: '0.85rem',
-                borderRadius: '4px',
-                border: '1px solid var(--color-primary, #4e73df)',
-                background: 'transparent',
-                color: 'var(--color-primary, #4e73df)',
-                cursor: 'pointer',
-              }}
+              className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary/20 transition-colors"
             >
               Dzisiaj
             </button>
           )}
-          <input
-            type="date"
-            value={selectedDate}
-            min={minAvailableDate}
-            max={maxAvailableDate}
-            onChange={handleDateChange}
-            list="available-chart-days"
-            style={{
-              fontSize: '0.85rem',
-              padding: '0.2rem 0.4rem',
-              borderRadius: '4px',
-              border: '1px solid #ced4da',
-              cursor: availableDatesQuery.isLoading ? 'progress' : 'pointer',
-              opacity: availableDatesQuery.isLoading ? 0.7 : 1,
-            }}
-            aria-label="Wybierz datę"
-          />
-          <datalist id="available-chart-days">
-            {availableDates.map((d) => (
-              <option key={d} value={d} />
-            ))}
-          </datalist>
+          <div className="relative">
+            <input
+              type="date"
+              value={selectedDate}
+              min={minAvailableDate}
+              max={maxAvailableDate}
+              onChange={handleDateChange}
+              list="available-chart-days"
+              className="flex items-center gap-2 px-4 py-2 bg-white/50 hover:bg-white border border-outline-variant/30 rounded-xl text-sm font-medium transition-colors shadow-sm cursor-pointer"
+              aria-label="Wybierz datę"
+            />
+            <datalist id="available-chart-days">
+              {availableDates.map((d) => (
+                <option key={d} value={d} />
+              ))}
+            </datalist>
+          </div>
         </div>
       </div>
+
       {dateError && (
-        <div style={{ marginBottom: '0.5rem', color: '#b54708', fontSize: '0.85rem' }}>
+        <div className="text-error text-xs font-medium">
           {dateError}
-        </div>
-      )}
-      {!availableDatesQuery.isLoading && availableDates.length === 0 && (
-        <div style={{ marginBottom: '0.5rem', color: 'var(--color-muted)', fontSize: '0.85rem' }}>
-          Brak dostępnych dni historycznych w bazie.
         </div>
       )}
 
       {isLoading && <LoadingSpinner />}
 
       {!isLoading && isError && (
-        <div className="error-message" role="alert">
+        <div className="text-error text-center p-8 bg-error/5 rounded-2xl" role="alert">
           Błąd ładowania wykresu dnia.
         </div>
       )}
 
       {!isLoading && !isError && isEmpty && (
-        <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--color-muted)' }}>
+        <div className="text-on-surface-variant text-center p-8 border border-dashed border-outline-variant/50 rounded-2xl">
           <p>Brak danych z wybranego dnia.</p>
         </div>
       )}
@@ -187,12 +176,14 @@ export default function TodayChart({ sessionId }) {
           { name: 'Pływalnia Kameralna', data: data.small },
         ]
         return (
-          <Chart
-            type="line"
-            height={260}
-            options={CHART_OPTIONS(categories)}
-            series={series}
-          />
+          <div className="w-full h-[320px] mt-2">
+             <Chart
+              type="line"
+              height="100%"
+              options={CHART_OPTIONS(categories)}
+              series={series}
+            />
+          </div>
         )
       })()}
     </div>

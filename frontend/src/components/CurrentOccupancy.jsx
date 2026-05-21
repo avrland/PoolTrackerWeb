@@ -133,15 +133,18 @@ export default function CurrentOccupancy({ onSessionId }) {
               const percent = Math.min(data[pctKey], 100)
               return (
                 <article key={key} className="pool-card">
-                  <div className="pool-card__name">{label}</div>
                   <button
-                    className="pool-card__icon-btn"
+                    className="pool-card__info-btn"
                     onClick={() => setOpenModal(key)}
                     aria-label={`Godziny otwarcia: ${label}`}
                     title="Sprawdź godziny otwarcia"
                   >
-                    <span className="pool-card__icon" aria-hidden="true">{pool.icon}</span>
+                    🕒
                   </button>
+                  <div className="pool-card__name">{label}</div>
+                  <div className="pool-card__icon-btn" style={{ cursor: 'default', transform: 'none', opacity: 1 }}>
+                    <span className="pool-card__icon" aria-hidden="true">{pool.icon}</span>
+                  </div>
                   <div className="pool-card__value">
                     {value}
                     <span className="pool-card__unit"> / {capacity}</span>

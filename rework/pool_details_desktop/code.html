@@ -1,0 +1,344 @@
+<!DOCTYPE html><html lang="pl" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Pływalnia Sportowa - BOSiR Live</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#5c2400",
+                    "chart-line-3": "#20C997",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "secondary-container": "#fe761c",
+                    "primary-fixed-dim": "#b1c5ff",
+                    "secondary-fixed-dim": "#ffb691",
+                    "surface-dim": "#d8d9e5",
+                    "surface-subtle": "#F6F9FF",
+                    "secondary-fixed": "#ffdbcb",
+                    "background": "#faf8ff",
+                    "tertiary": "#405ba3",
+                    "inverse-on-surface": "#eff0fc",
+                    "primary-fixed": "#dae2ff",
+                    "surface-container-high": "#e6e7f3",
+                    "outline-variant": "#c2c6d8",
+                    "on-primary-fixed": "#001946",
+                    "on-secondary-fixed": "#341100",
+                    "on-error": "#ffffff",
+                    "surface-container": "#ecedf9",
+                    "surface-container-highest": "#e1e2ee",
+                    "surface-tint": "#0057ce",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f2f3ff",
+                    "error-container": "#ffdad6",
+                    "secondary": "#9e4300",
+                    "surface-variant": "#e1e2ee",
+                    "chart-line-2": "#FF771D",
+                    "inverse-primary": "#b1c5ff",
+                    "on-surface": "#191b24",
+                    "inverse-surface": "#2d3039",
+                    "surface-bright": "#faf8ff",
+                    "chart-line-1": "#0D6EFD",
+                    "on-surface-variant": "#424655",
+                    "occupancy-medium": "#FFC107",
+                    "on-primary-fixed-variant": "#00419e",
+                    "on-tertiary-fixed-variant": "#26438a",
+                    "on-tertiary-container": "#ffffff",
+                    "tertiary-container": "#5974be",
+                    "occupancy-high": "#DC3545",
+                    "tertiary-fixed": "#dae1ff",
+                    "surface": "#faf8ff",
+                    "on-primary-container": "#ffffff",
+                    "tertiary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed-variant": "#783100",
+                    "primary-container": "#0d6efd",
+                    "on-background": "#191b24",
+                    "on-tertiary-fixed": "#001849",
+                    "on-tertiary": "#ffffff",
+                    "occupancy-low": "#198754",
+                    "primary": "#0057cd",
+                    "outline": "#727787",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "container-max": "1200px",
+                    "stack-lg": "32px",
+                    "margin-mobile": "16px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ],
+                    "data-display": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-sm": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "data-display": [
+                            "48px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.04em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background flex flex-col min-h-screen antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant shadow-none transition-shadow duration-300" id="global-header">
+<div class="flex items-center justify-between h-16 px-4 md:px-6 w-full max-w-container-max mx-auto">
+<!-- Leading Logo & Brand -->
+<a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+  <img src="https://lh3.googleusercontent.com/aida/ADBb0ugiAWVCxatAHTqQ3Qdaq7o885ZCEtRGTwrVYDV3u7OeesuA3kFrCpWGENaxy9xD_Bko89CCtQyTkQOWka08NQm-SyCZjgQ0jpEaEBqHSP9yFUf7b51rHN8MEjVliuS_Ol5_f53lDPkHFApIpfTwAqsbi8GjxYjl_QyogIpDC25xVbUH20Y75VtQCULNa166H0yI4I0LiNDAkcvN7PcQ7GkAI8QdHEeZ8yTsmZqKPlJMVcj2XmifOClkyFE" alt="Logo" class="h-8 w-auto">
+  <span class="font-headline-md text-headline-md font-bold text-primary">basen.bialystok.pl</span>
+</a>
+<!-- Trailing Icon -->
+<button class="p-2 -mr-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-150 text-primary flex items-center justify-center">
+  
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-16 flex flex-col w-full max-w-container-max mx-auto px-4 md:px-6 py-stack-lg gap-gutter lg:flex-row">
+<!-- Left Column: Details & Content (60%) -->
+<section class="w-full lg:w-[60%] flex flex-col gap-stack-lg">
+<!-- Hero Image -->
+<div class="w-full rounded-xl overflow-hidden border border-outline-variant bg-surface-container-lowest">
+<img alt="Pływalnia Sportowa wnętrze" class="w-full h-[300px] md:h-[400px] object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ug0rqMgiwXxXwQUjw7fItzli6fFcEDU6DdIAiFYLmquBHtceVSvXYqjK0BxzuuEclF-2EZtgtqXdVaT5N-_ObNm8OastJaDaAB807PeCznHRb2FXPsRXODOMCuam6rvn2PK5iktsPawiz3fLjd8vJS373WfplitOP33PPtMhdLXCMCfPTJqyOiAbydcG80FUtpyudbeT_nmDq30BJn1lh0CnxsxInlZZPR_-W3_sUHd5OGX1BrXhRGDqx0">
+</div>
+<!-- Facility Title & Description -->
+<div class="flex flex-col gap-stack-sm">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant mb-2">
+  <a href="/" class="hover:text-primary transition-colors">Strona główna</a>
+  <span class="text-outline-variant">/</span>
+  <a href="#" class="hover:text-primary transition-colors">Obiekty</a>
+  <span class="text-outline-variant">/</span>
+  <span class="text-primary font-medium underline underline-offset-4 decoration-1 decoration-primary/30">Pływalnia Sportowa</span>
+</nav><button class="flex items-center gap-2 text-primary hover:bg-surface-container-low px-2 py-1 -ml-2 rounded-lg transition-colors w-fit mb-1" onclick="window.history.back()">
+  <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+  <span class="font-body-md font-medium">Wstecz</span>
+</button><h2 class="font-headline-lg text-headline-lg md:font-headline-lg md:text-headline-lg text-on-surface">Pływalnia Sportowa</h2>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-occupancy-low" style="font-variation-settings: 'FILL' 1; font-size: 16px;">fiber_manual_record</span>
+<span class="">Obiekt otwarty</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-stack-sm leading-relaxed">
+                    Pływalnia Sportowa BOSiR to nowoczesny kompleks wodny w sercu Białegostoku, zaprojektowany z myślą o profesjonalistach i amatorach pływania. Obiekt dysponuje 25-metrowym basenem sportowym, strefą rekreacyjną oraz trybunami. Wyposażony w zaawansowany system monitoringu zajętości, pozwala na optymalne zaplanowanie treningu.
+                </p>
+</div>
+<!-- Gallery Grid -->
+<div class="grid grid-cols-2 gap-4">
+<img class="w-full h-48 object-cover rounded-lg border border-outline-variant hover:opacity-90 transition-opacity cursor-pointer" data-alt="A brightly lit, modern indoor swimming pool with clear turquoise water. Sunlight streams through large architectural windows, casting geometric reflections on the water's surface. The surroundings feature clean white concrete and minimalist wooden accents, creating a professional and hygienic sports atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTMAOvePIOr3ZH_dtjXISVGUcJmBqKLwVt4yy_4Tq-9FTEeZuPrMw5qfV1-sax0Er4uWbYT_Vh8RO9HmmfHwTU8e4sLzM_6q-Xn8hC_wWYU6coW9QV4nBJPpnN2oQ9nU0Jfz9xDLopVdCQVHRAo4lwpPp_wJQZ6DDL1i2HzFV-Ct51f1C2Txy4cIwmO4fe9kslV9WZmrLmpuGui27SBUFm67hf5eoyQ0FEFvDZAW9YmlHCQJ9wyim4rSJhUXUBgWdzRszHoHaQPXQ">
+<img class="w-full h-48 object-cover rounded-lg border border-outline-variant hover:opacity-90 transition-opacity cursor-pointer" data-alt="Close-up of starting blocks at a competitive indoor swimming pool. The blocks are dark blue and textured, sitting solidly on a light grey tiled deck. The background is a soft blur of pool water and lane dividers in vibrant blues and reds, emphasizing speed and athletic precision in a clean, modern setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsJe02_uXJ_UkfeHd-jpy_nkaykvD01VS6P1j12PpO72lFGIfKvzdXoHagVlkdUhYsEriuM4gjEazPoCh6JOWONQ2PlScvk70PZpNh2otjIy_NPQTovGblc2xUDr0_z8MEC1_8WQK49_nWv-UIAGLAanewbuaDngWaAI6VLegB7EZsGLIciAK9J6ABtyDbPet92-ODZtSV863GCsPmiEBtN-DT-Bt1TaNv9ethj57yHsGY6OpvC1oZw_4fYZNH9CRAWW6v3AUGjAg">
+</div>
+</section>
+<!-- Right Column: Sticky Sidebar Data (40%) -->
+<aside class="w-full lg:w-[40%] flex flex-col gap-stack-md lg:sticky lg:top-24 h-fit">
+<!-- Live Occupancy Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col gap-stack-md shadow-sm hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] transition-shadow">
+<div class="flex justify-between items-center">
+<span class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">groups</span>
+                        Aktualne obłożenie
+                    </span>
+<span class="bg-surface-container bg-opacity-50 text-on-surface-variant font-label-caps text-label-caps px-3 py-1 rounded-full border border-outline-variant">
+                        50% PEŁNY
+                    </span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-data-display text-data-display text-primary">52</span>
+<span class="font-body-lg text-body-lg text-on-surface-variant">/ 105 osób</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden mt-2">
+<div class="h-full bg-primary rounded-full transition-all duration-1000 ease-out" style="width: 50%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-right">Odświeżono przed chwilą</p>
+</div>
+<!-- Quick Info Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col gap-stack-sm">
+<!-- Hours -->
+<div class="flex items-start gap-3 py-2 border-b border-outline-variant border-opacity-50">
+<span class="material-symbols-outlined text-primary mt-0.5">schedule</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">06:15 - 21:30</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dzisiejsze godziny otwarcia</span>
+</div>
+</div>
+<!-- Address -->
+<div class="flex items-start gap-3 py-2">
+<span class="material-symbols-outlined text-primary mt-0.5">location_on</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">ul. Włókiennicza 4</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">15-464 Białystok</span>
+</div>
+</div>
+</div>
+<!-- Actions Card -->
+<div class="flex flex-col gap-stack-sm mt-2">
+<!-- Primary CTA -->
+<button class="w-full bg-primary text-on-primary font-headline-sm text-headline-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">navigation</span>
+                    Nawiguj w Google Maps
+                </button>
+<!-- Secondary Actions Layout -->
+<div class="grid grid-cols-2 gap-3 mt-2">
+<button class="w-full bg-transparent border border-outline-variant text-on-surface-variant font-headline-sm text-headline-sm py-2.5 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-surface-container-low hover:text-primary hover:border-primary transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">favorite</span>
+                        Zapisz
+                    </button>
+<button class="w-full bg-transparent border border-outline-variant text-on-surface-variant font-headline-sm text-headline-sm py-2.5 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-surface-container-low hover:text-primary hover:border-primary transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined">calendar_today</span>
+                        Grafik
+                    </button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-auto bg-surface-container-lowest border-t border-outline-variant shadow-none">
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 py-8 px-4 md:px-6 w-full max-w-container-max mx-auto">
+<!-- Brand / Copyright -->
+<div class="flex flex-col items-center md:items-start gap-2">
+
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">
+                    © 2026 basen.bialystok.pl</p>
+</div>
+<!-- Links -->
+<nav class="flex flex-wrap justify-center gap-4 md:gap-6 mt-4 md:mt-0">
+
+
+
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Polityka Prywatności</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Kontakt</a>
+</nav>
+</div>
+</footer>
+<!-- Simple script for TopAppBar shadow on scroll -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.getElementById('global-header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    header.classList.add('shadow-sm');
+                } else {
+                    header.classList.remove('shadow-sm');
+                }
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+
+</body></html>
