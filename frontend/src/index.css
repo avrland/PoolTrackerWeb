@@ -18,7 +18,7 @@
 }
 
 .bg-hero-pattern {
-  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAPRVdw_whfBma6zBYgLwwWVOeyP8_whkqh6K8fnHFt4a7YNKMyvA6uzYg2uQL9kSZfXjgsTjrhtUzHWQKW4_nkeQ8OqbNOS0Z3cKQUUy1ETdVfq2uO-xboDQLvKBO_xqHtYBGbmDMX3Uq_iIP1EU__nTfwlMAyS0oYR7Hz89Eez8TuQF_LzzNIk2HYNPwIQitQycqSt7SfjYvO7eSCjUkGnb62Xu51UglB_EqiVwuMlHS2DRj0gKr7VFxZaO8oDWblxwzH5MU9uPY');
+  background-image: url('/assets/img/small.jpg');
   background-size: cover;
   background-position: center top;
   background-attachment: fixed;

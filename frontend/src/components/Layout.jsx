@@ -29,7 +29,7 @@ export default function Layout({ children }) {
             <img
               alt="Logo"
               className="w-8 h-8 rounded-lg shrink-0 shadow-sm"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ugiAWVCxatAHTqQ3Qdaq7o885ZCEtRGTwrVYDV3u7OeesuA3kFrCpWGENaxy9xD_Bko89CCtQyTkQOWka08NQm-SyCZjgQ0jpEaEBqHSP9yFUf7b51rHN8MEjVliuS_Ol5_f53lDPkHFApIpfTwAqsbi8GjxYjl_QyogIpDC25xVbUH20Y75VtQCULNa166H0yI4I0LiNDAkcvN7PcQ7GkAI8QdHEeZ8yTsmZqKPlJMVcj2XmifOClkyFE"
+              src="/assets/img/logo.png"
             />
             <h1 className="font-headline-md text-lg font-bold text-primary tracking-tight">
               basen.bialystok.pl
@@ -61,7 +61,7 @@ export default function Layout({ children }) {
             <img
               alt="BOSiR Logo"
               className="w-8 h-8 rounded-lg shadow-sm"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ug3LLuK9wrfEEqHuqmPz5lKRN6QD4xhuLNX0uougXEv-wRfMWmIeXd8Xb5CSbYUE8u5ILU2PpZjCjGagJjg8Dx6zspxb9_liNpD8p9EinWJS3JzumpIbGIv45tp3j7LvUPdpAQrb_05-KWmsQYRO31mNZ1gLHkYmnFhX7Oq-AsdJ6YBR7qo5kJTrn7q6brjpVKCEtw-X6NSWt0l10rb6a4A5XofEM0dPnlcNNsjfbBlTKB27Wu7yP7nxSk"
+              src="/assets/img/logo.png"
             />
             <h2 className="font-headline-sm text-[15px] font-bold text-primary tracking-tight">
               basen.bialystok.pl
