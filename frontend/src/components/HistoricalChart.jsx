@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Chart from 'react-apexcharts'
 import { fetchHistoricalData } from '../services/api.js'
-import LoadingSpinner from './LoadingSpinner.jsx'
+import { ChartSkeleton } from './Skeleton.jsx'
 
 const DAY_NAMES = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Nd']
 const DAY_NAMES_FULL = [
@@ -21,7 +21,7 @@ const CHART_OPTIONS = (categories) => ({
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
     background: 'transparent',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   },
   stroke: { curve: 'smooth', width: 3 },
   xaxis: {
@@ -39,7 +39,7 @@ const CHART_OPTIONS = (categories) => ({
     position: 'bottom', 
     horizontalAlign: 'center',
     fontSize: '11px',
-    fontFamily: 'Inter',
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
     fontWeight: 700,
     textTransform: 'uppercase',
     markers: { radius: 12 },
@@ -114,14 +114,15 @@ export default function HistoricalChart() {
         ))}
       </nav>
 
-      <div className="w-full h-[280px]">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : isError ? (
+      <div className="w-full h-[280px] relative" aria-busy={isLoading && !data}>
+        {isError && !isEmpty && <span role="status" className="absolute top-0 right-0 z-10 text-xs text-on-surface-variant">Dane nieaktualne</span>}
+        {isLoading && !data ? (
+          <ChartSkeleton />
+        ) : isError && isEmpty ? (
           <div className="text-error text-center p-8 bg-error/5 rounded-2xl" role="alert">
             Błąd ładowania wykresu: {error.message}
           </div>
-        ) : isFilteredEmpty ? (
+        ) : isEmpty || isFilteredEmpty ? (
           <div className="text-on-surface-variant text-center p-8 border border-dashed border-outline-variant/50 rounded-2xl">
             Brak danych historycznych dla tego dnia.
           </div>

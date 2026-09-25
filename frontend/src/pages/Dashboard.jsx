@@ -8,6 +8,7 @@ import FacebookCard from '../components/FacebookCard.jsx'
 import ErrorBoundary from '../components/ErrorBoundary.jsx'
 import HowToUse from '../components/HowToUse.jsx'
 import FAQ from '../components/FAQ.jsx'
+import CurrentStatus from '../components/CurrentStatus.jsx'
 
 export default function Dashboard() {
   const [sessionId, setSessionId] = useState(null)
@@ -20,10 +21,7 @@ export default function Dashboard() {
           <h2 className="font-headline-lg-mobile md:text-3xl text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-on-surface to-on-surface/70 tracking-tight">
             Stan zajętości obiektów BOSiR
           </h2>
-          <div className="flex items-center gap-1.5 bg-error/10 px-2.5 py-1 rounded-full mb-1 border border-error/10">
-            <span className="w-2 h-2 rounded-full bg-error animate-pulse"></span>
-            <span className="text-[10px] font-bold text-error uppercase tracking-wider">LIVE</span>
-          </div>
+          <CurrentStatus className="flex mb-1 shrink-0 max-w-[45%]" />
         </div>
 
         <ErrorBoundary>

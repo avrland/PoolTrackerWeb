@@ -79,15 +79,15 @@ export default {
         "stack-xl": "48px"
       },
       fontFamily: {
-        "body-sm": ["Inter"],
-        "headline-lg": ["Inter"],
-        "headline-lg-mobile": ["Inter"],
-        "label-caps": ["Inter"],
-        "body-md": ["Inter"],
-        "data-display": ["Inter"],
-        "headline-md": ["Inter"],
-        "body-lg": ["Inter"],
-        "headline-sm": ["Inter"]
+        "body-sm": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "headline-lg": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "headline-lg-mobile": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "label-caps": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "body-md": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "data-display": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "headline-md": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "body-lg": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        "headline-sm": ["Inter", "system-ui", "-apple-system", "Segoe UI", "sans-serif"]
       },
       fontSize: {
         "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],

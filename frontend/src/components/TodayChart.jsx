@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Chart from 'react-apexcharts'
-import { fetchAvailableDates, fetchCurrentData, fetchDateData } from '../services/api.js'
-import LoadingSpinner from './LoadingSpinner.jsx'
+import { fetchAvailableDates, fetchDateData } from '../services/api.js'
+import useCurrentData from '../hooks/useCurrentData.js'
+import { ChartSkeleton } from './Skeleton.jsx'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
@@ -13,7 +14,7 @@ const CHART_OPTIONS = (categories) => ({
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
     background: 'transparent',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   },
   stroke: { curve: 'smooth', width: 3 },
   xaxis: {
@@ -31,7 +32,7 @@ const CHART_OPTIONS = (categories) => ({
     position: 'bottom', 
     horizontalAlign: 'center',
     fontSize: '11px',
-    fontFamily: 'Inter',
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
     fontWeight: 700,
     textTransform: 'uppercase',
     markers: { radius: 12 },
@@ -64,12 +65,7 @@ export default function TodayChart({ sessionId }) {
   const [dateError, setDateError] = useState('')
   const isToday = selectedDate === todayStr()
 
-  const todayQuery = useQuery({
-    queryKey: ['current'],
-    queryFn: fetchCurrentData,
-    refetchInterval: 5 * 60 * 1000,
-    enabled: isToday,
-  })
+  const todayQuery = useCurrentData({ enabled: isToday })
 
   const availableDatesQuery = useQuery({
     queryKey: ['available-dates'],
@@ -113,6 +109,8 @@ export default function TodayChart({ sessionId }) {
   }
 
   const isEmpty = !data || !Array.isArray(data.date) || data.date.length === 0
+  const waitingForSession = !isToday && !effectiveSessionId && todayQuery.isLoading
+  const isInitialLoading = (isLoading || waitingForSession) && !data
 
   return (
     <div className="flex flex-col gap-4">
@@ -154,21 +152,22 @@ export default function TodayChart({ sessionId }) {
         </div>
       )}
 
-      {isLoading && <LoadingSpinner />}
+      <div className="w-full h-[320px] mt-2" aria-busy={isInitialLoading}>
+      {isInitialLoading && <ChartSkeleton />}
 
-      {!isLoading && isError && (
+      {!isInitialLoading && isError && isEmpty && (
         <div className="text-error text-center p-8 bg-error/5 rounded-2xl" role="alert">
           Błąd ładowania wykresu dnia.
         </div>
       )}
 
-      {!isLoading && !isError && isEmpty && (
+      {!isInitialLoading && !isError && isEmpty && (
         <div className="text-on-surface-variant text-center p-8 border border-dashed border-outline-variant/50 rounded-2xl">
           <p>Brak danych z wybranego dnia.</p>
         </div>
       )}
 
-      {!isLoading && !isError && !isEmpty && (() => {
+      {!isInitialLoading && !isEmpty && (() => {
         const categories = data.date.map((dt) => dt.slice(11, 16))
         const series = [
           { name: 'Pływalnia Sportowa', data: data.sport },
@@ -176,7 +175,8 @@ export default function TodayChart({ sessionId }) {
           { name: 'Pływalnia Kameralna', data: data.small },
         ]
         return (
-          <div className="w-full h-[320px] mt-2">
+          <div className="h-full relative">
+            {isError && <span role="status" className="absolute top-0 right-0 z-10 text-xs text-on-surface-variant">Dane nieaktualne</span>}
              <Chart
               type="line"
               height="100%"
@@ -186,6 +186,7 @@ export default function TodayChart({ sessionId }) {
           </div>
         )
       })()}
+      </div>
     </div>
   )
 }

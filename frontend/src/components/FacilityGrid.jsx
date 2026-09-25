@@ -1,8 +1,8 @@
+import Icon from './Icon.jsx'
 import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { Link, useLocation } from 'react-router-dom'
-import { fetchCurrentData } from '../services/api.js'
-import LoadingSpinner from './LoadingSpinner.jsx'
+import useCurrentData from '../hooks/useCurrentData.js'
+import Skeleton from './Skeleton.jsx'
 
 export const POOLS = [
   {
@@ -68,19 +68,31 @@ function getOccupancyColor(percent) {
 
 export default function FacilityGrid({ onSessionId }) {
   const location = useLocation()
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['current'],
-    queryFn: fetchCurrentData,
-    refetchInterval: 5 * 60 * 1000,
-  })
+  const { data, status, hasCurrentData, isError, error, refetch } = useCurrentData()
 
   useEffect(() => {
     if (onSessionId && data?.session_id) onSessionId(data.session_id)
   }, [data, onSessionId])
 
-  if (isLoading) return <LoadingSpinner />
+  if (status === 'loading') {
+    return (
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" aria-label="Kafelki obiektów" aria-busy="true">
+        <span className="sr-only" role="status">Ładowanie zajętości obiektów</span>
+        {POOLS.map(({ id, label, address }) => (
+          <div key={id} className="glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-white/80 to-white/40">
+            <div className="flex flex-col items-center">
+              <h3 className="text-sm font-semibold text-on-surface line-clamp-1 truncate w-full px-1">{label}</h3>
+              <p className="text-[10px] text-outline uppercase font-medium tracking-wider mt-0.5">{address}</p>
+            </div>
+            <Skeleton className="w-16 h-16 !rounded-full my-1" />
+            <Skeleton className="w-full h-8 !rounded-xl" />
+          </div>
+        ))}
+      </section>
+    )
+  }
 
-  if (isError) {
+  if (isError && !hasCurrentData) {
     return (
       <div className="bg-error/10 border border-error/20 p-4 rounded-xl text-error text-center" role="alert">
         <p>Błąd ładowania danych: {error.message}</p>
@@ -118,7 +130,7 @@ export default function FacilityGrid({ onSessionId }) {
               </div>
               <div className="relative w-16 h-16 flex items-center justify-center my-1">
                 <svg className="w-full h-full transform -rotate-90 absolute" viewBox="0 0 36 36">
-                  <path className="text-surface-variant/50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="2"></path>
+                  <path className="text-surface-variant/50" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2"></path>
                 </svg>
                 <div className="flex flex-col items-center z-10">
                   <span className="text-lg font-bold text-outline-variant leading-none">0</span>
@@ -140,7 +152,7 @@ export default function FacilityGrid({ onSessionId }) {
             </div>
             <div className="relative w-16 h-16 flex items-center justify-center my-1">
               <svg className="w-full h-full transform -rotate-90 absolute" viewBox="0 0 36 36">
-                <path className="text-surface-variant/40" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="2"></path>
+                <path className="text-surface-variant/40" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2"></path>
                 <path 
                   className={`${colorClass} drop-shadow-md transition-all duration-1000 ease-out`} 
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
@@ -165,7 +177,7 @@ export default function FacilityGrid({ onSessionId }) {
               state={window.innerWidth < 1024 ? { background: location } : null}
               className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary hover:text-white transition-colors duration-200"
             >
-              Szczegóły <span className="material-symbols-rounded text-[14px]">arrow_forward</span>
+              Szczegóły <Icon name="arrow_forward" variant="rounded" size={14} />
             </Link>
           </div>
         )

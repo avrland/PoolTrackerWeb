@@ -12,10 +12,6 @@ vi.mock('react-apexcharts', () => ({
   default: () => <div data-testid="apex-chart" />,
 }))
 
-vi.mock('../components/LoadingSpinner.jsx', () => ({
-  default: () => <div data-testid="loading-spinner" />,
-}))
-
 import { useQuery } from '@tanstack/react-query'
 
 const MOCK_DATA = {
@@ -98,12 +94,22 @@ describe('TodayChart', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 
-  it('shows loading spinner while loading', () => {
+  it('shows an accessible skeleton in the reserved chart area while loading', () => {
     mockUseQueryMap({
       current: { data: undefined, isLoading: true, isError: false },
     })
     render(<TodayChart sessionId="abc" />)
-    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: 'Ładowanie wykresu' })).toBeInTheDocument()
+    expect(screen.queryByTestId('apex-chart')).not.toBeInTheDocument()
+    expect(screen.getByRole('status').parentElement).toHaveClass('h-[320px]')
+  })
+
+  it('keeps the chart visible when a background refresh fails', () => {
+    mockUseQueryMap({ current: { data: MOCK_DATA, isLoading: false, isError: true } })
+    render(<TodayChart sessionId="abc" />)
+    expect(screen.getByTestId('apex-chart')).toBeInTheDocument()
+    expect(screen.getByText('Dane nieaktualne')).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('datepicker is enabled when sessionId is null', () => {

@@ -1,21 +1,8 @@
+import Icon from './Icon.jsx'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { fetchCurrentData } from '../services/api.js'
+import CurrentStatus from './CurrentStatus.jsx'
 
 export default function Layout({ children }) {
-  const { data } = useQuery({
-    queryKey: ['current'],
-    queryFn: fetchCurrentData,
-    refetchInterval: 5 * 60 * 1000,
-  })
-
-  const totalPeople = data ? (
-    (data.lastsport || 0) + 
-    (data.lastfamily || 0) + 
-    (data.lastsmall || 0) + 
-    (data.lastice || 0)
-  ) : 0
-
   return (
     <div className="text-on-surface font-body-md min-h-screen flex flex-col relative overflow-x-hidden">
       {/* Background Overlay */}
@@ -36,15 +23,10 @@ export default function Layout({ children }) {
             </h1>
           </Link>
 
-          <div className="hidden sm:flex items-center gap-2 bg-error/10 px-3 py-1 rounded-full ml-3 border border-error/10 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-error animate-pulse shadow-[0_0_8px_rgba(186,26,26,0.6)]"></span>
-            <span className="text-[10px] font-bold text-error uppercase tracking-wider">
-              Teraz pływa łącznie {totalPeople} osób
-            </span>
-          </div>
+          <CurrentStatus showTotal className="hidden sm:flex ml-3 shadow-sm" />
 
-          <button className="p-2 hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
-            <span className="material-symbols-rounded text-primary">menu</span>
+          <button aria-label="Menu" className="p-2 hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+            <Icon name="menu" variant="rounded" size={24} className="text-primary" />
           </button>
         </div>
       </header>

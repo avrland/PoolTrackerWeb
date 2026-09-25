@@ -1,7 +1,7 @@
+import Icon from '../components/Icon.jsx'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { fetchCurrentData } from '../services/api.js'
+import useCurrentData from '../hooks/useCurrentData.js'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import { POOLS } from '../components/FacilityGrid.jsx'
 
@@ -11,10 +11,7 @@ export default function PoolDetails({ isModal = false }) {
   
   const pool = POOLS.find((p) => p.id === id)
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['current'],
-    queryFn: fetchCurrentData,
-  })
+  const { data, isLoading, isError, hasCurrentData } = useCurrentData()
 
   if (!pool) {
     return (
@@ -27,7 +24,7 @@ export default function PoolDetails({ isModal = false }) {
 
   if (isLoading) return <div className="flex justify-center p-20"><LoadingSpinner /></div>
 
-  if (isError) {
+  if (isError && !hasCurrentData) {
     return (
       <div className="flex flex-col items-center justify-center p-20 gap-4 text-center">
         <h2 className="text-xl font-bold text-error">Błąd ładowania danych</h2>
@@ -52,7 +49,7 @@ export default function PoolDetails({ isModal = false }) {
                 className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-surface-container-lowest/80 backdrop-blur-md rounded-full text-on-surface z-[100] shadow-md"
                 onClick={handleClose}
               >
-                <span className="material-symbols-outlined">close</span>
+                <Icon name="close" variant="outlined" size={24} />
               </button>
           )}
         </div>
@@ -73,7 +70,7 @@ export default function PoolDetails({ isModal = false }) {
                 className="flex items-center gap-2 text-primary hover:bg-surface-container-low px-2 py-1 -ml-2 rounded-lg transition-colors w-fit mb-1 font-bold" 
                 onClick={handleClose}
               >
-                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+                <Icon name="arrow_back" variant="outlined" size={20} />
                 <span>Wstecz</span>
               </button>
             )}
@@ -81,7 +78,7 @@ export default function PoolDetails({ isModal = false }) {
             <h2 className={`${mobile ? 'font-headline-lg-mobile text-headline-lg-mobile' : 'font-headline-lg text-headline-lg'} text-on-surface`}>{pool.label}</h2>
             
             <div className="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
-              <span className="material-symbols-outlined text-occupancy-low icon-fill" style={{ fontSize: '16px' }}>fiber_manual_record</span>
+              <Icon name="fiber_manual_record" variant="outlined" size={16} className="text-occupancy-low" />
               <span>Obiekt otwarty</span>
               <span className="mx-1 text-outline-variant">•</span>
               <span>{pool.address}</span>
@@ -113,7 +110,7 @@ export default function PoolDetails({ isModal = false }) {
 
           {/* Opening Hours Row */}
           <div className="flex items-start gap-3 pb-4">
-            <span className="material-symbols-outlined text-primary mt-0.5">schedule</span>
+            <Icon name="schedule" variant="outlined" size={24} className="text-primary mt-0.5" />
             <div className="flex flex-col">
               <span className="font-headline-sm text-on-surface font-semibold">Godziny otwarcia</span>
               <span className="font-body-md text-body-md text-on-surface-variant">Poniedziałek - Niedziela</span>
@@ -126,7 +123,7 @@ export default function PoolDetails({ isModal = false }) {
             <div className="grid grid-cols-2 gap-4">
               <img className="w-full h-48 object-cover rounded-lg border border-outline-variant" src={pool.image} alt="Gallery 1" />
               <div className="bg-surface-container-high w-full h-48 rounded-lg flex items-center justify-center text-outline-variant">
-                 <span className="material-symbols-outlined text-4xl">image</span>
+                 <Icon name="image" variant="outlined" size={36} />
               </div>
             </div>
           )}
@@ -146,7 +143,7 @@ export default function PoolDetails({ isModal = false }) {
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col gap-stack-md shadow-md">
             <div className="flex justify-between items-center">
               <span className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2 font-semibold">
-                <span className="material-symbols-outlined text-primary font-bold">groups</span>
+                <Icon name="groups" variant="outlined" size={24} className="text-primary" />
                 Aktualne obłożenie
               </span>
               <span className={`bg-surface-container bg-opacity-50 font-label-caps text-label-caps px-3 py-1 rounded-full border border-outline-variant uppercase font-bold ${percent >= 80 ? 'text-occupancy-high border-occupancy-high/30' : 'text-on-surface-variant'}`}>
@@ -160,12 +157,12 @@ export default function PoolDetails({ isModal = false }) {
             <div className="w-full h-2 bg-surface-container-highest rounded-full overflow-hidden mt-2">
               <div className={`h-full transition-all duration-1000 ease-out ${percent >= 80 ? 'bg-occupancy-high' : 'bg-primary'}`} style={{ width: `${percent}%` }}></div>
             </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant text-right">Dane na żywo</p>
+            <p className="font-body-sm text-body-sm text-on-surface-variant text-right">{isError ? 'Dane nieaktualne' : 'Dane na żywo'}</p>
           </div>
 
           <div className="flex flex-col gap-stack-sm mt-4">
             <a href={pool.mapsUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-primary text-on-primary font-headline-sm text-headline-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-md font-bold">
-              <span className="material-symbols-outlined icon-fill">navigation</span>
+              <Icon name="navigation" variant="outlined" size={24} />
               Nawiguj w Google Maps
             </a>
           </div>
@@ -226,7 +223,7 @@ export default function PoolDetails({ isModal = false }) {
             rel="noopener noreferrer"
             className="w-full border-2 border-primary text-primary font-headline-sm text-headline-sm py-3 px-6 rounded-full flex items-center justify-center gap-2 font-bold active:scale-[0.98] transition-all"
           >
-            <span className="material-symbols-outlined icon-fill text-[20px]">directions</span>
+            <Icon name="directions" variant="outlined" size={20} />
             Nawiguj w Google Maps
           </a>
         </div>
