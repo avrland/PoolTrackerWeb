@@ -99,7 +99,6 @@ def get_pools_data() -> pd.DataFrame | None:
 
         if df.empty:
             print("No entries found in the table.")
-            return None
 
         return df
 
@@ -120,7 +119,9 @@ def generate_stats(df: pd.DataFrame) -> pd.DataFrame:
 
     df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values("date")
-    df["time"] = df["date"].dt.time
+    # Scheduler runs can differ by seconds/microseconds between days.
+    # Keep raw timestamps intact, but aggregate in stable quarter-hour slots.
+    df["time"] = df["date"].dt.floor("15min").dt.time
     df["hour"] = df["date"].dt.hour
     df = df[(df["hour"] >= 6) & (df["hour"] < 22)]
     df["weekday"] = df["date"].dt.day_name()
@@ -166,8 +167,8 @@ def generate_stats(df: pd.DataFrame) -> pd.DataFrame:
     return avg_df.dropna()
 
 
-def insert_data_from_df(df: pd.DataFrame) -> pd.DataFrame | None:
-    """Insert generated history rows into poolstats_history."""
+def replace_history_from_df(df: pd.DataFrame) -> pd.DataFrame | None:
+    """Atomically replace derived history, preserving the old snapshot on failure."""
     insert_query = """
         INSERT INTO poolstats_history (guid, weekday, time, sport, family, small, ice)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -177,6 +178,10 @@ def insert_data_from_df(df: pd.DataFrame) -> pd.DataFrame | None:
         with closing(get_db_connection()) as connection:
             with connection:
                 with connection.cursor() as cursor:
+                    # Serialize refreshes while allowing API SELECTs to read
+                    # the previous committed snapshot until this one commits.
+                    cursor.execute("LOCK TABLE poolstats_history IN SHARE ROW EXCLUSIVE MODE")
+                    cursor.execute("DELETE FROM poolstats_history")
                     for _, row in df.iterrows():
                         cursor.execute(
                             insert_query,
@@ -198,74 +203,15 @@ def insert_data_from_df(df: pd.DataFrame) -> pd.DataFrame | None:
         return None
 
 
-def update_data_from_df(df: pd.DataFrame) -> pd.DataFrame | None:
-    """Update existing history rows for each weekday and time slot."""
-    print("Updating poolStats_history")
-    update_query = """
-        UPDATE poolstats_history
-        SET sport = %s,
-            family = %s,
-            small = %s,
-            ice = %s,
-            update_datetime = CURRENT_TIMESTAMP
-        WHERE weekday = %s AND time = %s
-    """
-
-    try:
-        with closing(get_db_connection()) as connection:
-            with connection:
-                with connection.cursor() as cursor:
-                    for _, row in df.iterrows():
-                        cursor.execute(
-                            update_query,
-                            (
-                                int(row["sport"]),
-                                int(row["family"]),
-                                int(row["small"]),
-                                int(row["ice"]),
-                                str(row["weekday"]),
-                                row["time"],
-                            ),
-                        )
-
-        return df
-
-    except (psycopg2.Error, RuntimeError) as error:
-        print(f"Error accessing database: {error}")
-        return None
-
-
-def is_history_table_empty() -> bool:
-    """Return whether the generated history table has any rows."""
-    query = "SELECT COUNT(*) FROM poolstats_history"
-
-    try:
-        with closing(get_db_connection()) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(query)
-                count = cursor.fetchone()[0]
-                return count == 0
-    except (psycopg2.Error, RuntimeError) as error:
-        print(f"Error checking history table: {error}")
-        return True
-
-
 def update_history() -> None:
     """Refresh the generated history table from recent scraper readings."""
     df = get_pools_data()
-    if df is None or df.empty:
-        print("No pool stats available to update history.")
+    if df is None:
+        print("Could not load pool stats; preserving existing history.")
         return
 
-    df_stats = generate_stats(df)
-    if df_stats is None or df_stats.empty:
-        print("Generated stats are empty; skipping history update.")
-        return
-
-    if is_history_table_empty():
-        insert_data_from_df(df_stats)
-    else:
-        update_data_from_df(df_stats)
+    df_stats = generate_stats(df) if not df.empty else pd.DataFrame()
+    replace_history_from_df(df_stats)
 
 
 if __name__ == "__main__":

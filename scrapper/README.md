@@ -43,6 +43,25 @@ docker compose logs -f scrapper
 The scheduler fetches data every 15 minutes and updates generated history data
 once per day.
 
+History averages use 15-minute slots (for example, 08:00:01 and 08:14:59
+belong to 08:00). Raw reading timestamps are preserved. Each refresh replaces
+the entire derived history in one transaction, adding new slots and removing
+expired ones. A successful read with no usable readings clears history;
+database failures preserve the previous snapshot.
+
+## Tests
+
+After installing `scrapper/requirements.txt`, run from the repository root:
+
+```bash
+python -m unittest discover -s scrapper/tests -v
+```
+
+PostgreSQL transaction tests are enabled when `SCRAPPER_TEST_DATABASE_URL`
+contains a test database connection URL. They use session-local temporary
+tables and check replacement, clearing, and rollback after a failed insert.
+Without that variable, transaction tests are skipped.
+
 ## Data fetched from API
 
 The source API returns entries like:

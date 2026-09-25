@@ -32,7 +32,7 @@ export default function Layout({ children }) {
               src="/assets/img/logo.png"
             />
             <h1 className="font-headline-md text-lg font-bold text-primary tracking-tight">
-              basen.bialystok.pl
+              basen.bialystok.pl<sup className="ml-1 text-[10px] font-medium tracking-normal">beta</sup>
             </h1>
           </Link>
 
