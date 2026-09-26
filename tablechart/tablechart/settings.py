@@ -18,12 +18,7 @@ import json
 load_dotenv()
 
 OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-# Google Ads Donor Removal Feature
-DONATION_LIST_PATH = os.getenv('DONATION_LIST_PATH', 'donors.json')
-GODMODE_EMAIL = os.getenv('GODMODE_EMAIL', 'test@pooltrackerdev.local')
-BUYCOFFEE_URL = os.getenv('BUYCOFFEE_URL', 'https://buycoffee.to/basen.bialystok.pl')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -52,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chart_app',
-    'chatbot_app',
 ]
 
 MIDDLEWARE = [

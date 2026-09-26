@@ -7,7 +7,16 @@ staticfiles/
 **/*.pyo
 
 # Environment secrets
-.env
+.env*
+pw.json
+
+# Dormant user data must never be packaged or served by the application.
+donors.json
+logs/
+archives/
+backups/
+**/donors.json
+**/chat_history.csv
 
 # Version control
 .git

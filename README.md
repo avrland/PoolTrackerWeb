@@ -1,145 +1,124 @@
 # PoolTrackerWeb
-![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
-Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker PostgreSQL database, puts it on line chart and does some calculations.
+Pool occupancy dashboard for Białystok, with a Polish interface. React/Vite displays
+current readings, data for a selected date, weekday averages, weather and facility
+details. Both light and dark themes are supported. Django serves the API,
+PostgreSQL stores readings, and the Python scraper collects and aggregates them.
 
-## Features
-- occupancy live chart for current day (for my observed pools it's from 6:00 AM)
-- mean occupancy chart for each weekday from last 60 days (updated every day), day is selectable, default it's current day
-- max lines showing max pool cap
-- charts are zoomable, right click brings back to standard view 
-- dashboard showing % occupancy live for each pool, colouring red when it's over 80%, green when below
+## Development
 
-## Installation (for local development)
+Copy `tablechart/.env.example` to `tablechart/.env` and configure an isolated
+PostgreSQL database, `SECRET_KEY`, `DB_HOST` and `DJANGO_DEBUG=True`.
+Initialize the measurement schema using `tablechart/initdb/` in that development
+database; Django migrations manage sessions and framework tables.
 
-1. Clone repo
-```
-git clone https://github.com/avrland/PoolTrackerWeb.git
-cd PoolTrackerWeb/tablechart
-```
-2. Install requirements
-```
+```sh
+cd tablechart
 pip install -r requirements.txt
-```
-3. Copy and fill in the environment file:
-```
-cp .env.example .env
-```
-Edit `.env` and set your database credentials, Django secret key, and API keys.
-
-4. Run Django migrations and start the dev server:
-```
 python manage.py migrate
 python manage.py runserver
 ```
 
-## Docker Setup (production)
+In another terminal, from the repository root:
 
-**Requirements**: Docker Engine ≥ 24.0 + Docker Compose v2
-
-The system runs as **4 containers** orchestrated from the repository root:
-- `pooltracker-db` — PostgreSQL 16 database
-- `pooltracker-web` — Django web application (Gunicorn on port 8000)
-- `pooltracker-scrapper` — Data scrapper (collects pool occupancy every 15 min)
-- `pooltracker-backup` — Automatic weekly database backup to `./backups/`
-
-### Quick start
-
-1. Copy and fill in the environment file:
-```
-cp .env.example .env
-# Edit .env — set DB_PASSWORD, SECRET_KEY and optionally API keys
+```sh
+npm --prefix frontend ci --legacy-peer-deps
+npm --prefix frontend run dev
 ```
 
-2. Start all containers from the repository root:
-```
-docker compose up -d
-```
+Open http://localhost:5173. Vite proxies API calls to localhost:8000.
+An optional `OPENWEATHER_API_KEY` enables weather data.
 
-3. Verify all services are running:
-```
+## Docker deployment
+
+Copy `.env.example` to `.env` and set database credentials and a strong Django
+secret. Set `DJANGO_DEBUG=False` for production. Use Docker Engine and Compose v2.
+
+The five services are:
+
+| Service | Purpose |
+| --- | --- |
+| `db` | PostgreSQL 16 and persistent measurements |
+| `web` | Django API served by Gunicorn |
+| `frontend` | React build served by Nginx, public port **8008** |
+| `scrapper` | Pool measurements and weekday aggregates |
+| `backup` | Database backups in `./backups/` |
+
+```sh
+docker compose config --quiet
+docker compose up -d --build
 docker compose ps
 ```
 
-Expected output:
-```
-pooltracker-db       running (healthy)
-pooltracker-web      running
-pooltracker-scrapper running
-pooltracker-backup   running
-```
+Open http://localhost:8008. Production HTTPS is terminated by the external proxy.
+Compose uses fixed container names: use a separate host/context for validation.
+`docker compose down` preserves named volumes; never use `down -v` during upgrades.
 
-4. Open the app at http://localhost:8000
+Backup settings are `SCHEDULE`, `BACKUP_KEEP_DAYS`, and `BACKUP_KEEP_WEEKS`.
+The existing Compose/example default remains `@weekly`; daily backup automation
+and the 24-hour recovery requirement need separate work and are not implemented
+by this cleanup. An immediate backup can be triggered with
+`docker compose exec backup /bin/sh -c /backup.sh`.
 
-### Environment variables
+## Upgrading from a version with retired features
 
-All configuration is in `.env` (copy from `.env.example`):
+Chatbot, donations, donor verification and ad-free activation have been retired.
+Their settings and provider credentials are no longer used. Public `/chatbot`
+and `/chatbot/…` requests return JSON with **410 Gone**; direct Django and Vite
+development requests return **404**. Vite retains a narrow proxy rule to prevent
+its SPA fallback from making a retired URL appear available.
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DB_NAME` | PostgreSQL database name | Yes |
-| `DB_USER` | PostgreSQL user | Yes |
-| `DB_PASSWORD` | PostgreSQL password | Yes |
-| `SECRET_KEY` | Django secret key (min 50 chars) | Yes |
-| `DJANGO_DEBUG` | Django debug mode (`False` in production) | No |
-| `GEMINI_API_KEY` | Gemini API key for chatbot | No |
-| `SCHEDULE` | Backup schedule (default: `@weekly`) | No |
-| `BACKUP_KEEP_DAYS` | Days to keep backups (default: `30`) | No |
+Existing private data is **preserved pending a separate decision**. Before
+recreating an old container, stop retired-feature writes and inspect the presence
+of `/app/logs/chat_history.csv`, `/logs/chat_history.csv`, and the formerly
+configured donor-file location. `/app/logs/` was not covered by the Compose log
+volume. Copy files from the container layer to a new private location outside the
+repository and public directories; compare sizes and SHA-256 checksums. Keep a
+private manifest of locations and hashes. Missing files require no invented data.
 
-### Verifying the scrapper
+Do not delete old conversation/message tables, migration records, content types,
+volumes, files or backups. Normal `migrate` leaves dormant tables alone; a clean
+installation does not create them. Archive files and private environment files
+are excluded from the backend image. Do not clean stale content types or unapply
+the removed application's migration.
 
-After 15 minutes, check that data is being collected:
-```
-docker compose exec db psql -U $DB_USER -d $DB_NAME -c 'SELECT * FROM "poolStats" ORDER BY date DESC LIMIT 5;'
-```
+Record old image IDs before release. After preserving files, build and start the
+new version, run ordinary migrations and smoke-test pool data, sessions, themes
+and retired URLs. A rollback must use a repair image with the known-good pool
+code **and retirement rules still applied**, including removal of the backend
+registration; do not restore the old chatbot or its credentials.
 
-### Manual backup and restore
+See the [release and validation procedure](specs/007-remove-retired-features/quickstart.md)
+and [recorded validation](specs/007-remove-retired-features/validation.md).
+These describe local rehearsals; production archives must be checked at deployment.
 
-Trigger an immediate backup:
-```
-docker compose exec backup /bin/sh -c "/backup.sh"
-```
+## Tests
 
-Backup files are stored in `./backups/` on the host as `*.sql.gz` files.
-
-Restore from a backup:
-```
-gunzip -c ./backups/<filename>.sql.gz | docker compose exec -T db psql -U $DB_USER -d $DB_NAME
-```
-
-### Stop and reset
-
-```
-# Stop containers (preserves data)
-docker compose down
-
-# Stop and delete all data (including database!)
-docker compose down -v
+```sh
+cd tablechart
+python manage.py test chart_app
+cd ..
+npm --prefix frontend run test:run
+npm --prefix frontend run test:coverage
+python -m unittest discover -s scrapper/tests -v
 ```
 
-For detailed troubleshooting see [specs/002-scrapper-docker-integration/quickstart.md](specs/002-scrapper-docker-integration/quickstart.md).
+Scraper transaction tests require `SCRAPPER_TEST_DATABASE_URL` pointing to an
+isolated test database. Additional HTTP, runtime and archive checks live in
+`tests/retirement/`.
 
-## Repository sctructure
-```
-PoolTrackerWeb/
-    tablechart/
-        chart_app/ <- main django app
-        chatbot_app/ <- part for chatbot integration
-        tablechart/ <- core of django project
-        templates/ <- html templates
-        static/ <- all static assets
-```
+## Repository
 
+- `frontend/`: active React interface and Nginx/Vite configuration.
+- `tablechart/chart_app/`: active Django endpoints.
+- `tablechart/tablechart/`: Django settings and routing.
+- `scrapper/`: collection and aggregation.
+- `specs/`: specifications, including historical decisions retained for context.
 
-## TODO
-- info that current day is more or less ocupated that average
-- ML model predicting occupancy for rest of the day (need way more data)
-- ~~choose slimer python images for docker~~
-- ~~weather module~~, gathering info to link occupancy trends with bad/good weather
-- ~~clickable popup window with info about pools~~
-- ~~SSL cert as browser don't like sites without it~~
-- ~~stats chart for each day~~
+The retired `rework/` and `darkmode/` mockups are removed; the active theme
+components remain in `frontend/src/`.
 
 ## Credits
-- Frontend from template [bootstrapmade.com](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/)
-- Favicon [www.flaticon.com](https://www.flaticon.com/free-icon/swimmer_3091014?term=swimming+pool&page=1&position=56&origin=tag&related_id=3091014)
+
+- Legacy template/assets: [BootstrapMade NiceAdmin](https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/).
+- Favicon: [Flaticon](https://www.flaticon.com/free-icon/swimmer_3091014).

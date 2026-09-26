@@ -1,17 +1,3 @@
-/**
- * Reads the CSRF token from the browser's csrftoken cookie.
- * Required for POST requests to Django endpoints.
- */
-function getCsrfToken() {
-  const name = 'csrftoken'
-  const cookies = document.cookie.split(';')
-  for (const cookie of cookies) {
-    const [key, value] = cookie.trim().split('=')
-    if (key === name) return decodeURIComponent(value)
-  }
-  return null
-}
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
 
 /**
@@ -83,30 +69,6 @@ export async function fetchAvailableDates() {
 export async function fetchWeather() {
   const response = await fetch(`${BASE_URL}/api/weather/`, {
     credentials: 'include',
-  })
-  if (!response.ok) {
-    throw new Error(`API error ${response.status}`)
-  }
-  return response.json()
-}
-
-/**
- * Sends a chat message to the chatbot endpoint.
- * @param {string} message - User message (max 500 chars)
- */
-export async function sendChatMessage(message) {
-  const trimmed = message.trim()
-  if (!trimmed || trimmed.length > 500) {
-    throw new Error('Wiadomość musi mieć od 1 do 500 znaków.')
-  }
-  const response = await fetch(`${BASE_URL}/chatbot/api/chat/`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRFToken': getCsrfToken() ?? '',
-    },
-    body: JSON.stringify({ message: trimmed }),
   })
   if (!response.ok) {
     throw new Error(`API error ${response.status}`)

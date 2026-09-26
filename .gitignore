@@ -16,3 +16,13 @@ logs/chat_history.csv
 
 # Database backup files (bind mount — backups stored on host, not in repo)
 backups/
+
+# Local dependencies and validation artifacts
+node_modules/
+dist/
+coverage/
+.coverage*
+__pycache__/
+.venv/
+.retirement-validation/
+archives/

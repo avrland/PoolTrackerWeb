@@ -6,11 +6,6 @@ plotly
 pandas
 whitenoise
 requests
-pydantic
-langchain
-langchain-google-genai
-qdrant-client
 gunicorn
-bleach
 django-ratelimit
 pytz

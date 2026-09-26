@@ -9,6 +9,8 @@ export default defineConfig({
     setupFiles: './src/tests/setup.js',
   },
   server: {
+    // Let the target return its real status for OPTIONS, including retired URLs.
+    cors: { preflightContinue: true },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -22,7 +24,8 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/chatbot': {
+      // Retired URLs must reach Django's 404 instead of Vite's SPA fallback.
+      '^/chatbot(?:/|$|[?])': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
