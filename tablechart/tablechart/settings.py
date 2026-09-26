@@ -36,11 +36,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() == 'true'
 ALLOWED_HOSTS = ['*']
 
 SESSION_COOKIE_AGE = 1800
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_HTTPONLY = True   # prevent JS access to session cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # required for React SPA same-origin cookie passing
 
 # Application definition
 INSTALLED_APPS = [
@@ -49,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pymysql',
     'chart_app',
     'chatbot_app',
 ]
@@ -64,6 +65,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware"
 ]
+
+# CORS — active only in development (React Vite dev server on :5173)
+# In production, nginx serves everything from the same origin — no CORS needed
+if DEBUG:
+    INSTALLED_APPS += ['corsheaders']
+    MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
+
+# CORS allowed origins (only applied when DEBUG=True)
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'tablechart.urls'
 
@@ -90,12 +104,12 @@ WSGI_APPLICATION = 'tablechart.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME'),
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'HOST': os.getenv('DB_HOST', 'db'),
+        'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
 
@@ -134,13 +148,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
-if DEBUG:
-    STATICFILES_DIRS = [ os.path.join(BASE_DIR, 'static'), 
-                         os.path.join(BASE_DIR, 'tablechart/static')]
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -155,7 +174,10 @@ if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     
     # HTTPS Security (works with Cloudflare)
-    SECURE_SSL_REDIRECT = True
+    # SSL redirect is handled by Cloudflare; enabling this on the origin causes
+    # worker timeouts when accessed directly via HTTP (Gunicorn receives SSL
+    # handshake bytes on a plain socket).
+    SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000  # 1 year

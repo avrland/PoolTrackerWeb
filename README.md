@@ -1,7 +1,7 @@
 # PoolTrackerWeb
 ![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
-Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker mysql database, puts it on line chart and does some calculations.
+Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker PostgreSQL database, puts it on line chart and does some calculations.
 
 ## Features
 - occupancy live chart for current day (for my observed pools it's from 6:00 AM)
@@ -12,40 +12,112 @@ Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/
 
 ## Installation (for local development)
 
-1. Use latest python, install pip requirments
-```
-pip install django pymysql plotly pandas
-```
-2. Clone repo
+1. Clone repo
 ```
 git clone https://github.com/avrland/PoolTrackerWeb.git
+cd PoolTrackerWeb/tablechart
 ```
-3. Generate django secret key.
-```python
-from django.core.management.utils import get_random_secret_key
-print(get_random_secret_key())
+2. Install requirements
 ```
-4. Insert mysql credentials (the same as for [PoolTracker scrapper part](https://github.com/avrland/PoolTracker), django secret key, gemini api key, openweathermap api key into .env file:
-```env
-DB_NAME=
-DB_USER=
-DB_PASSWORD=
-DB_HOST=
-DB_PORT=
-SECRET_KEY=
-OPENWEATHER_API_KEY=
-GEMINI_API_KEY=
+pip install -r requirements.txt
 ```
-5. Run django server
+3. Copy and fill in the environment file:
 ```
-python manage.py runserver 0.0.0.0:80
+cp .env.example .env
+```
+Edit `.env` and set your database credentials, Django secret key, and API keys.
+
+4. Run Django migrations and start the dev server:
+```
+python manage.py migrate
+python manage.py runserver
 ```
 
-## Docker image (for production)
+## Docker Setup (production)
+
+**Requirements**: Docker Engine ≥ 24.0 + Docker Compose v2
+
+The system runs as **4 containers** orchestrated from the repository root:
+- `pooltracker-db` — PostgreSQL 16 database
+- `pooltracker-web` — Django web application (Gunicorn on port 8000)
+- `pooltracker-scrapper` — Data scrapper (collects pool occupancy every 15 min)
+- `pooltracker-backup` — Automatic weekly database backup to `./backups/`
+
+### Quick start
+
+1. Copy and fill in the environment file:
 ```
-docker compose build --no-cache
+cp .env.example .env
+# Edit .env — set DB_PASSWORD, SECRET_KEY and optionally API keys
+```
+
+2. Start all containers from the repository root:
+```
 docker compose up -d
 ```
+
+3. Verify all services are running:
+```
+docker compose ps
+```
+
+Expected output:
+```
+pooltracker-db       running (healthy)
+pooltracker-web      running
+pooltracker-scrapper running
+pooltracker-backup   running
+```
+
+4. Open the app at http://localhost:8000
+
+### Environment variables
+
+All configuration is in `.env` (copy from `.env.example`):
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DB_NAME` | PostgreSQL database name | Yes |
+| `DB_USER` | PostgreSQL user | Yes |
+| `DB_PASSWORD` | PostgreSQL password | Yes |
+| `SECRET_KEY` | Django secret key (min 50 chars) | Yes |
+| `DJANGO_DEBUG` | Django debug mode (`False` in production) | No |
+| `GEMINI_API_KEY` | Gemini API key for chatbot | No |
+| `SCHEDULE` | Backup schedule (default: `@weekly`) | No |
+| `BACKUP_KEEP_DAYS` | Days to keep backups (default: `30`) | No |
+
+### Verifying the scrapper
+
+After 15 minutes, check that data is being collected:
+```
+docker compose exec db psql -U $DB_USER -d $DB_NAME -c 'SELECT * FROM "poolStats" ORDER BY date DESC LIMIT 5;'
+```
+
+### Manual backup and restore
+
+Trigger an immediate backup:
+```
+docker compose exec backup /bin/sh -c "/backup.sh"
+```
+
+Backup files are stored in `./backups/` on the host as `*.sql.gz` files.
+
+Restore from a backup:
+```
+gunzip -c ./backups/<filename>.sql.gz | docker compose exec -T db psql -U $DB_USER -d $DB_NAME
+```
+
+### Stop and reset
+
+```
+# Stop containers (preserves data)
+docker compose down
+
+# Stop and delete all data (including database!)
+docker compose down -v
+```
+
+For detailed troubleshooting see [specs/002-scrapper-docker-integration/quickstart.md](specs/002-scrapper-docker-integration/quickstart.md).
 
 ## Repository sctructure
 ```

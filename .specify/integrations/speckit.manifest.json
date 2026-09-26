@@ -1,0 +1,13 @@
+{
+  "integration": "speckit",
+  "version": "0.5.1.dev0",
+  "installed_at": "2026-04-24T05:32:38.787277+00:00",
+  "files": {
+    ".specify/scripts/powershell/check-prerequisites.ps1": "bcb37804b0757c37799b65a9321c1d3fb7b7ddcab6703c55c5b9a142c9166bf1",
+    ".specify/scripts/powershell/common.ps1": "e6f40ffb201144fdb0cf252809cf5066e6510a5f015228f0b2e74e84ca590ed3",
+    ".specify/scripts/powershell/create-new-feature.ps1": "b7554406bab8072d9d1c417b6aa148904e2b5c00301962fff1fcc71e4320ae39",
+    ".specify/scripts/powershell/setup-plan.ps1": "c13ec3f33330e74aa088979c69bf35fe641301aaa50b2c1203c10ce94bcad338",
+    ".specify/scripts/powershell/update-agent-context.ps1": "42db3401c2869d8c6e4a77bf2e4d744afca9aff472cc2ae5b360aeaccc3c4e07",
+    ".specify/templates/constitution-template.md": "ce7549540fa45543cca797a150201d868e64495fdff39dc38246fb17bd4024b3"
+  }
+}

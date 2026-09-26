@@ -2,9 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django_ratelimit.decorators import ratelimit
 import json
-import uuid
 from .langchain_utils import create_conversational_chain
-from django.shortcuts import render
 from django.core.cache import cache
 import pandas as pd
 import os
@@ -33,10 +31,6 @@ def save_chat_history(session_id, user_message, bot_response):
             user_message,
             str(bot_response)
         ])
-
-
-def chatbot_home(request):
-    return render(request, 'chat_home.html')
 
 
 def sanitize_message(message):
@@ -117,7 +111,7 @@ def chat_view(request):
             else:
                 # Informacja dla użytkownika, jeśli dane nie są dostępne
                 return JsonResponse({
-                    'response': 'Przepraszam, dane o obłożeniu basenów nie są w tej chwili dostępne. Odwiedź najpierw stronę główną, aby je załadować.',
+                    'response': 'Przepraszam, dane o obłożeniu basenów nie są w tej chwili dostępne. Odśwież aplikację i spróbuj ponownie.',
                     'session_id': session_id
                 })
 

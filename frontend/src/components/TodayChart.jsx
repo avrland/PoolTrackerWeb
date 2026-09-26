@@ -1,0 +1,198 @@
+import { useTheme } from '../contexts/ThemeContext.jsx'
+import { chartTheme } from './chartTheme.js'
+import { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import Chart from 'react-apexcharts'
+import { fetchAvailableDates, fetchDateData } from '../services/api.js'
+import useCurrentData from '../hooks/useCurrentData.js'
+import { ChartSkeleton } from './Skeleton.jsx'
+
+const todayStr = () => new Date().toISOString().slice(0, 10)
+
+const CHART_OPTIONS = (categories, theme, palette) => ({
+  chart: {
+    type: 'line',
+    toolbar: { show: false },
+    zoom: { enabled: false },
+    animations: { enabled: true, speed: 300 },
+    background: 'transparent',
+    foreColor: palette.text,
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
+  },
+  stroke: { curve: 'smooth', width: 3 },
+  xaxis: {
+    categories,
+    tickAmount: 6,
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+    labels: { rotate: 0, style: { fontSize: '11px', colors: palette.muted } },
+  },
+  yaxis: {
+    min: 0,
+    labels: { style: { fontSize: '11px', colors: palette.muted } },
+  },
+  legend: {
+    labels: { colors: palette.text },
+    position: 'bottom', 
+    horizontalAlign: 'center',
+    fontSize: '11px',
+    fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    markers: { radius: 12 },
+    itemMargin: { horizontal: 10, vertical: 5 }
+  },
+  colors: palette.series,
+  tooltip: {
+    x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
+    y: { formatter: (val) => `${val} os.` },
+    theme,
+  },
+  grid: { 
+    borderColor: palette.grid,
+    strokeDashArray: 4,
+    padding: { left: 10, right: 10 }
+  },
+})
+
+function formatDatePL(dateStr) {
+  return new Intl.DateTimeFormat('pl-PL', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(dateStr + 'T12:00:00'))
+}
+
+export default function TodayChart({ sessionId }) {
+  const { theme } = useTheme()
+  const palette = chartTheme(theme)
+  const [selectedDate, setSelectedDate] = useState(todayStr())
+  const [dateError, setDateError] = useState('')
+  const isToday = selectedDate === todayStr()
+
+  const todayQuery = useCurrentData({ enabled: isToday })
+
+  const availableDatesQuery = useQuery({
+    queryKey: ['available-dates'],
+    queryFn: fetchAvailableDates,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const availableDates = availableDatesQuery.data?.dates ?? []
+  const availableDateSet = useMemo(() => new Set(availableDates), [availableDates])
+  const effectiveSessionId = sessionId ?? todayQuery.data?.session_id ?? null
+
+  const dateQuery = useQuery({
+    queryKey: ['date', selectedDate],
+    queryFn: () => fetchDateData(selectedDate, effectiveSessionId),
+    enabled: !isToday && !!effectiveSessionId && availableDateSet.has(selectedDate),
+    staleTime: Infinity,
+  })
+
+  const { data, isLoading, isError } = isToday ? todayQuery : dateQuery
+
+  const chartTitle = isToday ? 'Dzisiaj' : formatDatePL(selectedDate)
+  const today = todayStr()
+  const minAvailableDate = availableDates.length > 0 ? availableDates[0] : undefined
+  const maxAvailableDate = availableDates.length > 0 ? availableDates[availableDates.length - 1] : today
+
+  function handleDateChange(e) {
+    const nextDate = e.target.value
+    if (!nextDate) return
+
+    if (nextDate === today || availableDateSet.has(nextDate)) {
+      setDateError('')
+      setSelectedDate(nextDate)
+      return
+    }
+
+    setDateError('Wybrany dzień nie ma danych w bazie.')
+  }
+
+  function handleTodayClick() {
+    setSelectedDate(todayStr())
+  }
+
+  const isEmpty = !data || !Array.isArray(data.date) || data.date.length === 0
+  const waitingForSession = !isToday && !effectiveSessionId && todayQuery.isLoading
+  const isInitialLoading = (isLoading || waitingForSession) && !data
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between items-center pb-2">
+        <span className="font-headline-sm text-lg text-on-surface font-semibold">{chartTitle}</span>
+        <div className="flex items-center gap-2">
+          {!isToday && (
+            <button
+              type="button"
+              onClick={handleTodayClick}
+              className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-semibold hover:bg-primary/20 transition-colors"
+            >
+              Dzisiaj
+            </button>
+          )}
+          <div className="relative">
+            <input
+              type="date"
+              value={selectedDate}
+              min={minAvailableDate}
+              max={maxAvailableDate}
+              onChange={handleDateChange}
+              list="available-chart-days"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-control/50 hover:bg-surface-control border border-outline-variant/30 rounded-xl text-sm font-medium transition-colors shadow-sm cursor-pointer"
+              aria-label="Wybierz datę"
+            />
+            <datalist id="available-chart-days">
+              {availableDates.map((d) => (
+                <option key={d} value={d} />
+              ))}
+            </datalist>
+          </div>
+        </div>
+      </div>
+
+      {dateError && (
+        <div className="text-error text-xs font-medium">
+          {dateError}
+        </div>
+      )}
+
+      <div className="w-full h-[320px] mt-2" aria-busy={isInitialLoading}>
+      {isInitialLoading && <ChartSkeleton />}
+
+      {!isInitialLoading && isError && isEmpty && (
+        <div className="text-error text-center p-8 bg-error/5 rounded-2xl" role="alert">
+          Błąd ładowania wykresu dnia.
+        </div>
+      )}
+
+      {!isInitialLoading && !isError && isEmpty && (
+        <div className="text-on-surface-variant text-center p-8 border border-dashed border-outline-variant/50 rounded-2xl">
+          <p>Brak danych z wybranego dnia.</p>
+        </div>
+      )}
+
+      {!isInitialLoading && !isEmpty && (() => {
+        const categories = data.date.map((dt) => dt.slice(11, 16))
+        const series = [
+          { name: 'Pływalnia Sportowa', data: data.sport },
+          { name: 'Pływalnia Rodzinna', data: data.family },
+          { name: 'Pływalnia Kameralna', data: data.small },
+        ]
+        return (
+          <div className="h-full relative">
+            {isError && <span role="status" className="absolute top-0 right-0 z-10 text-xs text-on-surface-variant">Dane nieaktualne</span>}
+             <Chart
+              type="line"
+              height="100%"
+              options={CHART_OPTIONS(categories, theme, palette)}
+              series={series}
+            />
+          </div>
+        )
+      })()}
+      </div>
+    </div>
+  )
+}

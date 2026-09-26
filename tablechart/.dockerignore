@@ -1,0 +1,22 @@
+# Generated static files (built inside container by collectstatic)
+staticfiles/
+
+# Python cache
+**/__pycache__
+**/*.pyc
+**/*.pyo
+
+# Environment secrets
+.env
+
+# Version control
+.git
+.gitignore
+
+# Specs and docs (not needed in container)
+../specs/
+*.md
+
+# IDE
+.vscode/
+.idea/
