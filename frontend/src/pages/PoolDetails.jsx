@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import useCurrentData from '../hooks/useCurrentData.js'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
+import PoolOccupancyChart from '../components/PoolOccupancyChart.jsx'
 import { POOLS } from '../components/FacilityGrid.jsx'
 
 export default function PoolDetails({ isModal = false }) {
@@ -140,6 +141,7 @@ export default function PoolDetails({ isModal = false }) {
         </section>
 
         <aside className="w-full lg:w-[40%] flex flex-col gap-stack-md lg:sticky lg:top-24 h-fit lg:pt-[104px]">
+          <PoolOccupancyChart pool={pool} data={data} isError={isError} />
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col gap-stack-md shadow-md">
             <div className="flex justify-between items-center">
               <span className="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2 font-semibold">

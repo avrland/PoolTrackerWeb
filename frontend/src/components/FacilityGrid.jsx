@@ -145,7 +145,13 @@ export default function FacilityGrid({ onSessionId }) {
         }
 
         return (
-          <div key={id} className="facility-card glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-surface-gradient/80 to-surface-glass/40 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border-t-white/80">
+          <Link
+            key={id}
+            to={`/pool/${id}`}
+            state={window.innerWidth < 1024 ? { background: location } : null}
+            aria-label={label}
+            className="facility-card glass-card group p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-surface-gradient/80 to-surface-glass/40 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border-t-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          >
             <div className="flex flex-col items-center">
               <h3 className="text-sm font-semibold text-on-surface line-clamp-1 truncate w-full px-1">{label}</h3>
               <p className="text-[10px] text-outline uppercase font-medium tracking-wider mt-0.5">{address}</p>
@@ -168,18 +174,12 @@ export default function FacilityGrid({ onSessionId }) {
                 <span className={`text-[10px] font-semibold ${colorClass} leading-tight mt-0.5`}>{percent}%</span>
               </div>
             </div>
-            {/* 
-              Pass background state ONLY on mobile screens to trigger animated overlay.
-              On desktop, it will trigger a normal page navigation.
-            */}
-            <Link 
-              to={`/pool/${id}`} 
-              state={window.innerWidth < 1024 ? { background: location } : null}
-              className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary hover:text-on-primary transition-colors duration-200"
+            <span
+              className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 group-hover:bg-primary group-hover:text-on-primary group-focus-visible:bg-primary group-focus-visible:text-on-primary transition-colors duration-200"
             >
               Szczegóły <Icon name="arrow_forward" variant="rounded" size={14} />
-            </Link>
-          </div>
+            </span>
+          </Link>
         )
       })}
     </section>
