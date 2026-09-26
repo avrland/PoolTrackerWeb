@@ -1,6 +1,6 @@
 export default function FAQ() {
   return (
-    <section className="glass-card p-6 flex flex-col gap-4 bg-white/60">
+    <section className="glass-card p-6 flex flex-col gap-4 bg-surface-control/60">
       <h3 className="font-headline-sm text-[16px] font-bold text-on-surface border-b border-surface-variant/40 pb-3">Pytania i odpowiedzi</h3>
       <div className="space-y-5 pt-2">
         <div>

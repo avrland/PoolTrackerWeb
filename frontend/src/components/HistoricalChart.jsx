@@ -1,3 +1,5 @@
+import { useTheme } from '../contexts/ThemeContext.jsx'
+import { chartTheme } from './chartTheme.js'
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Chart from 'react-apexcharts'
@@ -14,13 +16,14 @@ function getTodayIndex() {
   return jsDay === 0 ? 6 : jsDay - 1
 }
 
-const CHART_OPTIONS = (categories) => ({
+const CHART_OPTIONS = (categories, theme, palette) => ({
   chart: {
     type: 'line',
     toolbar: { show: false },
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
     background: 'transparent',
+    foreColor: palette.text,
     fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   },
   stroke: { curve: 'smooth', width: 3 },
@@ -29,13 +32,14 @@ const CHART_OPTIONS = (categories) => ({
     tickAmount: 6,
     axisBorder: { show: false },
     axisTicks: { show: false },
-    labels: { rotate: 0, style: { fontSize: '11px', colors: '#727787' } },
+    labels: { rotate: 0, style: { fontSize: '11px', colors: palette.muted } },
   },
   yaxis: {
     min: 0,
-    labels: { style: { fontSize: '11px', colors: '#727787' } },
+    labels: { style: { fontSize: '11px', colors: palette.muted } },
   },
-  legend: { 
+  legend: {
+    labels: { colors: palette.text },
     position: 'bottom', 
     horizontalAlign: 'center',
     fontSize: '11px',
@@ -45,19 +49,21 @@ const CHART_OPTIONS = (categories) => ({
     markers: { radius: 12 },
     itemMargin: { horizontal: 10, vertical: 5 }
   },
-  colors: ['#0D6EFD', '#FF771D', '#20C997'],
+  colors: palette.series,
   tooltip: {
     x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
     y: { formatter: (val) => `${val} os.` },
-    theme: 'light',
+    theme,
   },
   grid: { 
-    borderColor: '#e1e2ee',
+    borderColor: palette.grid,
     strokeDashArray: 4,
   },
 })
 
 export default function HistoricalChart() {
+  const { theme } = useTheme()
+  const palette = chartTheme(theme)
   const [selectedDay, setSelectedDay] = useState(getTodayIndex)
 
   const { data, isLoading, isError, error } = useQuery({
@@ -102,8 +108,8 @@ export default function HistoricalChart() {
             type="button"
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
               idx === selectedDay 
-              ? 'bg-primary text-white shadow-md' 
-              : 'bg-white text-on-surface-variant border border-outline-variant/30 hover:bg-surface-container-low'
+              ? 'bg-primary text-on-primary shadow-md'
+              : 'bg-surface-control text-on-surface-variant border border-outline-variant/30 hover:bg-surface-container-low'
             }`}
             onClick={() => setSelectedDay(idx)}
             aria-pressed={idx === selectedDay}
@@ -130,7 +136,7 @@ export default function HistoricalChart() {
           <Chart
             type="line"
             height="100%"
-            options={CHART_OPTIONS(filteredCategories)}
+            options={CHART_OPTIONS(filteredCategories, theme, palette)}
             series={series}
           />
         )}

@@ -1,4 +1,4 @@
-import Icon from './Icon.jsx'
+import DarkModeToggle from './DarkModeToggle.jsx'
 import { Link } from 'react-router-dom'
 import CurrentStatus from './CurrentStatus.jsx'
 
@@ -7,10 +7,10 @@ export default function Layout({ children }) {
     <div className="text-on-surface font-body-md min-h-screen flex flex-col relative overflow-x-hidden">
       {/* Background Overlay */}
       <div className="fixed inset-0 z-[-1] bg-hero-pattern opacity-30"></div>
-      <div className="fixed inset-0 z-[-1] bg-gradient-to-b from-white/40 via-background/90 to-background"></div>
+      <div className="fixed inset-0 z-[-1] bg-gradient-to-b hero-overlay from-surface-overlay/40 via-background/90 to-background"></div>
 
       {/* Top App Bar */}
-      <header className="bg-white/70 backdrop-blur-lg border-b border-white/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] fixed top-0 w-full z-50 transition-all">
+      <header className="app-header bg-surface-glass/70 backdrop-blur-lg border-b border-white/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] fixed top-0 w-full z-50 transition-all">
         <div className="flex items-center justify-between h-16 px-4 md:px-6 w-full max-w-container-max mx-auto">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <img
@@ -25,9 +25,7 @@ export default function Layout({ children }) {
 
           <CurrentStatus showTotal className="hidden sm:flex ml-3 shadow-sm" />
 
-          <button aria-label="Menu" className="p-2 hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
-            <Icon name="menu" variant="rounded" size={24} className="text-primary" />
-          </button>
+          <DarkModeToggle />
         </div>
       </header>
 
@@ -37,7 +35,7 @@ export default function Layout({ children }) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-md border-t border-white/60 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] w-full mt-auto relative z-10">
+      <footer className="app-footer bg-surface-glass/80 backdrop-blur-md border-t border-white/60 shadow-[0_-4px_24px_rgba(0,0,0,0.02)] w-full mt-auto relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 py-8 px-6 w-full max-w-container-max mx-auto">
           <div className="flex items-center gap-3">
             <img

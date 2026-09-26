@@ -1,6 +1,6 @@
 export default function FacebookCard() {
   return (
-    <div className="glass-card p-5 flex flex-row md:flex-col items-center justify-between gap-4 bg-gradient-to-br from-white/80 to-primary-fixed/20 border-primary/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all h-full">
+    <div className="social-card glass-card p-5 flex flex-row md:flex-col items-center justify-between gap-4 bg-gradient-to-br from-surface-gradient/80 to-primary-fixed/20 border-primary/10 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all h-full">
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 rounded-2xl bg-[#1877F2] flex items-center justify-center text-white shadow-sm shrink-0">
            <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">

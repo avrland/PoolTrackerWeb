@@ -1,3 +1,5 @@
+import { useTheme } from '../contexts/ThemeContext.jsx'
+import { chartTheme } from './chartTheme.js'
 import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Chart from 'react-apexcharts'
@@ -7,13 +9,14 @@ import { ChartSkeleton } from './Skeleton.jsx'
 
 const todayStr = () => new Date().toISOString().slice(0, 10)
 
-const CHART_OPTIONS = (categories) => ({
+const CHART_OPTIONS = (categories, theme, palette) => ({
   chart: {
     type: 'line',
     toolbar: { show: false },
     zoom: { enabled: false },
     animations: { enabled: true, speed: 300 },
     background: 'transparent',
+    foreColor: palette.text,
     fontFamily: 'Inter, system-ui, -apple-system, "Segoe UI", sans-serif',
   },
   stroke: { curve: 'smooth', width: 3 },
@@ -22,13 +25,14 @@ const CHART_OPTIONS = (categories) => ({
     tickAmount: 6,
     axisBorder: { show: false },
     axisTicks: { show: false },
-    labels: { rotate: 0, style: { fontSize: '11px', colors: '#727787' } },
+    labels: { rotate: 0, style: { fontSize: '11px', colors: palette.muted } },
   },
   yaxis: {
     min: 0,
-    labels: { style: { fontSize: '11px', colors: '#727787' } },
+    labels: { style: { fontSize: '11px', colors: palette.muted } },
   },
-  legend: { 
+  legend: {
+    labels: { colors: palette.text },
     position: 'bottom', 
     horizontalAlign: 'center',
     fontSize: '11px',
@@ -38,14 +42,14 @@ const CHART_OPTIONS = (categories) => ({
     markers: { radius: 12 },
     itemMargin: { horizontal: 10, vertical: 5 }
   },
-  colors: ['#0D6EFD', '#FF771D', '#20C997'],
+  colors: palette.series,
   tooltip: {
     x: { formatter: (val, opts) => categories[opts.dataPointIndex] ?? val },
     y: { formatter: (val) => `${val} os.` },
-    theme: 'light',
+    theme,
   },
   grid: { 
-    borderColor: '#e1e2ee',
+    borderColor: palette.grid,
     strokeDashArray: 4,
     padding: { left: 10, right: 10 }
   },
@@ -61,6 +65,8 @@ function formatDatePL(dateStr) {
 }
 
 export default function TodayChart({ sessionId }) {
+  const { theme } = useTheme()
+  const palette = chartTheme(theme)
   const [selectedDate, setSelectedDate] = useState(todayStr())
   const [dateError, setDateError] = useState('')
   const isToday = selectedDate === todayStr()
@@ -134,7 +140,7 @@ export default function TodayChart({ sessionId }) {
               max={maxAvailableDate}
               onChange={handleDateChange}
               list="available-chart-days"
-              className="flex items-center gap-2 px-4 py-2 bg-white/50 hover:bg-white border border-outline-variant/30 rounded-xl text-sm font-medium transition-colors shadow-sm cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-control/50 hover:bg-surface-control border border-outline-variant/30 rounded-xl text-sm font-medium transition-colors shadow-sm cursor-pointer"
               aria-label="Wybierz datę"
             />
             <datalist id="available-chart-days">
@@ -180,7 +186,7 @@ export default function TodayChart({ sessionId }) {
              <Chart
               type="line"
               height="100%"
-              options={CHART_OPTIONS(categories)}
+              options={CHART_OPTIONS(categories, theme, palette)}
               series={series}
             />
           </div>

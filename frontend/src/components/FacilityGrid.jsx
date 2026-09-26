@@ -79,7 +79,7 @@ export default function FacilityGrid({ onSessionId }) {
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6" aria-label="Kafelki obiektów" aria-busy="true">
         <span className="sr-only" role="status">Ładowanie zajętości obiektów</span>
         {POOLS.map(({ id, label, address }) => (
-          <div key={id} className="glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-white/80 to-white/40">
+          <div key={id} className="facility-card glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-surface-gradient/80 to-surface-glass/40">
             <div className="flex flex-col items-center">
               <h3 className="text-sm font-semibold text-on-surface line-clamp-1 truncate w-full px-1">{label}</h3>
               <p className="text-[10px] text-outline uppercase font-medium tracking-wider mt-0.5">{address}</p>
@@ -123,7 +123,7 @@ export default function FacilityGrid({ onSessionId }) {
 
         if (actuallyClosed) {
           return (
-            <div key={id} className="glass-card p-4 flex flex-col items-center text-center gap-3 bg-white/30 backdrop-blur-md opacity-80 grayscale-[30%]">
+            <div key={id} className="facility-card glass-card p-4 flex flex-col items-center text-center gap-3 bg-surface-control/30 backdrop-blur-md opacity-80 grayscale-[30%]">
               <div className="flex flex-col items-center">
                 <h3 className="text-sm font-semibold text-on-surface line-clamp-1 truncate w-full px-1">{label}</h3>
                 <p className="text-[10px] text-outline uppercase font-medium tracking-wider mt-0.5">{address}</p>
@@ -145,7 +145,7 @@ export default function FacilityGrid({ onSessionId }) {
         }
 
         return (
-          <div key={id} className="glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-white/80 to-white/40 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border-t-white/80">
+          <div key={id} className="facility-card glass-card p-4 flex flex-col items-center text-center gap-3 bg-gradient-to-b from-surface-gradient/80 to-surface-glass/40 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] transition-all duration-300 border-t-white/80">
             <div className="flex flex-col items-center">
               <h3 className="text-sm font-semibold text-on-surface line-clamp-1 truncate w-full px-1">{label}</h3>
               <p className="text-[10px] text-outline uppercase font-medium tracking-wider mt-0.5">{address}</p>
@@ -175,7 +175,7 @@ export default function FacilityGrid({ onSessionId }) {
             <Link 
               to={`/pool/${id}`} 
               state={window.innerWidth < 1024 ? { background: location } : null}
-              className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary hover:text-white transition-colors duration-200"
+              className="w-full py-2 bg-primary/5 text-primary rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary hover:text-on-primary transition-colors duration-200"
             >
               Szczegóły <Icon name="arrow_forward" variant="rounded" size={14} />
             </Link>

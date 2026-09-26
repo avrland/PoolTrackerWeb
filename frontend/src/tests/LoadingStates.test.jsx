@@ -1,3 +1,4 @@
+import { ThemeProvider } from '../contexts/ThemeContext.jsx'
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -31,7 +32,7 @@ let client
 function mount(children) {
   return render(
     <QueryClientProvider client={client}>
-      <MemoryRouter>{children}</MemoryRouter>
+      <ThemeProvider><MemoryRouter>{children}</MemoryRouter></ThemeProvider>
     </QueryClientProvider>,
   )
 }

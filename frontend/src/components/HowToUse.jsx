@@ -1,13 +1,13 @@
 import Icon from './Icon.jsx'
 export default function HowToUse() {
   return (
-    <section className="glass-card p-5 bg-white/40 hidden md:block">
+    <section className="glass-card p-5 bg-surface-control/40 hidden md:block">
       <div className="flex items-center justify-between mb-4 border-b border-outline-variant/20 pb-3">
         <div className="flex items-center gap-2 text-primary">
           <Icon name="info" variant="rounded" size={22} />
           <h3 className="font-headline-sm text-[15px] font-semibold text-on-surface">Jak korzystać z serwisu</h3>
         </div>
-        <button aria-label="Zamknij instrukcję" className="text-outline hover:text-on-surface bg-white/50 hover:bg-white p-1 rounded-full transition-all">
+        <button aria-label="Zamknij instrukcję" className="text-outline hover:text-on-surface bg-surface-control/50 hover:bg-surface-control p-1 rounded-full transition-all">
           <Icon name="close" variant="rounded" size={20} />
         </button>
       </div>

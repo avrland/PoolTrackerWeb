@@ -180,7 +180,7 @@ export default function PoolDetails({ isModal = false }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={handleClose}
-        className="fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm pointer-events-auto"
+        className="modal-backdrop fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm pointer-events-auto"
       />
 
       {/* Animated Bottom Sheet */}

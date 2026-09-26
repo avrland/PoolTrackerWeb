@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { ThemeProvider } from '../contexts/ThemeContext.jsx'
+import { render as rtlRender, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import TodayChart from '../components/TodayChart.jsx'
 
@@ -125,3 +126,5 @@ describe('TodayChart', () => {
     expect(screen.getByText(/nie ma danych w bazie/i)).toBeInTheDocument()
   })
 })
+
+function render(ui) { return rtlRender(<ThemeProvider>{ui}</ThemeProvider>) }

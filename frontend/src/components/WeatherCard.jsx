@@ -16,7 +16,7 @@ export default function WeatherCard() {
     <div className="glass-card p-5 flex flex-row md:flex-col items-center justify-between gap-4 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all h-full" aria-busy={isInitialLoading}>
       {isInitialLoading && <span role="status" className="sr-only">Ładowanie pogody</span>}
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-primary shadow-sm border border-primary/5 shrink-0">
+        <div className="w-14 h-14 rounded-2xl bg-surface-control flex items-center justify-center text-primary shadow-sm border border-primary/5 shrink-0">
           {isInitialLoading ? (
             <Skeleton className="w-8 h-8 !rounded-full" />
           ) : (

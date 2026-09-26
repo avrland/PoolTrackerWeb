@@ -28,7 +28,7 @@ export default function CountdownCard() {
   return (
     <div className="glass-card p-5 flex flex-row md:flex-col items-center justify-between gap-4 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all h-full">
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-tertiary shadow-sm border border-tertiary/5 shrink-0">
+        <div className="w-14 h-14 rounded-2xl bg-surface-control flex items-center justify-center text-tertiary shadow-sm border border-tertiary/5 shrink-0">
           <Icon name="pool" variant="rounded" size={32} />
         </div>
         <div>

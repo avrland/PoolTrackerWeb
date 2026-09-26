@@ -1,3 +1,5 @@
+@import './theme.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +15,10 @@
 @layer base {
   body {
     @apply bg-background text-on-surface font-body-md min-h-screen flex flex-col relative overflow-x-hidden;
+  }
+  :where(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid rgb(var(--color-primary));
+    outline-offset: 3px;
   }
 }
 
@@ -30,4 +36,49 @@
   background-size: cover;
   background-position: center top;
   background-attachment: fixed;
+}
+
+/* Match the dark reference without changing the light layout or surfaces. */
+[data-theme='dark'] .glass-card {
+  background-color: rgb(var(--color-surface-container) / 0.6);
+  border-color: rgb(255 255 255 / 0.05);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.3);
+}
+[data-theme='dark'] .glass-panel {
+  background-color: rgb(var(--color-surface-container-high) / 0.6);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.4);
+}
+[data-theme='dark'] .facility-card {
+  --tw-gradient-from: rgb(var(--color-surface-bright) / 0.4);
+  --tw-gradient-to: rgb(var(--color-surface-container) / 0.4);
+  border-top-color: rgb(255 255 255 / 0.1);
+}
+[data-theme='dark'] .glass-card:hover {
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.4), 0 0 16px rgb(var(--color-primary) / 0.04);
+}
+[data-theme='dark'] .social-card {
+  background-image: linear-gradient(to bottom right, rgb(var(--color-surface-container-high) / 0.8), rgb(var(--color-primary) / 0.05));
+}
+[data-theme='dark'] .text-outline-variant { color: rgb(var(--color-outline)); }
+[data-theme='dark'] .modal-backdrop { background-color: rgb(0 0 0 / 0.4); }
+[data-theme='dark'] .app-header,
+[data-theme='dark'] .app-footer {
+  background-color: rgb(var(--color-surface-container-high) / 0.8);
+  border-color: rgb(255 255 255 / 0.05);
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.2);
+}
+[data-theme='dark'] .bg-hero-pattern { opacity: 0.2; }
+[data-theme='dark'] .hero-overlay {
+  background-image: linear-gradient(to bottom, rgb(var(--color-background) / 0.6), rgb(var(--color-background) / 0.95), rgb(var(--color-background)));
+}
+[data-theme='dark'] .apexcharts-tooltip,
+[data-theme='dark'] .apexcharts-xaxistooltip {
+  background: rgb(var(--color-surface-container-lowest) / 0.95);
+  color: rgb(var(--color-on-surface));
+  border-color: rgb(var(--color-outline-variant));
+}
+[data-theme='dark'] .apexcharts-tooltip-title {
+  background: rgb(var(--color-surface-container-high));
+  border-color: rgb(var(--color-outline-variant));
 }
