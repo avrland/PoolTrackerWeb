@@ -1,0 +1,10 @@
+[Unit]
+Description=Check PoolTracker main every 30 minutes
+
+[Timer]
+OnCalendar=*-*-* *:00,30:00
+Persistent=true
+Unit=pooltracker-deploy.service
+
+[Install]
+WantedBy=timers.target

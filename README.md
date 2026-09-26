@@ -1,4 +1,13 @@
 # PoolTrackerWeb
+
+## CI/CD na VPS
+
+GitHub Actions testuje i publikuje obrazy aplikacji do GHCR. Timer systemd na VPS
+sprawdza `main` co 30 minut i wdraża gotowe wydanie z backupem, kontrolą zdrowia
+oraz rollbackiem. Instalacja i obsługa: [deploy/README.md](deploy/README.md).
+
+Migracje Django są teraz jawnym krokiem wdrożenia; lokalnie przed uruchomieniem
+aplikacji wykonaj `docker compose run --rm --entrypoint python web manage.py migrate --noinput`.
 ![ss1](https://github.com/avrland/PoolTrackerWeb/blob/develop/images/2.png)
 
 Django&bootstrap based web app part of [PoolTracker](https://github.com/avrland/PoolTracker) project. Reads data from PoolTracker PostgreSQL database, puts it on line chart and does some calculations.
@@ -37,9 +46,10 @@ python manage.py runserver
 
 **Requirements**: Docker Engine ≥ 24.0 + Docker Compose v2
 
-The system runs as **4 containers** orchestrated from the repository root:
+The system runs as **5 containers** orchestrated from the repository root:
 - `pooltracker-db` — PostgreSQL 16 database
 - `pooltracker-web` — Django web application (Gunicorn on port 8000)
+- `pooltracker-frontend` — React application and nginx proxy (host port 8008)
 - `pooltracker-scrapper` — Data scrapper (collects pool occupancy every 15 min)
 - `pooltracker-backup` — Automatic weekly database backup to `./backups/`
 
@@ -51,8 +61,9 @@ cp .env.example .env
 # Edit .env — set DB_PASSWORD, SECRET_KEY and optionally API keys
 ```
 
-2. Start all containers from the repository root:
+2. Run migrations, then start all containers from the repository root:
 ```
+docker compose run --rm --entrypoint python web manage.py migrate --noinput
 docker compose up -d
 ```
 
@@ -65,11 +76,12 @@ Expected output:
 ```
 pooltracker-db       running (healthy)
 pooltracker-web      running
+pooltracker-frontend running
 pooltracker-scrapper running
 pooltracker-backup   running
 ```
 
-4. Open the app at http://localhost:8000
+4. Open the app at http://localhost:8008
 
 ### Environment variables
 

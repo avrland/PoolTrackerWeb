@@ -1,0 +1,16 @@
+**/__pycache__/
+**/*.pyc
+**/.env*
+**/*.env
+**/*.pem
+**/*.key
+**/pw.json
+**/donors.json
+**/logs/
+**/backups/
+**/*.log
+**/*.csv
+**/*.sql*
+.git/
+.venv/
+tests/

@@ -1,0 +1,41 @@
+# Isolated integration environment. No production env files, ports or volumes.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pooltracker_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U test -d pooltracker_test]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  web:
+    image: pooltracker-ci-web
+    build: ../tablechart
+    environment:
+      DB_NAME: pooltracker_test
+      DB_USER: test
+      DB_PASSWORD: test
+      DB_HOST: db
+      SECRET_KEY: ci-only-test-secret
+    depends_on:
+      db:
+        condition: service_healthy
+  frontend:
+    image: pooltracker-ci-frontend
+    build: ../frontend
+    depends_on: [web]
+  scrapper-tests:
+    image: pooltracker-ci-scrapper
+    build: ../scrapper
+    working_dir: /work
+    volumes:
+      - ../scrapper:/work/scrapper:ro
+    environment:
+      SCRAPPER_TEST_DATABASE_URL: postgresql://test:test@db:5432/pooltracker_test
+    command: [python, -m, unittest, discover, -s, scrapper/tests, -v]
+    depends_on:
+      db:
+        condition: service_healthy

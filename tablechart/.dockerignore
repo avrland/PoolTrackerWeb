@@ -20,3 +20,15 @@ staticfiles/
 # IDE
 .vscode/
 .idea/
+**/.env*
+**/*.env
+**/*.pem
+**/*.key
+**/pw.json
+**/donors.json
+**/logs/
+**/backups/
+**/*.log
+**/*.csv
+**/*.sql*
+**/*.sqlite3

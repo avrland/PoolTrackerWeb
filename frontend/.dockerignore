@@ -8,3 +8,11 @@ Thumbs.db
 .git/
 .gitignore
 README.md
+**/.env*
+**/*.env
+**/*.pem
+**/*.key
+**/logs/
+**/backups/
+**/donors.json
+**/pw.json

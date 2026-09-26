@@ -1,0 +1,149 @@
+name: Test and publish
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: pooltracker_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U test -d pooltracker_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_NAME: pooltracker_test
+      DB_USER: test
+      DB_PASSWORD: test
+      DB_HOST: localhost
+      DB_PORT: '5432'
+      SECRET_KEY: ci-only-not-a-production-secret
+      SCRAPPER_TEST_DATABASE_URL: postgresql://test:test@localhost:5432/pooltracker_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --legacy-peer-deps && npm run test:run && npm run build
+        working-directory: frontend
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r scrapper/requirements.txt
+      - run: python -m unittest discover -s scrapper/tests -v
+      - run: python -m unittest discover -s deploy/tests -v
+      - run: bash -n deploy/pooltracker-deploy.sh && shellcheck deploy/pooltracker-deploy.sh
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - run: pip install -r tablechart/requirements.txt
+      - working-directory: tablechart
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+          python manage.py migrate --noinput
+          python manage.py test tablechart.test_health
+      - name: Build and smoke-test the actual containers
+        run: |
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml build
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml run --rm --entrypoint python web manage.py migrate --noinput
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml up -d web frontend
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml exec -T web python - prepare < deploy/smoke.py
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml up -d --no-deps --force-recreate web
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml up -d --no-deps --force-recreate frontend
+          docker compose -p pooltracker-ci -f deploy/compose.test.yml exec -T web python - verify < deploy/smoke.py
+      - name: Clean up isolated test containers
+        if: always()
+        run: docker compose -p pooltracker-ci -f deploy/compose.test.yml down -v
+
+  images:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - service: web
+            context: tablechart
+          - service: frontend
+            context: frontend
+          - service: scrapper
+            context: scrapper
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - id: name
+        env:
+          REPOSITORY: ${{ github.repository }}
+          SERVICE: ${{ matrix.service }}
+        run: echo "image=ghcr.io/${REPOSITORY,,}-${SERVICE}" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: ${{ matrix.context }}
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.name.outputs.image }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+      - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        env:
+          SERVICE: ${{ matrix.service }}
+          IMAGE: ${{ steps.name.outputs.image }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: jq -n --arg service "$SERVICE" --arg image "$IMAGE@$DIGEST" '{($service):$image}' > "$SERVICE.json"
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          name: image-${{ matrix.service }}
+          path: ${{ matrix.service }}.json
+
+  release:
+    needs: images
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: image-*
+          merge-multiple: true
+      - env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          jq -s --arg sha "$SHA" '{schema:1,sha:$sha,images:(add)}' web.json frontend.json scrapper.json > manifest.json
+          if gh release view "deploy-$SHA" >/dev/null 2>&1; then
+            echo 'Release already exists; refusing to replace immutable manifest.'
+            exit 0
+          fi
+          gh release create "deploy-$SHA" manifest.json --target "$SHA" \
+            --title "Deploy $SHA" --notes 'Tested application images. Database migrations must remain backward compatible.' --latest=false

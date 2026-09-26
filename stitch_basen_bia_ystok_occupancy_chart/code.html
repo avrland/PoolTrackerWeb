@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html lang="pl"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pływalnia Kameralna - basen.bialystok.pl</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#0062d2',
+              hover: '#0052b3',
+              light: '#f0f6ff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-chart-styles">
+    /* Subtle tooltip hover on bar chart */
+    .chart-bar-group:hover .chart-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-4px);
+    }
+    .chart-tooltip {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-gray-50/50 text-slate-800 antialiased font-sans min-h-screen flex flex-col justify-between">
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<!-- Brand Logo -->
+<a class="flex items-center gap-2 group" data-purpose="site-logo" href="#">
+<svg class="w-8 h-8 text-blue-500 transition-transform group-hover:scale-105" fill="none" viewbox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#EBF4FF" height="36" rx="10" width="36"></rect>
+<path d="M8 21C11.5 21 13 18.5 16.5 18.5C20 18.5 21.5 21 25 21C27 21 28 20 29 19.5" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+<path d="M7 26C10.5 26 12 23.5 15.5 23.5C19 23.5 20.5 26 24 26C26.5 26 27.5 24.8 29 24.2" stroke="#38BDF8" stroke-linecap="round" stroke-width="2.5"></path>
+<circle cx="23" cy="12" fill="#F97316" r="3"></circle>
+</svg>
+<span class="font-bold text-lg text-slate-900 tracking-tight flex items-baseline">
+          basen.bialystok.pl
+          <span class="ml-1 text-[11px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">beta</span>
+</span>
+</a>
+<!-- Center Live Total Counter Pill -->
+<div class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50/80 border border-red-100 text-xs font-semibold text-red-600 tracking-wide uppercase shadow-xs">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+</span>
+        Teraz pływa łącznie 245 osób
+      </div>
+<!-- Right Controls: Theme Toggle -->
+<div class="flex items-center">
+<button aria-label="Przełącz tryb ciemny" class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1">
+<!-- Breadcrumb / Back Link -->
+<div class="mb-4">
+<a class="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+        Wstecz
+      </a>
+</div>
+<!-- Facility Header Info -->
+<section class="mb-8" data-purpose="pool-header-info">
+<h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+        Pływalnia Kameralna
+      </h1>
+<!-- Status and Address -->
+<div class="flex flex-wrap items-center gap-3 text-sm text-slate-600 mb-3 font-medium">
+<span class="inline-flex items-center gap-1.5 text-emerald-600 font-semibold">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+          Obiekt otwarty
+        </span>
+<span class="text-slate-300">•</span>
+<span class="text-slate-600">ul. Mazowiecka 39C</span>
+</div>
+<!-- Description -->
+<p class="text-slate-600 text-sm sm:text-base max-w-3xl leading-relaxed mb-4">
+        Pływalnia Kameralna to przytulny obiekt idealny dla osób szukających spokoju i kameralnej atmosfery podczas treningu.
+      </p>
+<!-- Working Hours -->
+<div class="flex items-start gap-3 text-slate-700 bg-white/70 backdrop-blur-xs p-3 rounded-xl border border-slate-200/60 inline-flex">
+<div class="text-blue-600 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="text-sm">
+<div class="font-bold text-slate-900">Godziny otwarcia</div>
+<div class="text-xs text-slate-500">Poniedziałek - Niedziela</div>
+<div class="font-bold text-slate-900 mt-0.5 text-base">06:15 – 21:45</div>
+</div>
+</div>
+</section>
+<!-- Two-column Layout: Gallery & Live/Chart Sidebar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- BEGIN: LeftColumn (Images & Gallery) -->
+<div class="lg:col-span-7 flex flex-col gap-4" data-purpose="pool-gallery">
+<!-- Main Featured Image -->
+<div class="relative overflow-hidden rounded-2xl shadow-sm border border-slate-200/80 bg-slate-100 aspect-[16/10]">
+<img alt="Wnętrze basenu - Pływalnia Kameralna Białystok" class="w-full h-full object-cover" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<!-- Thumbnails Gallery -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Thumbnail 1 (Photo) -->
+<div class="rounded-xl overflow-hidden border border-slate-200 aspect-[16/10] bg-slate-100">
+<img alt="Miniatura basenu" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer" src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg"/>
+</div>
+<!-- Thumbnail 2 (Placeholder) -->
+<div class="rounded-xl border border-dashed border-slate-300 bg-slate-100/70 aspect-[16/10] flex items-center justify-center text-slate-400">
+<svg class="w-10 h-10 stroke-current" fill="none" viewbox="0 0 24 24">
+<path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- END: LeftColumn -->
+<!-- BEGIN: RightColumn (Today's Chart & Live Occupancy) -->
+<div class="lg:col-span-5 flex flex-col gap-4" data-purpose="occupancy-sidebar">
+<!-- NEW FEATURE: Today's Occupancy Hourly Chart (Directly above the live card) -->
+<section class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs" data-purpose="hourly-occupancy-chart">
+<!-- Chart Header -->
+<div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+<div>
+<div class="flex items-center gap-1.5">
+<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<h2 class="text-sm font-bold text-slate-900">Wykres obłożenia – Dzisiaj</h2>
+</div>
+<p class="text-xs text-slate-500 mt-0.5">Średnia liczba osób wg godzin</p>
+</div>
+<span class="text-[11px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+              06:00 – 22:00
+            </span>
+</div>
+<!-- Interactive Bar Chart Container -->
+<div class="pt-2">
+<!-- Capacity reference line info -->
+<div class="flex justify-between items-center text-[10px] text-slate-400 font-medium mb-1">
+<span>Maks. 30 osób</span>
+<span class="text-blue-600 font-semibold">● Aktualna godzina</span>
+</div>
+<!-- SVG Visual Bars Chart -->
+<div class="relative h-32 w-full pt-4 flex items-end justify-between gap-1 sm:gap-1.5 border-b border-slate-200">
+<!-- 06:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">4 os. (13%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 13%;"></div>
+</div>
+<!-- 07:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">8 os. (26%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 26%;"></div>
+</div>
+<!-- 08:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">12 os. (40%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 40%;"></div>
+</div>
+<!-- 09:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">15 os. (50%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 50%;"></div>
+</div>
+<!-- 10:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">18 os. (60%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 60%;"></div>
+</div>
+<!-- 11:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">14 os. (47%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 47%;"></div>
+</div>
+<!-- 12:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">11 os. (36%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 36%;"></div>
+</div>
+<!-- 13:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">9 os. (30%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 30%;"></div>
+</div>
+<!-- 14:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">13 os. (43%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 43%;"></div>
+</div>
+<!-- 15:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">17 os. (56%)</div>
+<div class="w-full max-w-[18px] bg-blue-100 hover:bg-blue-300 rounded-t transition-colors" style="height: 56%;"></div>
+</div>
+<!-- 16:00 -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">21 os. (70%)</div>
+<div class="w-full max-w-[18px] bg-blue-200 hover:bg-blue-400 rounded-t transition-colors" style="height: 70%;"></div>
+</div>
+<!-- 17:00 (Aktualna godzina - podświetlona) -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-100 bg-blue-600 text-white text-[10px] font-bold py-0.5 px-1.5 rounded shadow whitespace-nowrap absolute -top-7 z-10">22 os. (73%)</div>
+<div class="w-full max-w-[18px] bg-blue-600 hover:bg-blue-700 rounded-t transition-colors ring-2 ring-blue-300 ring-offset-1" style="height: 73%;"></div>
+</div>
+<!-- 18:00 (Prognoza) -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">Prognoza: 25 os.</div>
+<div class="w-full max-w-[18px] bg-slate-200 hover:bg-slate-300 rounded-t transition-colors border-t-2 border-dashed border-slate-400" style="height: 83%;"></div>
+</div>
+<!-- 19:00 (Prognoza) -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">Prognoza: 20 os.</div>
+<div class="w-full max-w-[18px] bg-slate-200 hover:bg-slate-300 rounded-t transition-colors border-t-2 border-dashed border-slate-400" style="height: 66%;"></div>
+</div>
+<!-- 20:00 (Prognoza) -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">Prognoza: 14 os.</div>
+<div class="w-full max-w-[18px] bg-slate-200 hover:bg-slate-300 rounded-t transition-colors border-t-2 border-dashed border-slate-400" style="height: 46%;"></div>
+</div>
+<!-- 21:00 (Prognoza) -->
+<div class="chart-bar-group relative flex-1 flex flex-col items-center h-full justify-end cursor-pointer group">
+<div class="chart-tooltip opacity-0 pointer-events-none absolute -top-7 bg-slate-800 text-white text-[10px] py-0.5 px-1.5 rounded whitespace-nowrap z-10">Prognoza: 6 os.</div>
+<div class="w-full max-w-[18px] bg-slate-200 hover:bg-slate-300 rounded-t transition-colors border-t-2 border-dashed border-slate-400" style="height: 20%;"></div>
+</div>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between text-[11px] text-slate-400 font-medium pt-1.5 px-0.5">
+<span>06:00</span>
+<span>09:00</span>
+<span>12:00</span>
+<span>15:00</span>
+<span class="text-blue-600 font-bold">17:00</span>
+<span>21:00</span>
+</div>
+</div>
+</section>
+<!-- Current Occupancy Card (Directly below chart) -->
+<section class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs" data-purpose="current-occupancy-card">
+<!-- Card Header & Badge -->
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2 text-slate-900 font-bold text-base">
+<!-- Users Icon -->
+<svg class="w-5 h-5 text-blue-600" fill="currentColor" viewbox="0 0 20 20">
+<path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
+</svg>
+<span>Aktualne obłożenie</span>
+</div>
+<span class="text-xs font-bold text-slate-600 border border-slate-200 px-2.5 py-1 rounded-full uppercase tracking-wider bg-slate-50">
+              73% pełny
+            </span>
+</div>
+<!-- Numbers -->
+<div class="flex items-baseline gap-2 mb-3">
+<span class="text-5xl font-extrabold text-blue-600 tracking-tight">22</span>
+<span class="text-lg font-medium text-slate-600">/ 30 osób</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-slate-100 rounded-full h-2.5 mb-2 overflow-hidden">
+<div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 ease-out" style="width: 73.3%"></div>
+</div>
+<!-- Live Indicator Subtext -->
+<div class="text-right">
+<span class="text-xs text-slate-400 font-medium">Dane na żywo</span>
+</div>
+</section>
+<!-- Navigation Action Button -->
+<a class="w-full inline-flex items-center justify-center gap-2 bg-[#0062d2] hover:bg-[#0052b3] active:scale-[0.99] text-white font-medium text-base py-3.5 px-6 rounded-full shadow-sm transition-all duration-150" data-purpose="navigation-button" href="https://maps.google.com" rel="noopener noreferrer" target="_blank">
+<!-- Navigation Arrow Icon -->
+<svg class="w-4 h-4 fill-current transform rotate-45 -mt-0.5" viewbox="0 0 20 20">
+<path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
+</svg>
+          Nawiguj w Google Maps
+        </a>
+</div>
+<!-- END: RightColumn -->
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: MainFooter -->
+<footer class="mt-16 bg-white border-t border-slate-100 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+<!-- Footer Logo -->
+<div class="flex items-center gap-2">
+<svg class="w-6 h-6 text-blue-500" fill="none" viewbox="0 0 36 36">
+<rect fill="#EBF4FF" height="36" rx="8" width="36"></rect>
+<path d="M8 21C11.5 21 13 18.5 16.5 18.5C20 18.5 21.5 21 25 21" stroke="#2563EB" stroke-linecap="round" stroke-width="2.5"></path>
+<circle cx="22" cy="13" fill="#F97316" r="2.5"></circle>
+</svg>
+<span class="font-bold text-sm text-slate-800">basen.bialystok.pl</span>
+</div>
+<!-- Footer Links -->
+<nav class="flex items-center gap-6 text-xs text-slate-500 font-medium">
+<a class="hover:text-slate-800 transition-colors" href="#">Polityka Prywatności</a>
+<a class="hover:text-slate-800 transition-colors" href="#">Kontakt</a>
+</nav>
+<!-- Copyright Notice -->
+<div class="text-xs text-slate-400 font-normal">
+        © 2026 basen.bialystok.pl
+      </div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>
