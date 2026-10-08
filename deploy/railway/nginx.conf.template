@@ -18,9 +18,11 @@ server {
         return 200 "ok\n";
     }
     location / {
+        if ($http_x_forwarded_proto != "https") { return 308 https://$host$request_uri; }
         try_files $uri $uri/ /index.html;
     }
     location ~ ^/(api|update_chart|get_date_data|chatbot)/ {
+        if ($http_x_forwarded_proto != "https") { return 308 https://$host$request_uri; }
         proxy_pass http://${BACKEND_HOST}:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
