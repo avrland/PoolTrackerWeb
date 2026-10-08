@@ -40,6 +40,17 @@ function CurrentView() {
   return <><CurrentStatus showTotal /><CurrentStatus /><FacilityGrid /></>
 }
 
+function expectPoolLinks() {
+  expect(screen.getAllByRole('link')).toHaveLength(3)
+  for (const [name, path] of [
+    ['Pływalnia Kameralna', '/pool/small'],
+    ['Pływalnia Sportowa', '/pool/sport'],
+    ['Pływalnia Rodzinna', '/pool/family'],
+  ]) {
+    expect(screen.getByRole('link', { name })).toHaveAttribute('href', path)
+  }
+}
+
 beforeEach(() => {
   vi.resetAllMocks()
   client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity, gcTime: Infinity } } })
@@ -56,11 +67,11 @@ describe('current data loading states', () => {
     expect(screen.getByRole('region', { name: 'Kafelki obiektów' })).toHaveAttribute('aria-busy', 'true')
     expect(screen.queryByText(/Teraz pływa/)).not.toBeInTheDocument()
     expect(screen.queryByText('LIVE')).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /Szczegóły/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
     await act(async () => request.resolve(CURRENT))
     expect(await screen.findByText('Teraz pływa łącznie 17 osób')).toBeInTheDocument()
     expect(screen.getByText('LIVE')).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /Szczegóły/ })).toHaveLength(3)
+    expectPoolLinks()
     expect(fetchCurrentData).toHaveBeenCalledTimes(1)
   })
 
@@ -102,7 +113,7 @@ describe('current data loading states', () => {
     expect(await screen.findByText('Ostatnio: 17 osób · Dane nieaktualne')).toBeInTheDocument()
     expect(screen.getByText('Dane nieaktualne')).toBeInTheDocument()
     expect(screen.queryByText('LIVE')).not.toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /Szczegóły/ })).toHaveLength(3)
+    expectPoolLinks()
     fetchCurrentData.mockResolvedValue({ ...CURRENT, lastsport: 13 })
     await act(async () => { await client.invalidateQueries({ queryKey: ['current'] }) })
     expect(await screen.findByText('Teraz pływa łącznie 18 osób')).toBeInTheDocument()
